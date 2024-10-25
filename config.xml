@@ -2,9 +2,12 @@
 <widget id="com.alr.spendwise" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>SpendWise</name>
     <description>Ứng dụng ghi chú và quản lý chi tiêu cá nhân</description>
-    <author email="anlerip@gmail.com" href="https://cordova.apache.org">
-        ALR2310
-    </author>
+    <author email="anlerip@gmail.com" href="facebook.com/anle2310">ALR2310</author>
+
+    <platform name="android">
+        <icon src="www/assets/imgs/logo.png" />
+    </platform>
+
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
