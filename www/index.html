@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="light">
 
 <head>
     <meta charset="utf-8">
@@ -12,17 +12,44 @@
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/tailwind.css">
     <link rel="stylesheet" href="assets/libs/fontawesome-6.4.2/css/all.css">
+    <script src="assets/libs/jquery-3.7.1.js"></script>
+    <script src="assets/libs/lodash.min.1.8.3.js"></script>
+    <script src="assets/js/main.js"></script>
     <title>SpendWise</title>
 </head>
 
 <body>
+    <div id="toast-container" class="toast toast-top"></div>
+
     <div id="app">
+        <div id="content">
+            <div id="spend-content"></div>
+            <div id="stats-content"></div>
+            <div id="note-content"></div>
+            <div id="setting-content"></div>
+        </div>
 
-        <button class="btn btn-info">Info</button>
-        <button class="btn btn-success">Success</button>
-        <button class="btn btn-warning">Warning</button>
-        <button class="btn btn-error">Error</button>
+        <div class="btm-nav">
+            <button id="spend-btn" class="text-primary">
+                <i class="fa-sharp fa-regular fa-wallet"></i>
+                <span class="btm-nav-label">Chi tiêu</span>
+            </button>
 
+            <button id="stats-btn" class="text-primary ">
+                <i class="fa-sharp fa-regular fa-chart-simple"></i>
+                <span class="btm-nav-label">Thống kê</span>
+            </button>
+
+            <button id="note-btn" class="text-primary">
+                <i class="fa-sharp fa-regular fa-note"></i>
+                <span class="btm-nav-label">Ghi chú</span>
+            </button>
+
+            <button id="setting-btn" class="text-primary">
+                <i class="fa-sharp fa-regular fa-gear"></i>
+                <span class="btm-nav-label">Cài đặt</span>
+            </button>
+        </div>
     </div>
 
     <script src="cordova.js"></script>
