@@ -1,0 +1,8 @@
+.btm-nav-sm>*:where(.active) {
+    border-top-width: 1px !important;
+    border-color: black !important;
+}
+
+.btm-nav>*:not(.active) {
+    padding-top: 0px !important;
+}

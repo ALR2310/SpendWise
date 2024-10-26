@@ -29,9 +29,14 @@ $(document).on('deviceready', () => {
         $("#content > div").hide();
         $(".btm-nav button").removeClass("active");
 
+        $(".btm-nav button i").removeClass("fa-solid").addClass("fa-regular");
+
         loadContentOnce(sectionId, file);
         $("#" + buttonId).addClass("active");
+
+        $("#" + buttonId + " i").removeClass("fa-regular").addClass("fa-solid");
     }
+
 
     // Gán sự kiện click vào các nút để mở nội dung chỉ một lần
     $("#spend-btn").click(() => showContent("spend-content", "spend-btn", "assets/views/spend.hbs"));

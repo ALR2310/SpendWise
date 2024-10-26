@@ -3,6 +3,9 @@ module.exports = {
   content: [
     "./www/**/*.{html,js}",
   ],
+  safelist: [
+    { pattern: /alert|btn|flex|justify/, },
+  ],
   theme: {
     extend: {},
   },
