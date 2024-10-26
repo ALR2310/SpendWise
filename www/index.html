@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="assets/libs/fontawesome-6.4.2/css/all.css">
     <script src="assets/libs/jquery-3.7.1.js"></script>
     <script src="assets/libs/lodash.min.1.8.3.js"></script>
+    <script src="assets/libs/theme-change-2.0.2.js"></script>
     <script src="assets/js/main.js"></script>
     <title>SpendWise</title>
 </head>
@@ -21,31 +22,51 @@
 <body>
     <div id="toast-container" class="toast toast-top"></div>
 
-    <div id="app" class="bg-gray-100">
-        <div id="content" class="overflow-y-scroll no-scrollbar" style="height: 93.5vh;">
+    <div id="app" class="bg-base-200">
+        <!-- Navbar -->
+        <div class="navbar min-h-0 p-3 bg-base-100">
+            <div class="flex-none">
+                <img src="assets/imgs/logo.png" class="w-7 h-7">
+            </div>
+            <div class="flex-1">
+                <a class="font-semibold ps-1 text-xl">SpendWise</a>
+            </div>
+            <div class="flex-none">
+                <label class="swap swap-rotate">
+                    <input type="checkbox" data-toggle-theme="dark,light" class="theme-controller" value="dark" />
+
+                    <i class="fa-sharp fa-regular fa-brightness swap-off fill-current text-2xl"></i>
+                    <i class="fa-sharp fa-regular fa-moon swap-on fill-current text-2xl"></i>
+                </label>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div id="content" class="overflow-y-scroll no-scrollbar" style="height: calc(100vh - 48px - 52px);">
             <div id="spend-content"></div>
             <div id="stats-content"></div>
             <div id="note-content"></div>
             <div id="setting-content"></div>
         </div>
 
+        <!-- Bottom navigation -->
         <div class="btm-nav btm-nav-sm">
-            <button id="spend-btn" class="text-black border-t border-neutral-300">
+            <button id="spend-btn" class="text-base-content border-t border-base-300">
                 <i class="fa-sharp fa-regular fa-wallet"></i>
                 <span class="btm-nav-label">Chi tiêu</span>
             </button>
 
-            <button id="stats-btn" class="text-black border-t border-neutral-300 ">
+            <button id="stats-btn" class="text-base-content border-t border-base-300 ">
                 <i class="fa-sharp fa-regular fa-chart-simple"></i>
                 <span class="btm-nav-label">Thống kê</span>
             </button>
 
-            <button id="note-btn" class="text-black border-t border-neutral-300">
+            <button id="note-btn" class="text-base-content border-t border-base-300">
                 <i class="fa-sharp fa-regular fa-note"></i>
                 <span class="btm-nav-label">Ghi chú</span>
             </button>
 
-            <button id="setting-btn" class="text-black border-t border-neutral-300">
+            <button id="setting-btn" class="text-base-content border-t border-base-300">
                 <i class="fa-sharp fa-regular fa-gear"></i>
                 <span class="btm-nav-label">Cài đặt</span>
             </button>

@@ -45,3 +45,11 @@ $(document).on('deviceready', () => {
     // Hiển thị nội dung mặc định khi tải trang
     showContent("spend-content", "spend-btn", "assets/views/spend.hbs");
 });
+
+
+$(document).ready(function () {
+    if ($('html').data('theme') == 'dark') {
+        $('.theme-controller').prop('checked', true);
+    }
+})
+

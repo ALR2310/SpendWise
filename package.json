@@ -8,7 +8,8 @@
     "live-watch": "nodemon --watch www --exec \"cordova prepare\" --ext html,hbs,css,js",
     "live-serve": "live-server --watch=\"platforms/browser/www\"",
     "start": "npm-run-all -c -n -l -p live-watch live-serve",
-    "android": "cordova run android",
+    "a": "cordova run android",
+    "android": "cordova run android --device",
     "build:dev": "cordova build android --clean",
     "build:release": "cordova build android --release --clean",
     "build:css": "tailwindcss -i ./tailwindcss/style.css -o ./www/assets/css/tailwind.css --watch"

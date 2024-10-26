@@ -9,24 +9,40 @@
     </button>
 </div>
 
-<hr>
+<div class="w-full border-t bg-base-content"></div>
 
 <label class="input input-sm input-bordered flex items-center m-4 gap-2">
     <input type="text" class="grow" placeholder="Tìm kiếm" />
     <i class="fa-sharp fa-regular fa-magnifying-glass"></i>
 </label>
 
-<div class="overflow-x-auto m-4 bg-white rounded-xl">
-    <table class="table table-sm w-full table-pin-cols">
+<div class="flex m-4 justify-between">
+    <button class="btn btn-sm btn-accent">
+        <i class="fa-sharp fa-plus"></i> Thêm chi tiêu
+    </button>
+
+    <div>
+        <label for="">Xếp theo:</label>
+        <select class="select select-sm select-bordered">
+            <option>Thời gian</option>
+            <option>Khoản chi</option>
+            <option>Số tiền</option>
+        </select>
+    </div>
+</div>
+
+<div class="overflow-x-auto bg-base-100 rounded-xl m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-32px-48px)]">
+    <table class="table table-sm table-pin-rows">
         <thead>
             <tr>
-                <th class="text-black">Thời gian</th>
-                <th class="text-black">Khoản chi</th>
-                <th class="text-black">Số tiền</th>
+                <th class="text-base-content">Thời gian</th>
+                <th class="text-base-content">Khoản chi</th>
+                <th class="text-base-content">Số tiền</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr class="hover draggable">
+            <tr class="hover cursor-pointer">
                 <td>01/01/2024</td>
                 <td>Ăn sáng</td>
                 <td>1,000,000 VNĐ</td>
@@ -39,57 +55,17 @@
                             <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
                         </summary>
 
-                        <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow flex gap-1">
+                        <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] p-2 shadow flex gap-1">
                             <li><a class="btn btn-info btn-xs w-20">Sửa</a></li>
                             <li><a class="btn btn-error btn-xs w-20">Xoá</a></li>
                         </ul>
                     </details>
                 </td>
             </tr>
-            <tr class="hover draggable">
+            <tr class="hover cursor-pointer">
                 <td>02/01/2024</td>
                 <td>Ăn trưa</td>
                 <td>500,000 VNĐ</td>
-                <td>
-                    <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate">
-                            <input type="checkbox">
-
-                            <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
-                            <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
-                        </summary>
-
-                        <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow flex gap-1">
-                            <li><a class="btn btn-info btn-xs w-20">Sửa</a></li>
-                            <li><a class="btn btn-error btn-xs w-20">Xoá</a></li>
-                        </ul>
-                    </details>
-                </td>
-            </tr>
-            <tr class="hover draggable">
-                <td>02/01/2024</td>
-                <td>Ăn chiều</td>
-                <td>500,000 VNĐ</td>
-                <td>
-                    <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate">
-                            <input type="checkbox">
-
-                            <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
-                            <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
-                        </summary>
-
-                        <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow flex gap-1">
-                            <li><a class="btn btn-info btn-xs w-20">Sửa</a></li>
-                            <li><a class="btn btn-error btn-xs w-20">Xoá</a></li>
-                        </ul>
-                    </details>
-                </td>
-            </tr>
-            <tr class="hover draggable">
-                <td>03/01/2024</td>
-                <td>Ăn tối</td>
-                <td>300,000 VNĐ</td>
                 <td>
                     <details class="dropdown dropdown-left dropdown-end">
                         <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate">
