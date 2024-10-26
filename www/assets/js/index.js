@@ -28,12 +28,10 @@ $(document).on('deviceready', () => {
     function showContent(sectionId, buttonId, file) {
         $("#content > div").hide();
         $(".btm-nav button").removeClass("active");
-
         $(".btm-nav button i").removeClass("fa-solid").addClass("fa-regular");
 
         loadContentOnce(sectionId, file);
         $("#" + buttonId).addClass("active");
-
         $("#" + buttonId + " i").removeClass("fa-regular").addClass("fa-solid");
     }
 

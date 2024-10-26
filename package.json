@@ -5,7 +5,7 @@
   "description": "Ứng dụng ghi chú và quản lý chi tiêu cá nhân",
   "main": "index.js",
   "scripts": {
-    "live-watch": "nodemon --watch www --exec \"cordova prepare\" --ext html,css,js",
+    "live-watch": "nodemon --watch www --exec \"cordova prepare\" --ext html,hbs,css,js",
     "live-serve": "live-server --watch=\"platforms/browser/www\"",
     "start": "npm-run-all -c -n -l -p live-watch live-serve",
     "android": "cordova run android",

@@ -6,3 +6,17 @@
 .btm-nav>*:not(.active) {
     padding-top: 0px !important;
 }
+
+.slide-left {
+    transition: transform 0.5s ease;
+    transform: translateX(-100%);
+}
+
+.slide-right {
+    transition: transform 0.5s ease;
+    transform: translateX(100%);
+}
+
+.draggable {
+    pointer-events: all
+}
