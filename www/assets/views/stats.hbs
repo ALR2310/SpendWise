@@ -1,1 +1,64 @@
-<h1>Đây là thống kê</h1>
+<div class="shadow rounded-xl bg-base-100 m-4">
+    <div class="flex">
+        <div class="flex-1 p-2">
+            <div class="text-center text-base-content opacity-60">Tổng tuần này</div>
+            <div class="text-center font-extrabold text-2xl text-success">336.000 ₫</div>
+        </div>
+
+        <div class="border-l border-base-300"></div>
+
+        <div class="flex-1 p-2">
+            <div class="text-center text-base-content opacity-60">Tổng tuần trước</div>
+            <div class="text-center font-extrabold text-2xl text-success">1.336.000 ₫</div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="text-center text-base-content opacity-60 p-2">Tăng 21% so với tuần trước</div>
+</div>
+
+<div id="stats-chart-col" class="h-[40vh] m-4"></div>
+
+
+<script>
+    document.addEventListener('deviceready', function () {
+        const chartCol = echarts.init(document.getElementById('stats-chart-col'), null, { renderer: 'svg' });
+
+        // Thiết lập dữ liệu mẫu
+        const dates = ['2024-10-20', '2024-10-21', '2024-10-22', '2024-10-23', '2024-10-24'];
+        const spending = [120, 200, 150, 80, 170]; // Tổng chi tiêu mỗi ngày
+
+        // Cấu hình biểu đồ
+        let options = {
+            title: {
+                text: 'Chi tiêu hàng ngày',
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+            },
+            yAxis: {
+                type: 'value',
+            },
+            dataZoom: [{
+                type: 'slider',
+                orient: 'horizontal',
+                start: 10,
+                end: 100
+            }],
+            series: [{
+                data: spending,
+                type: 'bar',
+                barWidth: '60%',
+                smooth: true,
+            }]
+        };
+
+        chartCol.setOption(options);
+    });
+</script>

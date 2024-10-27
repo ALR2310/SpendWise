@@ -44,7 +44,7 @@ $(document).on('deviceready', () => {
     $("#setting-btn").click(() => showContent("setting-content", "setting-btn", "assets/views/setting.hbs"));
 
     // Hiển thị nội dung mặc định khi tải trang
-    showContent("spend-content", "spend-btn", "assets/views/spend.hbs");
+    $("#stats-btn").click();
 });
 
 
