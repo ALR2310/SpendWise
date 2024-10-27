@@ -4,20 +4,18 @@
         <option>Chi tiêu cá nhân 2</option>
     </select>
 
-    <button class="btn btn-active btn-sm">
+    <button class="btn btn-active btn-sm" onclick="modal_spendList.showModal()">
         <i class="fa-sharp fa-plus"></i> Thêm
     </button>
 </div>
 
-<div class="w-full border-t bg-base-content"></div>
-
 <label class="input input-sm input-bordered flex items-center m-4 gap-2">
     <input type="text" class="grow" placeholder="Tìm kiếm" />
-    <i class="fa-sharp fa-regular fa-magnifying-glass"></i>
+    <i class="fa-sharp fa-regular fa-magnifying-glass opacity-70"></i>
 </label>
 
 <div class="flex m-4 justify-between">
-    <button class="btn btn-sm btn-accent">
+    <button class="btn btn-sm btn-accent" onclick="modal_spendItem.showModal()">
         <i class="fa-sharp fa-plus"></i> Thêm chi tiêu
     </button>
 
@@ -31,7 +29,7 @@
     </div>
 </div>
 
-<div class="overflow-x-auto bg-base-100 rounded-xl m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-32px-48px)]">
+<div class="overflow-x-auto bg-base-100 rounded-xl m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-16px-48px)]">
     <table class="table table-sm table-pin-rows">
         <thead>
             <tr>
@@ -48,7 +46,8 @@
                 <td>1,000,000 VNĐ</td>
                 <td>
                     <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate">
+                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate"
+                            onclick="$(this).find('input[type=checkbox]').prop('checked', function(i, val) { return !val; })">
                             <input type="checkbox">
 
                             <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
@@ -68,7 +67,8 @@
                 <td>500,000 VNĐ</td>
                 <td>
                     <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate">
+                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate"
+                            onclick="$(this).find('input[type=checkbox]').prop('checked', function(i, val) { return !val; })">
                             <input type="checkbox">
 
                             <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
@@ -85,3 +85,65 @@
         </tbody>
     </table>
 </div>
+
+<!-- Modal SpendList -->
+<dialog id="modal_spendList" class="modal">
+    <div class="modal-box ">
+        <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
+        <label class="input input-sm input-bordered flex items-center gap-2 mb-3">
+            <i class="fa-sharp fa-solid fa-list opacity-70"></i>
+            <input type="text" class="grow" placeholder="Tên danh sách" />
+        </label>
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-sm w-20">Đóng</button>
+                <button class="btn btn-sm btn-success w-20">Thêm</button>
+            </div>
+        </form>
+
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Modal SpendItem -->
+<dialog id="modal_spendItem" class="modal">
+    <div class="modal-box ">
+        <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
+
+        <div class="flex gap-3 mb-3">
+            <input type="text" class="input input-sm input-bordered w-[55%]" placeholder="Tên khoản chi">
+            <input type="date" class="input input-sm input-bordered w-[45%]" placeholder="Thời gian" />
+        </div>
+
+        <div class="flex gap-3 mb-3">
+            <input type="text" class="input input-sm input-bordered w-[45%]" placeholder="Số tiền">
+            <input type="text" class="input input-sm input-bordered w-[55%]" placeholder="Thông tin thêm">
+        </div>
+
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-sm w-20">Đóng</button>
+                <button class="btn btn-sm btn-success w-20">Thêm</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    document.addEventListener('deviceready', function () {
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.value = new Date().toISOString().split('T')[0];
+            console.log('Code đã chạy');
+        });
+    });
+</script>
+<script src="assets/js/spend.js"></script>

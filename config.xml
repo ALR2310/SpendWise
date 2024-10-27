@@ -6,6 +6,10 @@
 
     <platform name="android">
         <icon src="www/assets/imgs/logo.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/assets/imgs/logo.png" />
+        <preference name="SplashScreenDelay" value="0" />
+        <preference name="FadeSplashScreenDuration" value="0" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#000000"/>
     </platform>
 
     <content src="index.html" />

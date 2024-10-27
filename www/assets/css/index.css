@@ -5,3 +5,15 @@
 .btm-nav>*:not(.active) {
     padding-top: 0px !important;
 }
+
+#modal_spendList:not(dialog:not(.modal-open)),
+#modal_spendList::backdrop,
+#modal_spendItem:not(dialog:not(.modal-open)),
+#modal_spendItem::backdrop {
+    background-color: unset !important;
+}
+
+/* #modal_spendList .modal-box,
+#modal_spendItem .modal-box {
+    box-shadow: unset !important;
+} */

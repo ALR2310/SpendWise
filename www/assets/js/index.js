@@ -48,8 +48,10 @@ $(document).on('deviceready', () => {
 
 
 $(document).ready(function () {
-    if ($('html').data('theme') == 'dark') {
+    if ($('html').data('theme') == 'light') {
         $('.theme-controller').prop('checked', true);
     }
-})
+});
+
+
 
