@@ -1,32 +1,33 @@
+$(document).ready(function () {
+    if ($('html').data('theme') == 'light') {
+        $('.theme-controller').prop('checked', true);
+    }
+});
+
 $(document).on('deviceready', () => {
     // Hàm tải nội dung bất đồng bộ và chỉ gán một lần
     async function loadContentOnce(sectionId, file) {
-        const section = document.getElementById(sectionId);
+        const section = $('#' + sectionId);
 
         // Nếu phần tử đã có nội dung, chỉ cần hiển thị
-        if (section.innerHTML.trim()) {
-            $("#" + sectionId).show();
-            return;
-        }
-
+        if (section.html().trim()) return $("#" + sectionId).show();
         try {
             const response = await fetch(file);
-            if (!response.ok) {
-                showToast('Không thể tải nội dung', 'error');
-                throw new Error(`Không thể tải tệp ${file}`);
-            }
+            if (!response.ok) return showToast('Không thể tải nội dung', 'error');
 
             const content = await response.text();
-            section.innerHTML = content;
-            $("#" + sectionId).show();
-        } catch (error) {
-            console.error(error);
+            const compiledContent = Handlebars.compile(content);
+            const html = compiledContent();
+            $('#' + sectionId).html(html);
+        } catch (e) {
+            console.error(e);
         }
     }
 
     // Hàm điều khiển hiển thị nội dung và cập nhật trạng thái nút
     function showContent(sectionId, buttonId, file) {
         $("#content > div").hide();
+        $("#" + sectionId).show();
         $(".btm-nav button").removeClass("active");
         $(".btm-nav button i").removeClass("fa-solid").addClass("fa-regular");
 
@@ -47,11 +48,7 @@ $(document).on('deviceready', () => {
 });
 
 
-$(document).ready(function () {
-    if ($('html').data('theme') == 'light') {
-        $('.theme-controller').prop('checked', true);
-    }
-});
+
 
 
 
