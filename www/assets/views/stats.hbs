@@ -1,4 +1,4 @@
-<div class="shadow rounded-xl bg-base-100 m-4">
+<div class="shadow rounded-box bg-base-100 m-4">
     <div class="flex">
         <div class="flex-1 p-2">
             <div class="text-center text-base-content opacity-60">Tổng tuần này</div>
@@ -18,7 +18,94 @@
     <div class="text-center text-base-content opacity-60 p-2">Tăng 21% so với tuần trước</div>
 </div>
 
-<div id="stats-chart-col" class="h-[40vh] m-4"></div>
+
+
+<div id="stats-chart-col" class="bg-base-100 rounded-box shadow h-[40vh] m-4"></div>
+
+<div id="stats-chart-pie" class="bg-base-100 rounded-box shadow h-[40vh] m-4"></div>
+
+<div class="flex m-4 gap-2">
+    <div class="join join-vertical bg-base-100 rounded-box shadow flex-[1]">
+        <div class="join-item border p-2">
+            <div class="text-center text-base-content opacity-60">Tổng danh sách</div>
+            <div class="text-center font-extrabold text-success">10.000.000 ₫</div>
+        </div>
+
+        <div class="join-item border p-2">
+            <div class="text-center text-base-content opacity-60">Tổng khoản chi</div>
+            <div class="text-center font-extrabold text-info">59 khoản chi</div>
+        </div>
+
+        <div class="join-item border p-2">
+            <div class="text-center text-base-content opacity-60">Thời gian chi</div>
+            <div class="text-center font-extrabold text-info">1099 ngày</div>
+        </div>
+
+        <div class="join-item border p-2">
+            <div class="text-center text-base-content opacity-60">Tháng này</div>
+            <div class="text-center font-extrabold text-success">10.000.000 ₫</div>
+        </div>
+
+        <div class="join-item border p-2">
+            <div class="text-center text-base-content opacity-60">Tháng trước</div>
+            <div class="text-center font-extrabold text-success">10.000.000 ₫</div>
+        </div>
+    </div>
+
+    <div class="flex-[1.5]">
+        <select class="select select-sm select-bordered w-full mb-2">
+            <option>Chi tiêu cá nhân 1</option>
+            <option>Chi tiêu cá nhân 2</option>
+        </select>
+
+        <div class="overflow-x-auto bg-base-100 rounded-box shadow h-[calc(328px-44px)]">
+            <table class="table table-sm table-pin-rows">
+                <thead>
+                    <tr>
+                        <th class="text-base-content">Thời gian</th>
+                        <th class="text-base-content">Khoản chi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                    <tr class="hover cursor-pointer">
+                        <td>Ăn sáng</td>
+                        <td>1,000,000 VNĐ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
 
 
 <script>
@@ -55,10 +142,64 @@
                 data: spending,
                 type: 'bar',
                 barWidth: '60%',
-                smooth: true,
+                showSymbol: false,
+                smooth: false,
+                lineStyle: {
+                    width: 5,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    shadowBlur: 10,
+                },
             }]
         };
 
         chartCol.setOption(options);
+
+
+
+
+        const chartPie = echarts.init(document.getElementById('stats-chart-pie'), null, { renderer: 'svg' });
+
+        // Thiết lập dữ liệu mẫu
+        chartPie.setOption({
+            title: {
+                text: 'Các chi tiêu trong ngày',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                type: 'scroll',
+                orient: 'vertical',
+                left: 'right',
+                right: 10,
+                top: 20,
+                bottom: 20,
+                textStyle: {
+                    color: 'green'
+                }
+            },
+            series: [
+                {
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        { value: 1048, name: 'Search Engine' },
+                        { value: 735, name: 'Direct' },
+                        { value: 580, name: 'Email' },
+                        { value: 484, name: 'Union Ads' },
+                        { value: 300, name: 'Video Ads' }
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        });
     });
 </script>
