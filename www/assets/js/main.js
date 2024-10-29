@@ -6,7 +6,7 @@ function showToast(message, type) {
     // Tạo phần tử toast mới
     const toast = document.createElement("div");
     toast.id = toastId;
-    toast.className = `alert alert-${type} p-2 flex justify-between mb-2`;
+    toast.className = `alert alert-${type} p-2 flex justify-between mb-2 text-white`;
 
     // Cấu trúc nội dung của toast
     toast.innerHTML = `
@@ -14,7 +14,7 @@ function showToast(message, type) {
             <i class="fa-sharp fa-regular ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : type === 'info' ? 'fa-circle-info' : 'fa-triangle-exclamation'}"></i>
             <span class="text-wrap">${message}</span>
         </div>
-        <button class="btn btn-${type} btn-xs btn-circle" onclick="closeToast('${toastId}')">
+        <button class="btn btn-${type} btn-xs btn-circle text-white" onclick="closeToast('${toastId}')">
             <i class="fa-light fa-xmark"></i>
         </button>
     `;

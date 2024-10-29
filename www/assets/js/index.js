@@ -38,13 +38,14 @@ $(document).on('deviceready', () => {
 
 
     // Gán sự kiện click vào các nút để mở nội dung chỉ một lần
+    $('#home-btn').click(() => showContent("page-home", "home-btn", "assets/views/home.hbs"));
     $("#spend-btn").click(() => showContent("page-spend", "spend-btn", "assets/views/spend.hbs"));
     $("#stats-btn").click(() => showContent("page-stats", "stats-btn", "assets/views/stats.hbs"));
     $("#note-btn").click(() => showContent("page-note", "note-btn", "assets/views/note.hbs"));
     $("#setting-btn").click(() => showContent("page-setting", "setting-btn", "assets/views/setting.hbs"));
 
     // Hiển thị nội dung mặc định khi tải trang
-    $("#note-btn").click();
+    $("#home-btn").click();
 });
 
 

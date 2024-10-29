@@ -13,12 +13,9 @@
     background-color: unset !important;
 }
 
-/* #modal_spendList .modal-box,
-#modal_spendItem .modal-box {
-    box-shadow: unset !important;
-} */
 
 
+/* Chức năng trượt cho thẻ */
 .swipeout {
     position: relative;
     overflow: hidden;
@@ -51,4 +48,44 @@
     z-index: 10;
     --tw-bg-opacity: 1;
     background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+
+/* Thẻ combobox */
+.combobox {
+    position: relative;
+}
+
+.combobox ul {
+    position: absolute;
+    display: none;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
+    width: 100%;
+    padding: 0.25rem;
+    border-radius: var(--rounded-btn, 0.5rem);
+    border-width: 1px;
+    margin-top: 0.5rem;
+}
+
+.combobox ul li {
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.combobox ul li:hover {
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b2, oklch(var(--b2)/var(--tw-bg-opacity)));
+    border-radius: var(--rounded-btn, 0.5rem);
+}
+
+.combobox i {
+    position: absolute;
+    right: 2.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
 }

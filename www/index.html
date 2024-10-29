@@ -22,7 +22,7 @@
 </head>
 
 <body>
-    <div id="toast-container" class="toast toast-top"></div>
+    <div id="toast-container" class="toast toast-top z-10"></div>
 
     <div id="app" class="bg-base-200">
         <!-- Navbar -->
@@ -31,7 +31,7 @@
                 <img src="assets/imgs/logo.png" class="w-7 h-7">
             </div>
             <div class="flex-1">
-                <a class="font-semibold ps-1 text-xl">SpendWise</a>
+                <a class="font-extrabold ps-1 text-xl text-base-content">SpendWise</a>
             </div>
             <div class="flex-none">
                 <label class="swap swap-rotate">
@@ -45,6 +45,7 @@
 
         <!-- Main content -->
         <div id="page" class="overflow-y-scroll no-scrollbar" style="height: calc(100vh - 48px - 52px);">
+            <div id="page-home"></div>
             <div id="page-spend"></div>
             <div id="page-stats"></div>
             <div id="page-note"></div>
@@ -53,6 +54,11 @@
 
         <!-- Bottom navigation -->
         <div class="btm-nav btm-nav-sm">
+            <button id="home-btn" class="text-base-content border-t border-base-300">
+                <i class="fa-sharp fa-regular fa-house"></i>
+                <span class="btm-nav-label">Trang chủ</span>
+            </button>
+
             <button id="spend-btn" class="text-base-content border-t border-base-300">
                 <i class="fa-sharp fa-regular fa-wallet"></i>
                 <span class="btm-nav-label">Chi tiêu</span>
