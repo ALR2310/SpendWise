@@ -17,3 +17,38 @@
 #modal_spendItem .modal-box {
     box-shadow: unset !important;
 } */
+
+
+.swipeout {
+    position: relative;
+    overflow: hidden;
+    clip-path: inset(0);
+    z-index: 1;
+    border-radius: 0.5rem;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+.swipeout-actions-left,
+.swipeout-actions-right {
+    display: flex;
+    position: absolute;
+    height: 98%;
+    z-index: 0;
+}
+
+.swipeout-actions-left {
+    left: 0;
+}
+
+.swipeout-actions-right {
+    right: 1px;
+}
+
+.swipeout-content {
+    padding: 0.5rem;
+    position: relative;
+    z-index: 10;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+}

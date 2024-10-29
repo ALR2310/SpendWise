@@ -26,7 +26,7 @@ $(document).on('deviceready', () => {
 
     // Hàm điều khiển hiển thị nội dung và cập nhật trạng thái nút
     function showContent(sectionId, buttonId, file) {
-        $("#content > div").hide();
+        $("#page > div").hide();
         $("#" + sectionId).show();
         $(".btm-nav button").removeClass("active");
         $(".btm-nav button i").removeClass("fa-solid").addClass("fa-regular");
@@ -38,17 +38,13 @@ $(document).on('deviceready', () => {
 
 
     // Gán sự kiện click vào các nút để mở nội dung chỉ một lần
-    $("#spend-btn").click(() => showContent("spend-content", "spend-btn", "assets/views/spend.hbs"));
-    $("#stats-btn").click(() => showContent("stats-content", "stats-btn", "assets/views/stats.hbs"));
-    $("#note-btn").click(() => showContent("note-content", "note-btn", "assets/views/note.hbs"));
-    $("#setting-btn").click(() => showContent("setting-content", "setting-btn", "assets/views/setting.hbs"));
+    $("#spend-btn").click(() => showContent("page-spend", "spend-btn", "assets/views/spend.hbs"));
+    $("#stats-btn").click(() => showContent("page-stats", "stats-btn", "assets/views/stats.hbs"));
+    $("#note-btn").click(() => showContent("page-note", "note-btn", "assets/views/note.hbs"));
+    $("#setting-btn").click(() => showContent("page-setting", "setting-btn", "assets/views/setting.hbs"));
 
     // Hiển thị nội dung mặc định khi tải trang
-    $("#stats-btn").click();
+    $("#note-btn").click();
 });
-
-
-
-
 
 
