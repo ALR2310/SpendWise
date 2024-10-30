@@ -1,0 +1,5 @@
+{
+    "plugins": [
+        "cordova-sqlite-storage"
+    ]
+}

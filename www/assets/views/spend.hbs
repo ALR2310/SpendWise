@@ -1,7 +1,8 @@
 <div class="flex m-4 gap-2">
-    <select class="select select-sm select-bordered w-full">
-        <option>Chi tiêu cá nhân 1</option>
-        <option>Chi tiêu cá nhân 2</option>
+    <select id="select_spendList" class="select select-sm select-bordered w-full">
+        {{#each spendList}}
+        <option value="{{this.Id}}">{{this.Name}}</option>
+        {{/each}}
     </select>
 
     <button class="btn btn-active btn-sm" onclick="modal_spendList.showModal()">
@@ -20,7 +21,7 @@
     </button>
 
     <div>
-        <label for="">Xếp theo:</label>
+        <label>Xếp theo:</label>
         <select class="select select-sm select-bordered">
             <option>Thời gian</option>
             <option>Khoản chi</option>
@@ -92,17 +93,17 @@
         <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
         <label class="input input-sm input-bordered flex items-center gap-2 mb-3">
             <i class="fa-sharp fa-solid fa-list opacity-70"></i>
-            <input type="text" class="grow" placeholder="Tên danh sách" />
+            <input id="input_spendList_name" type="text" class="grow" placeholder="Tên danh sách" />
         </label>
-        <form method="dialog">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
 
-            <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 <button class="btn btn-sm w-20">Đóng</button>
-                <button class="btn btn-sm btn-success w-20">Thêm</button>
-            </div>
-        </form>
+            </form>
 
+            <button id="btn_spendList_create" class="btn btn-sm btn-success w-20">Thêm</button>
+        </div>
     </div>
     <form method="dialog" class="modal-backdrop">
         <button>close</button>
@@ -132,14 +133,14 @@
             <input type="text" class="input input-sm input-bordered w-[55%]" placeholder="Thông tin thêm">
         </div>
 
-        <form method="dialog">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-
-            <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 <button class="btn btn-sm w-20">Đóng</button>
-                <button class="btn btn-sm btn-success w-20">Thêm</button>
-            </div>
-        </form>
+            </form>
+
+            <button id="btn_spendItem_create" class="btn btn-sm btn-success w-20">Thêm</button>
+        </div>
     </div>
     <form method="dialog" class="modal-backdrop">
         <button>close</button>
@@ -147,6 +148,7 @@
 </dialog>
 
 <script>
+    // Gán thời gian mặt định cho thẻ input[date]
     document.addEventListener('deviceready', function () {
         document.querySelectorAll('input[type="date"]').forEach(input => {
             input.value = new Date().toISOString().split('T')[0];

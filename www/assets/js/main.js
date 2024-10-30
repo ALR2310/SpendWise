@@ -1,12 +1,12 @@
 // Hàm showToast sử dụng giao diện daisyUI
-function showToast(message, type) {
+function showToast(message, type, duration = 5000) {
     const toastContainer = document.getElementById("toast-container");
     const toastId = `toast-${Date.now()}`; // Tạo ID duy nhất cho toast
 
     // Tạo phần tử toast mới
     const toast = document.createElement("div");
     toast.id = toastId;
-    toast.className = `alert alert-${type} p-2 flex justify-between mb-2 text-white`;
+    toast.className = `alert alert-${type} p-2 flex justify-between text-white`;
 
     // Cấu trúc nội dung của toast
     toast.innerHTML = `
@@ -20,7 +20,7 @@ function showToast(message, type) {
     `;
 
     toastContainer.appendChild(toast);
-    setTimeout(() => { closeToast(toastId); }, 5000);
+    setTimeout(() => { closeToast(toastId); }, duration);
 }
 
 function closeToast(toastId) {

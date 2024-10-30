@@ -4424,6 +4424,10 @@ details.collapse summary::-webkit-details-marker {
   fill: currentColor;
 }
 
+.p-0 {
+  padding: 0px;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
