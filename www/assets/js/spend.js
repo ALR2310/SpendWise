@@ -22,9 +22,18 @@ document.querySelectorAll('div.select').forEach(select => {
 
                 if (optionToSelect.length) {
                     const text = getTextContent(optionToSelect[0]);
-                    selectedValue.text(text);
                     const newValue = optionToSelect.data('value');
-                    selectElement.attr('value', newValue);
+                    const currentValue = selectElement.attr('value');
+
+                    if (currentValue !== newValue) {
+                        selectedValue.text(text);
+                        selectElement.attr('value', newValue);
+                        // Callback when use method set
+                        if (action === 'set') {
+                            const callback = selectElement.data('onChangeCallback');
+                            if (typeof callback === 'function') callback(newValue, text);
+                        }
+                    }
                 }
             }
 
@@ -54,6 +63,11 @@ document.querySelectorAll('div.select').forEach(select => {
                 }
             }
 
+            // Callback when use method change
+            if (action === 'change' && typeof value === 'function') {
+                selectElement.data('onChangeCallback', value);
+            }
+
             // Assign click event to open/close options and select an option
             selectElement.off('click').on('click', () => { optionsList.toggle(); });
             optionsList.find('li').off('click').on('click', function (e) {
@@ -63,6 +77,11 @@ document.querySelectorAll('div.select').forEach(select => {
                 const newValue = $(this).data('value');
                 selectElement.attr('value', newValue);
                 optionsList.hide();
+
+                const callback = selectElement.data('onChangeCallback');
+                if (typeof callback === 'function') {
+                    callback(newValue, text);
+                }
             });
         }).length === 1 ? result : this;
     };
@@ -70,7 +89,7 @@ document.querySelectorAll('div.select').forEach(select => {
     // Initialize the select
     $(select).selectControl('init');
 
-    // Hide options when clicking outside - chỉ gán một lần
+    // Hide options when clicking outside
     $(document).off('click').on('click', (e) => {
         $('div.select ul').each(function () {
             if (!this.parentNode.contains(e.target)) {
@@ -115,7 +134,30 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
     });
 });
 
-// Button create new SpendList
+// Function to load SpendItems when the app starts
+async function loadSpendItem() {
+    const listId = $('#select_spendList').selectControl('get');
+    const sortValue = $('#select_spendItem_sort').selectControl('get');
+    try {
+        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ${sortValue}`, [listId]);
+
+        const template = convertPlaceHbs($('#table_spendItem_template').html());
+        const compiledTemplate = Handlebars.compile(template);
+        const html = compiledTemplate({ spendItems: spendItems });
+        $('#table_spendItem').find('tbody').html(html);
+    } catch (e) {
+        console.log(e);
+        showToast('Tải dữ liệu thất bại', 'error');
+    }
+}
+
+// Load spendItems when the app starts and when the list and sort changes
+loadSpendItem();
+$('#select_spendList, #select_spendItem_sort').selectControl('change', function () {
+    loadSpendItem();
+});
+
+// Button create SpendList
 $('#btn_spendList_create').on('click', async function () {
     const name = $('#input_spendList_name').val().trim();
 
@@ -162,7 +204,33 @@ $('#btn_spendList_delete').on('click', async function () {
     else showToast('Vui lòng chọn danh sách muốn xoá', 'warning');
 });
 
-// Button create new SpendItem
+// Function to open modal Create and Update SpendItem
+function showSpendItemModal(id) {
+    modal_spendItem.showModal();
+    const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
+
+    if (id) {
+        $('#modal_spendItem').find('h3').text('Cập nhật chi tiêu');
+        $('#btn_spendItem_update').show();
+        $('#btn_spendItem_create').hide();
+        $('#input_spendItem_id').val(id);
+        $('#input_spendItem_name').val(spendItem.find('td').eq(1).text());
+        $('#input_spendItem_date').val(formatDate(spendItem.find('td').eq(0).text(), 'yyyy-mm-dd', 'dd/mm/yyyy'));
+        $('#input_spendItem_price').val(spendItem.find('td').eq(2).text());
+        $('#input_spendItem_info').val(spendItem.find('td').eq(3).text());
+    } else {
+        $('#modal_spendItem').find('h3').text('Thêm chi tiêu');
+        $('#btn_spendItem_update').hide();
+        $('#btn_spendItem_create').show();
+        $('#input_spendItem_id').val('');
+        $('#input_spendItem_name').val('');
+        $('#input_spendItem_date').val('');
+        $('#input_spendItem_price').val('');
+        $('#input_spendItem_info').val('');
+    }
+}
+
+// Button create SpendItem
 $('#btn_spendItem_create').on('click', async function () {
     const listId = $('#select_spendList').selectControl('get');
     const name = $('#input_spendItem_name').val().trim();
@@ -181,21 +249,38 @@ $('#btn_spendItem_create').on('click', async function () {
     }
 });
 
-// Function to load SpendItems when the app starts
-async function loadSpendItem() {
-    const listId = $('#select_spendList').selectControl('get');
-    const sortValue = $('#select_spendItem_sort').selectControl('get');
-    try {
-        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ?`, [listId, sortValue]);
+// Button update SpendItem
+$('#btn_spendItem_update').on('click', async function () {
+    const id = $('#input_spendItem_id').val();
+    const name = $('#input_spendItem_name').val().trim();
+    const dateTime = $('#input_spendItem_date').val().trim() + ` ${getTime()}`;
+    const price = $('#input_spendItem_price').val().trim().replace(/\./g, '') || 0;
+    const info = $('#input_spendItem_info').val().trim() || "Không có thông tin";
 
-        const template = convertPlaceHbs($('#table_spendItem_template').html());
-        const compiledTemplate = Handlebars.compile(template);
-        const html = compiledTemplate({ spendItems: spendItems });
-        $('#table_spendItem').find('tbody').html(html);
+    try {
+        await db.query("UPDATE SpendItem SET Name = ?, Price = ?, Details = ?, AtUpdate = ? WHERE Id = ?",
+            [name, price, info, dateTime, id]);
+        modal_spendItem.close();
+
+        const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
+        spendItem.find("td").eq(0).text(formatDate(dateTime, 'dd/mm/yyyy'));
+        spendItem.find('td').eq(1).text(name);
+        spendItem.find('td').eq(2).text(formatCurrency(price));
+        spendItem.find('td').eq(3).text(info);
     } catch (e) {
         console.log(e);
-        showToast('Tải dữ liệu thất bại', 'error');
+        showToast('Cập nhật chi tiêu thất bại', 'error');
+    }
+});
+
+// Function to delete SpendItem
+async function deleteSpendItem(id) {
+    try {
+        await db.query("DELETE FROM SpendItem WHERE Id = ?", [id]);
+        loadSpendItem();
+    } catch (e) {
+        console.log(e);
+        showToast('Xóa thất bại', 'error');
     }
 }
 
-loadSpendItem();
