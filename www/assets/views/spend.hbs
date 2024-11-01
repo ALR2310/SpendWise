@@ -29,18 +29,20 @@
         <i class="fa-sharp fa-plus"></i> Thêm chi tiêu
     </button>
 
-    <div>
-        <label>Xếp theo:</label>
-        <select class="select select-sm select-bordered">
-            <option>Thời gian</option>
-            <option>Khoản chi</option>
-            <option>Số tiền</option>
-        </select>
-    </div>
+    <label>Xếp theo:
+        <div id="select_spendItem_sort" class="select select-sm select-bordered w-28">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="AtUpdate">Thời gian</li>
+                <li data-value="Name">Khoản chi</li>
+                <li data-value="Price">Số tiền</li>
+            </ul>
+        </div>
+    </label>
 </div>
 
 <div class="overflow-x-auto bg-base-100 rounded-box shadow m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-16px-48px)]">
-    <table class="table table-sm table-pin-rows">
+    <table id="table_spendItem" class="table table-sm table-pin-rows">
         <thead>
             <tr>
                 <th class="text-base-content">Thời gian</th>
@@ -50,10 +52,14 @@
             </tr>
         </thead>
         <tbody>
+        </tbody>
+    </table>
+    <script type="text/x-handlebars-template" id="table_spendItem_template">
+        %#each spendItems%
             <tr class="hover cursor-pointer">
-                <td>01/01/2024</td>
-                <td>Ăn sáng</td>
-                <td>1,000,000 VNĐ</td>
+                <td>%formatDate this.AtUpdate%</td>
+                <td>%this.Name%</td>
+                <td>%formatCurrency this.Price%</td>
                 <td>
                     <details class="dropdown dropdown-left dropdown-end">
                         <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate"
@@ -71,32 +77,11 @@
                     </details>
                 </td>
             </tr>
-            <tr class="hover cursor-pointer">
-                <td>02/01/2024</td>
-                <td>Ăn trưa</td>
-                <td>500,000 VNĐ</td>
-                <td>
-                    <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-sm btn-circle swap swap-rotate"
-                            onclick="$(this).find('input[type=checkbox]').prop('checked', function(i, val) { return !val; })">
-                            <input type="checkbox">
-
-                            <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
-                            <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
-                        </summary>
-
-                        <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow flex gap-1">
-                            <li><a class="btn btn-info btn-xs w-20">Sửa</a></li>
-                            <li><a class="btn btn-error btn-xs w-20">Xoá</a></li>
-                        </ul>
-                    </details>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        %/each%
+    </script>
 </div>
 
-<!-- Modal Thêm SpendList -->
+<!-- Modal Create SpendList -->
 <dialog id="modal_spendList" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
@@ -119,7 +104,7 @@
     </form>
 </dialog>
 
-<!-- Modal Xoá SpendList -->
+<!-- Modal Delete SpendList -->
 <dialog id="modal_spendList_delete" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3"></h3>
@@ -138,7 +123,7 @@
     </form>
 </dialog>
 
-<!-- Modal Thêm SpendItem -->
+<!-- Modal Create SpendItem -->
 <dialog id="modal_spendItem" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
@@ -154,13 +139,17 @@
                     <li>Option 3</li>
                 </ul>
             </label>
-            <input id="input_spendItem_date" type="date" class="input input-sm input-bordered w-[45%]"
-                placeholder="Thời gian" />
+
+            <label class="relative w-[45%]">
+                <input id="input_spendItem_date" type="date" class="input input-sm input-bordered w-full"
+                    placeholder="Thời gian" />
+                <i class="fa-sharp fa-regular fa-calendar absolute right-[10%] top-[50%] translate-y-[-50%]"></i>
+            </label>
         </div>
 
         <div class="flex gap-3 mb-3">
             <input id="input_spendItem_price" type="text" class="input input-sm input-bordered w-[45%]"
-                placeholder="Số tiền">
+                placeholder="Số tiền" oninput="this.value = formatCurrency(this.value, false)">
             <input id="input_spendItem_info" type="text" class="input input-sm input-bordered w-[55%]"
                 placeholder="Thông tin thêm">
         </div>

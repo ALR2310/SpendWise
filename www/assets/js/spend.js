@@ -38,7 +38,7 @@ document.querySelectorAll('div.select').forEach(select => {
                 result = selectedOption.length ? getTextContent(selectedOption[0]) : null;
             }
 
-            // Remove option by data-value if action is 'remove'
+            // Remove option by data-value if action is 'del'
             if (action === 'del') {
                 optionsList.find(`li[data-value="${value}"]`).remove();
 
@@ -64,20 +64,21 @@ document.querySelectorAll('div.select').forEach(select => {
                 selectElement.attr('value', newValue);
                 optionsList.hide();
             });
-
-            // Hide options when clicking outside
-            $(document).off('click').on('click', (e) => {
-                if (!selectElement[0].contains(e.target)) optionsList.hide();
-            });
         }).length === 1 ? result : this;
     };
 
     // Initialize the select
     $(select).selectControl('init');
+
+    // Hide options when clicking outside - chỉ gán một lần
+    $(document).off('click').on('click', (e) => {
+        $('div.select ul').each(function () {
+            if (!this.parentNode.contains(e.target)) {
+                $(this).hide();
+            }
+        });
+    });
 });
-
-
-
 
 // Initialize the custom combobox
 document.querySelectorAll('.combobox').forEach((combobox) => {
@@ -114,18 +115,16 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
     });
 });
 
-
 // Button create new SpendList
 $('#btn_spendList_create').on('click', async function () {
     const name = $('#input_spendList_name').val().trim();
 
-    if (name) {
+    if (name)
         try {
             const result = await db.query(`INSERT INTO SpendList (Name) VALUES (?)`, [name]);
             showToast('Tạo danh sách thành công', 'success', 3000);
             $('#input_spendList_name').val('');
             modal_spendList.close();
-            // Thêm danh sách mới vào thẻ select
             const html = `
                 <li class="flex justify-between" data-value="${result.insertId}">${name}
                     <button class="btn btn-ghost btn-sm text-error" 
@@ -140,31 +139,59 @@ $('#btn_spendList_create').on('click', async function () {
             console.log(e);
             showToast('Tạo danh sách thất bại', 'error');
         }
-    } else {
-        showToast('Vui lồng nhập tên danh sách chi tiêu', 'warning');
-    }
+    else showToast('Vui lồng nhập tên danh sách chi tiêu', 'warning');
 });
 
 // Button delete SpendList
 $('#btn_spendList_delete').on('click', async function () {
-    const ListId = $('#select_spendList').selectControl('get');
+    const listId = $('#select_spendList').selectControl('get');
+    if (listId)
+        try {
+            await db.query(`DELETE FROM SpendList WHERE Id = ?`, [listId]);
+            showToast('Xoá danh sách thành công', 'success');
+            modal_spendList_delete.close();
+            $('#select_spendList').selectControl('del', listId);
+        } catch (e) {
+            console.log(e);
+            showToast('Xoá danh sách thất bại', 'error');
+        }
+    else showToast('Vui lòng chọn danh sách muốn xoá', 'warning');
+});
+
+// Button create new SpendItem
+$('#btn_spendItem_create').on('click', async function () {
+    const listId = $('#select_spendList').selectControl('get');
+    const name = $('#input_spendItem_name').val().trim();
+    const dateTime = $('#input_spendItem_date').val().trim() + ` ${getTime()}`;
+    const price = $('#input_spendItem_price').val().trim().replace(/\./g, '') || 0;
+    const info = $('#input_spendItem_info').val().trim() || "Không có thông tin";
+
     try {
-        await db.query(`DELETE FROM SpendList WHERE Id = ?`, [ListId]);
-        showToast('Xoá danh sách thành công', 'success');
-        modal_spendList_delete.close();
-        $('#select_spendList').selectControl('del', ListId);
+        await db.query("INSERT INTO SpendItem (ListId, Name, Price, Details, AtCreate, AtUpdate) VALUES (?, ?, ?, ?, ?, ?)",
+            [listId, name, price, info, dateTime, dateTime]);
+        modal_spendItem.close();
+        loadSpendItem();
     } catch (e) {
         console.log(e);
-        showToast('Xoá danh sách thất bại', 'error');
+        showToast('Thêm chi tiêu thất bại', 'error');
     }
 });
 
+// Function to load SpendItems when the app starts
+async function loadSpendItem() {
+    const listId = $('#select_spendList').selectControl('get');
+    const sortValue = $('#select_spendItem_sort').selectControl('get');
+    try {
+        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ?`, [listId, sortValue]);
 
-// Button create new SpendItem
-$('#btn_spendItem_create').on('click', function () {
-    const name = $('#input_spendItem_name').val().trim();
-    const datetime = $('#input_spendItem_date').val().trim();
-    const price = $('#input_spendItem_price').val().trim();
-    const info = $('#input_spendItem_info').val().trim();
+        const template = convertPlaceHbs($('#table_spendItem_template').html());
+        const compiledTemplate = Handlebars.compile(template);
+        const html = compiledTemplate({ spendItems: spendItems });
+        $('#table_spendItem').find('tbody').html(html);
+    } catch (e) {
+        console.log(e);
+        showToast('Tải dữ liệu thất bại', 'error');
+    }
+}
 
-});
+loadSpendItem();

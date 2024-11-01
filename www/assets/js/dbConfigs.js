@@ -73,7 +73,10 @@ document.addEventListener('deviceready', async function () {
 
         await db.query('INSERT INTO SpendList (Name) VALUES (?)', ['Danh sách 1']);
         await db.query('INSERT INTO SpendList (Name) VALUES (?)', ['Danh sách 2']);
-        await db.query('INSERT INTO SpendList (Name) VALUES (?)', ['Danh sách 3']);
+        await db.query('INSERT INTO SpendItem (ListId, Name, Price) VALUES (?, ?, ?)', [1, 'Ăn Sáng', 10000]);
+        await db.query('INSERT INTO SpendItem (ListId, Name, Price) VALUES (?, ?, ?)', [1, 'Ăn Trưa', 20000]);
+        await db.query('INSERT INTO SpendItem (ListId, Name, Price) VALUES (?, ?, ?)', [1, 'Ăn Chiều', 10000]);
+        await db.query('INSERT INTO SpendItem (ListId, Name, Price) VALUES (?, ?, ?)', [1, 'Ăn Tối', 20000]);
 
         document.dispatchEvent(dbReadyEvent);
     } catch (e) {
