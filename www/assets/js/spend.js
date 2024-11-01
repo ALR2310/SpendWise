@@ -119,14 +119,16 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
 $('#btn_spendList_create').on('click', async function () {
     const name = $('#input_spendList_name').val().trim();
 
-    if (name)
+    if (name) {
         try {
             const result = await db.query(`INSERT INTO SpendList (Name) VALUES (?)`, [name]);
             showToast('Tạo danh sách thành công', 'success', 3000);
             $('#input_spendList_name').val('');
             modal_spendList.close();
+
+            const escapedName = $('<div>').text(name).html();
             const html = `
-                <li class="flex justify-between" data-value="${result.insertId}">${name}
+                <li class="flex justify-between" data-value="${result.insertId}">${escapedName}
                     <button class="btn btn-ghost btn-sm text-error" 
                         onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
                         <i class="fa-sharp fa-trash"></i> Xoá
@@ -139,7 +141,9 @@ $('#btn_spendList_create').on('click', async function () {
             console.log(e);
             showToast('Tạo danh sách thất bại', 'error');
         }
-    else showToast('Vui lồng nhập tên danh sách chi tiêu', 'warning');
+    } else {
+        showToast('Vui lòng nhập tên danh sách chi tiêu', 'warning');
+    }
 });
 
 // Button delete SpendList
