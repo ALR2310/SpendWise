@@ -1,5 +1,1 @@
-{
-    "plugins": [
-        "cordova-sqlite-storage"
-    ]
-}
+{"plugins":["cordova-sqlite-storage"]}

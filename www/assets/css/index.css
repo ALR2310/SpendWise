@@ -89,3 +89,46 @@
     transform: translateY(-50%);
     opacity: 0.6;
 }
+
+
+/* Thẻ select tuỳ chỉnh */
+div.select {
+    position: relative;
+}
+
+div.select:hover {
+    box-shadow: none;
+    border-color: var(--fallback-bc, oklch(var(--bc)/0.2));
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--fallback-bc, oklch(var(--bc)/0.2));
+}
+
+div.select ul {
+    display: none;
+    margin-top: 0.5rem;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    position: absolute;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-radius: var(--rounded-btn, 0.5rem);
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+    --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+div.select ul li {
+    padding: 0 0.75rem;
+}
+
+div.select ul li:hover {
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-pc, oklch(var(--pc)/var(--tw-bg-opacity)));
+}

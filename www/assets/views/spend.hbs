@@ -1,9 +1,18 @@
 <div class="flex m-4 gap-2">
-    <select id="select_spendList" class="select select-sm select-bordered w-full">
-        {{#each spendList}}
-        <option value="{{this.Id}}">{{this.Name}}</option>
-        {{/each}}
-    </select>
+    <div id="select_spendList" class="select select-sm select-bordered w-full">
+        <span class="select-value"></span>
+        <ul>
+            {{#each spendList}}
+            <li class="flex justify-between" data-value="{{this.Id}}">
+                {{this.Name}}
+                <button class="btn btn-ghost btn-sm text-error"
+                    onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
+                    <i class="fa-sharp fa-trash"></i> Xoá
+                </button>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
 
     <button class="btn btn-active btn-sm" onclick="modal_spendList.showModal()">
         <i class="fa-sharp fa-plus"></i> Thêm
@@ -87,7 +96,7 @@
     </table>
 </div>
 
-<!-- Modal SpendList -->
+<!-- Modal Thêm SpendList -->
 <dialog id="modal_spendList" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
@@ -110,14 +119,34 @@
     </form>
 </dialog>
 
-<!-- Modal SpendItem -->
+<!-- Modal Xoá SpendList -->
+<dialog id="modal_spendList_delete" class="modal">
+    <div class="modal-box ">
+        <h3 class="text-lg font-bold mb-3"></h3>
+        <p>Bạn có chắc muốn xoá danh sách này không?. Sau khi xoá sẽ không thể khôi phục lại dữ liệu</p>
+
+        <div class="flex justify-end gap-2">
+            <form method="dialog">
+                <button class="btn btn-sm w-20">Đóng</button>
+            </form>
+
+            <button id="btn_spendList_delete" class="btn btn-sm btn-error w-20">Xoá</button>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Modal Thêm SpendItem -->
 <dialog id="modal_spendItem" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
 
         <div class="flex gap-3 mb-3">
             <label class="combobox w-[55%]">
-                <input type="text" class="input input-sm input-bordered w-full" placeholder="Tên khoản chi">
+                <input id="input_spendItem_name" type="text" class="input input-sm input-bordered w-full"
+                    placeholder="Tên khoản chi">
                 <i class="fa-sharp fa-regular fa-angles-up-down right-[5%!important] text-xs"></i>
                 <ul>
                     <li>Option 1</li>
@@ -125,12 +154,15 @@
                     <li>Option 3</li>
                 </ul>
             </label>
-            <input type="date" class="input input-sm input-bordered w-[45%]" placeholder="Thời gian" />
+            <input id="input_spendItem_date" type="date" class="input input-sm input-bordered w-[45%]"
+                placeholder="Thời gian" />
         </div>
 
         <div class="flex gap-3 mb-3">
-            <input type="text" class="input input-sm input-bordered w-[45%]" placeholder="Số tiền">
-            <input type="text" class="input input-sm input-bordered w-[55%]" placeholder="Thông tin thêm">
+            <input id="input_spendItem_price" type="text" class="input input-sm input-bordered w-[45%]"
+                placeholder="Số tiền">
+            <input id="input_spendItem_info" type="text" class="input input-sm input-bordered w-[55%]"
+                placeholder="Thông tin thêm">
         </div>
 
         <div class="flex justify-end gap-2">

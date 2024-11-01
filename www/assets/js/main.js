@@ -1,5 +1,5 @@
 // Hàm showToast sử dụng giao diện daisyUI
-function showToast(message, type, duration = 5000) {
+function showToast(message, type, duration = 3000) {
     const toastContainer = document.getElementById("toast-container");
     const toastId = `toast-${Date.now()}`; // Tạo ID duy nhất cho toast
 
