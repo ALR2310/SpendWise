@@ -50,9 +50,5 @@ document.addEventListener('dbready', function () {
     $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "assets/views/setting.hbs"); });
 
     // Hiển thị nội dung mặc định khi tải trang
-    $("#spend-btn").trigger('click');
-})
-
-
-
-
+    $("#setting-btn").trigger('click');
+});

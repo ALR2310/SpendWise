@@ -1,0 +1,134 @@
+.btm-nav-sm>*:where(.active) {
+    border-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-border-opacity))) !important;
+}
+
+.btm-nav>*:not(.active) {
+    padding-top: 0px !important;
+}
+
+#modal_spendList:not(dialog:not(.modal-open)),
+#modal_spendList::backdrop,
+#modal_spendItem:not(dialog:not(.modal-open)),
+#modal_spendItem::backdrop {
+    background-color: unset !important;
+}
+
+
+
+/* Chức năng trượt cho thẻ */
+.swipeout {
+    position: relative;
+    overflow: hidden;
+    clip-path: inset(0);
+    z-index: 1;
+    border-radius: 0.5rem;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+.swipeout-actions-left,
+.swipeout-actions-right {
+    display: flex;
+    position: absolute;
+    height: 98%;
+    z-index: 0;
+}
+
+.swipeout-actions-left {
+    left: 0;
+}
+
+.swipeout-actions-right {
+    right: 1px;
+}
+
+.swipeout-content {
+    padding: 0.5rem;
+    position: relative;
+    z-index: 10;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+
+/* Thẻ combobox */
+.combobox {
+    position: relative;
+}
+
+.combobox ul {
+    position: absolute;
+    display: none;
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
+    width: 100%;
+    padding: 0.25rem;
+    border-radius: var(--rounded-btn, 0.5rem);
+    border-width: 1px;
+    margin-top: 0.5rem;
+}
+
+.combobox ul li {
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.combobox ul li:hover {
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b2, oklch(var(--b2)/var(--tw-bg-opacity)));
+    border-radius: var(--rounded-btn, 0.5rem);
+}
+
+.combobox i {
+    position: absolute;
+    right: 2.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+}
+
+
+/* Thẻ select tuỳ chỉnh */
+div.select {
+    position: relative;
+}
+
+div.select:hover {
+    box-shadow: none;
+    border-color: var(--fallback-bc, oklch(var(--bc)/0.2));
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--fallback-bc, oklch(var(--bc)/0.2));
+}
+
+div.select ul {
+    display: none;
+    margin-top: 0.5rem;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    position: absolute;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-radius: var(--rounded-btn, 0.5rem);
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1, oklch(var(--b1)/var(--tw-bg-opacity)));
+    --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+div.select ul li {
+    padding: 0 0.75rem;
+}
+
+div.select ul li:hover {
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-pc, oklch(var(--pc)/var(--tw-bg-opacity)));
+}

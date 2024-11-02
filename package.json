@@ -12,7 +12,7 @@
     "android": "cordova run android --device",
     "build:dev": "cordova build android --clean",
     "build:release": "cordova build android --release --clean",
-    "build:css": "tailwindcss -i ./tailwindcss/style.css -o ./www/assets/css/tailwind.css --watch"
+    "build:css": "tailwindcss -i ./www/assets/css/tailwind.css -o ./www/assets/css/index.css --watch"
   },
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
@@ -32,6 +32,10 @@
   "cordova": {
     "plugins": {
       "cordova-sqlite-storage": {}
-    }
+    },
+    "platforms": [
+      "android",
+      "browser"
+    ]
   }
 }
