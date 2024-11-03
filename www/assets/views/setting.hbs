@@ -1,0 +1,15 @@
+<button class="btn btn-success" id="btn-test">click</button>
+
+<textarea id="textA" class="textarea w-full"></textarea>
+
+<script>
+    $('#btn-test').click(() => {
+
+        $('#textA').val(
+            JSON.stringify(
+                Database
+            )
+        );
+    })
+
+</script>

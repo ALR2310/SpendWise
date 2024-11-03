@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // Hiển thị giao diện khi tải trang
-document.addEventListener('dbready', function () {
+document.addEventListener('DOMContentLoaded', function () {
     // Hàm tải nội dung bất đồng bộ và chỉ gán một lần
     async function loadContentOnce(sectionId, file, data = {}) {
         const section = $('#' + sectionId);
@@ -50,5 +50,5 @@ document.addEventListener('dbready', function () {
     $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "assets/views/setting.hbs"); });
 
     // Hiển thị nội dung mặc định khi tải trang
-    $("#setting-btn").trigger('click');
+    $("#home-btn").trigger('click');
 });
