@@ -4,27 +4,21 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' data: https://ssl.gstatic.com https://apis.google.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src * data: content:;">
+        content="default-src 'self' data: https://ssl.gstatic.com https://apis.google.com https://unpkg.com https://cdn.jsdelivr.net 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src * data: content:;">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <meta name="color-scheme" content="light dark">
     <link rel="icon" href="assets/imgs/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="assets/css/index.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/libs/font-awesome-6.6.0-pro/css/all.css">
-    <script src="cordova.js"></script>
-    <script src="assets/js/dbConfigs.js"></script>
-    <script src="assets/libs/handlebars/handlebars4.7.8.min.js"></script>
-    <script src="assets/libs/jquery-3.7.1.js"></script>
-    <script src="assets/libs/lodash.min.1.8.3.js"></script>
-    <script src="assets/libs/theme-change-2.0.2.js"></script>
-    <script src="assets/libs/echarts-5.4.3/echarts/echarts.min.js"></script>
-    <script src="assets/js/main.js"></script>
+    <link rel="stylesheet" href="assets/css/myStyle.css">
+    <link rel="stylesheet" href="assets/libs/fontAwesome-6.6.0-pro/css/all.css">
     <title>SpendWise</title>
 </head>
 
 <body>
+    <jeep-sqlite></jeep-sqlite>
+
     <div id="toast-container" class="toast toast-top z-10 p-0 m-4"></div>
 
     <div id="app" class="bg-base-200">
@@ -84,8 +78,8 @@
         </div>
     </div>
 
-
-    <script src="assets/js/index.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="public/scripts/page.js"></script>
 </body>
 
 </html>

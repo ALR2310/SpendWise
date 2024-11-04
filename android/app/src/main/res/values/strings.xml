@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SpendWise</string>
+    <string name="title_activity_main">SpendWise</string>
+    <string name="package_name">com.alr.spendwise</string>
+    <string name="custom_url_scheme">com.alr.spendwise</string>
+</resources>
