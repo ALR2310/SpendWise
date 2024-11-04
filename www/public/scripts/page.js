@@ -1,10 +1,9 @@
-// Thay đổi biểu tượng theme
+// Change theme icon on page load
 document.addEventListener('DOMContentLoaded', function () {
     if ($('html').data('theme') == 'light') {
         $('.theme-controller').prop('checked', true);
     }
 });
-
 
 // Hiển thị giao diện khi tải trang
 document.addEventListener('DOMContentLoaded', function () {
@@ -40,14 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Gán sự kiện click vào các nút để mở nội dung chỉ một lần
-    $('#home-btn').on('click', function () { showContent("page-home", this.id, "assets/views/home.hbs"); });
+    $('#home-btn').on('click', function () { showContent("page-home", this.id, "pages/home.hbs"); });
     $("#spend-btn").on('click', async function () {
         const spendList = await db.query('SELECT * FROM SpendList WHERE STATUS = ?', [1]);
-        showContent("page-spend", this.id, "assets/views/spend.hbs", { spendList: spendList });
+        showContent("page-spend", this.id, "pages/spend.hbs", { spendList: spendList });
     });
-    $("#stats-btn").on('click', function () { showContent("page-stats", this.id, "assets/views/stats.hbs"); });
-    $("#note-btn").on('click', function () { showContent("page-note", this.id, "assets/views/note.hbs"); });
-    $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "assets/views/setting.hbs"); });
+    $("#stats-btn").on('click', function () { showContent("page-stats", this.id, "pages/stats.hbs"); });
+    $("#note-btn").on('click', function () { showContent("page-note", this.id, "pages/note.hbs"); });
+    $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "pages/setting.hbs"); });
 
     // Hiển thị nội dung mặc định khi tải trang
     $("#home-btn").trigger('click');

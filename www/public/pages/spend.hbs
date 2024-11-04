@@ -172,12 +172,4 @@
     </form>
 </dialog>
 
-<script>
-    // Gán thời gian mặt định cho thẻ input[date]
-    document.addEventListener('deviceready', function () {
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.value = new Date().toISOString().split('T')[0];
-        });
-    });
-</script>
-<script src="assets/js/spend.js"></script>
+<script src="scripts/spend.js"></script>

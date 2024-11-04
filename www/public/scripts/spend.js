@@ -138,15 +138,17 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
 async function loadSpendItem() {
     const listId = $('#select_spendList').selectControl('get');
     const sortValue = $('#select_spendItem_sort').selectControl('get');
-    try {
-        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ${sortValue}`, [listId]);
 
+    try {
+        if (!listId) return;
+
+        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ${sortValue}`, [listId]);
         const template = convertPlaceHbs($('#table_spendItem_template').html());
         const compiledTemplate = Handlebars.compile(template);
         const html = compiledTemplate({ spendItems: spendItems });
         $('#table_spendItem').find('tbody').html(html);
     } catch (e) {
-        console.log(e);
+        console.error(e);
         showToast('Tải dữ liệu thất bại', 'error');
     }
 }
@@ -170,7 +172,7 @@ $('#btn_spendList_create').on('click', async function () {
 
             const escapedName = $('<div>').text(name).html();
             const html = `
-                <li class="flex justify-between" data-value="${result.insertId}">${escapedName}
+                <li class="flex justify-between" data-value="${result.lastId}">${escapedName}
                     <button class="btn btn-ghost btn-sm text-error" 
                         onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
                         <i class="fa-sharp fa-trash"></i> Xoá
@@ -224,7 +226,7 @@ function showSpendItemModal(id) {
         $('#btn_spendItem_create').show();
         $('#input_spendItem_id').val('');
         $('#input_spendItem_name').val('');
-        $('#input_spendItem_date').val('');
+        $('#input_spendItem_date').val(new Date().toISOString().split('T')[0]);
         $('#input_spendItem_price').val('');
         $('#input_spendItem_info').val('');
     }
