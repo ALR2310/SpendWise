@@ -4,4 +4,5 @@
     <string name="title_activity_main">SpendWise</string>
     <string name="package_name">com.alr.spendwise</string>
     <string name="custom_url_scheme">com.alr.spendwise</string>
+    <string name="server_client_id">292298338560-pags40si86ac2o49jjthi6e23c7b1tsl.apps.googleusercontent.com</string>
 </resources>

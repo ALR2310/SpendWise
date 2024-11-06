@@ -4,10 +4,12 @@ import { initializeDatabase } from "./core/database";
 import * as echarts from 'echarts';
 import $ from "jquery";
 import myUtilis from './core/myUtilis';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 window.$ = $;
 window.Handlebars = Handlebars;
 window.echarts = echarts;
+window.GoogleAuth = GoogleAuth;
 Object.assign(window, myUtilis);
 
 Handlebars.registerHelper('formatDate', myUtilis.formatDate);
@@ -16,6 +18,12 @@ Handlebars.registerHelper('formatCurrency', myUtilis.formatCurrency);
 themeChange();
 
 document.addEventListener('DOMContentLoaded', async function () {
+    GoogleAuth.initialize({
+        clientId: '292298338560-pags40si86ac2o49jjthi6e23c7b1tsl.apps.googleusercontent.com',
+        scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'],
+        grantOfflineAccess: true,
+    });
+    
     const Database = await initializeDatabase();
 
     const db = {
@@ -49,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         transaction: async (queries) => {
             await db.query('BEGIN');
             try {
-                for (const { sql, params } of queries)  await db.query(sql, params);
+                for (const { sql, params } of queries) await db.query(sql, params);
                 await db.query('COMMIT');
             } catch (error) {
                 await db.query('ROLLBACK');

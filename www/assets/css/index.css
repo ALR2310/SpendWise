@@ -3802,6 +3802,10 @@ details.collapse summary::-webkit-details-marker {
   display: none;
 }
 
+.h-28 {
+  height: 7rem;
+}
+
 .h-7 {
   height: 1.75rem;
 }

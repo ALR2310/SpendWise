@@ -49,5 +49,5 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "pages/setting.hbs"); });
 
     // Hiển thị nội dung mặc định khi tải trang
-    $("#home-btn").trigger('click');
+    $("#setting-btn").trigger('click');
 });
