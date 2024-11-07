@@ -1,7 +1,7 @@
 <div class="flex m-4 gap-2">
     <div id="select_spendList" class="select select-sm select-bordered w-full">
         <span class="select-value"></span>
-        <ul>
+        <ul class="max-h-60">
             {{#each spendList}}
             <li class="flex justify-between" data-value="{{this.Id}}">
                 {{this.Name}}
@@ -19,11 +19,21 @@
     </button>
 </div>
 
-<label class="input input-sm input-bordered flex items-center m-4 gap-2">
-    <input id="input_spendItem_search" type="text" class="grow" placeholder="Tìm kiếm" />
-    <i class="fa-sharp fa-regular fa-magnifying-glass opacity-70"></i>
-</label>
+{{!-- Search --}}
+<div class="flex m-4 gap-2">
+    <label for="input_spendItem_search_date" class="relative">
+        <input id="input_spendItem_search_date" type="date" class="input input-sm input-bordered"
+            placeholder="Thời gian" style="width: 42px;">
+        <i class="fa-sharp fa-regular fa-calendar absolute right-[14px] top-[50%] translate-y-[-50%]"></i>
+    </label>
 
+    <label class="input input-sm input-bordered flex items-center gap-2 flex-1">
+        <input id="input_spendItem_search" type="text" class="grow" placeholder="Tìm kiếm" />
+        <i class="fa-sharp fa-regular fa-magnifying-glass opacity-70"></i>
+    </label>
+</div>
+
+{{!-- Sort --}}
 <div class="flex m-4 justify-between">
     <button class="btn btn-sm btn-accent" onclick="showSpendItemModal()">
         <i class="fa-sharp fa-plus"></i> Thêm chi tiêu
@@ -41,6 +51,7 @@
     </label>
 </div>
 
+{{!-- Table SpendItem --}}
 <div class="overflow-x-auto bg-base-100 rounded-box shadow m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-16px-48px)]">
     <table id="table_spendItem" class="table table-sm table-pin-rows">
         <thead>
@@ -133,8 +144,7 @@
             <input id="input_spendItem_id" type="text" class="input input-sm input-bordered hidden" placeholder="Id">
 
             <label id="combobox_spendItem_name" class="combobox w-[55%]">
-                <input type="text" class="input input-sm input-bordered w-full"
-                    placeholder="Tên khoản chi">
+                <input type="text" class="input input-sm input-bordered w-full" placeholder="Tên khoản chi">
                 <i class="fa-sharp fa-regular fa-angles-up-down right-[5%!important] text-xs"></i>
                 <ul class="max-h-52">
                     <li>Option 1</li>

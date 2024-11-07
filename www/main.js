@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     await db.query(`INSERT INTO SpendList(Name) VALUES (?)`, ["Chi tiêu cá nhân 1"]);
     await db.query(`INSERT INTO SpendList(Name) VALUES (?)`, ["Chi tiêu cá nhân 2"]);
 
-    await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [1, "Ăn sáng", 10000]);
-    await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [1, "Ăn trưa", 15000]);
-    await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [1, "Ăn chiều", 20000]);
-    await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [1, "Ăn tối", 25000]);
+    await db.query(`INSERT INTO SpendItem(ListId, Name, Price, AtUpdate) VALUES (?, ?, ?, ?)`, [1, "Ăn sáng", 10000, '2021-01-01 00:00:00']);
+    await db.query(`INSERT INTO SpendItem(ListId, Name, Price, AtUpdate) VALUES (?, ?, ?, ?)`, [1, "Ăn trưa", 15000, '2022-02-01 00:00:00']);
+    await db.query(`INSERT INTO SpendItem(ListId, Name, Price, AtUpdate) VALUES (?, ?, ?, ?)`, [1, "Ăn chiều", 20000, '2023-03-01 00:00:00']);
+    await db.query(`INSERT INTO SpendItem(ListId, Name, Price, AtUpdate) VALUES (?, ?, ?, ?)`, [1, "Ăn tối", 25000, '2024-04-01 00:00:00']);
 
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn sáng", 110000]);
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn trưa", 12000]);

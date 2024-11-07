@@ -145,11 +145,26 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
     $(combobox).comboboxControl();
 });
 
+// Load suggest for Combobox
+async function loadSuggest() {
+    try {
+        const suggest = await db.query('SELECT DISTINCT Name FROM SpendItem WHERE Status = 1 COLLATE NOCASE');
+        $('#combobox_spendItem_name').find('ul').html(
+            suggest.map(item => `<li>${item.Name}</li>`).join('')
+        ).closest('.combobox').comboboxControl();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 // Function to load SpendItems when the app starts
 async function loadSpendItem() {
     const listId = $('#select_spendList').selectControl('get');
     const searchKey = $('#input_spendItem_search').val().trim();
     const sortValue = $('#select_spendItem_sort').selectControl('get');
+    const dateValue = $('#input_spendItem_search_date').val();
+
+    loadSuggest();
 
     try {
         if (!listId) return;
@@ -160,6 +175,11 @@ async function loadSpendItem() {
         if (searchKey) {
             sql += ` AND (Name LIKE ? OR Price LIKE ? OR Details LIKE ?)`;
             params.push(`%${searchKey}%`, `%${searchKey}%`, `%${searchKey}%`);
+        }
+
+        if (dateValue) {
+            sql += ` AND DATE(AtUpdate) = DATE(?)`;
+            params.push(dateValue);
         }
 
         sql += ` ORDER BY ${sortValue}`;
@@ -186,17 +206,12 @@ $('#select_spendList, #select_spendItem_sort').selectControl('change', function 
     loadSpendItem();
 });
 
-// Load suggest for Combobox
-async function loadSuggest() {
-    try {
-        const suggest = await db.query('SELECT DISTINCT Name FROM SpendItem WHERE Status = 1 COLLATE NOCASE');
-        $('#combobox_spendItem_name').find('ul').html(
-            suggest.map(item => `<li>${item.Name}</li>`).join('')
-        ).closest('.combobox').comboboxControl();
-    } catch (e) {
-        console.error(e);
-    }
-}
+// Show/Hide date input
+$('#input_spendItem_search_date').on('input', async function () {
+    loadSpendItem();
+    if ($(this).val()) $(this).css('width', '128px');
+    else $(this).css('width', '42px');
+});
 
 // Button create SpendList
 $('#btn_spendList_create').on('click', async function () {
