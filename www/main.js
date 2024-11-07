@@ -5,6 +5,8 @@ import * as echarts from 'echarts';
 import $ from "jquery";
 import myUtilis from './core/myUtilis';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Device } from '@capacitor/device';
+
 
 window.$ = $;
 window.Handlebars = Handlebars;
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'],
         grantOfflineAccess: true,
     });
-    
+
     const Database = await initializeDatabase();
 
     const db = {
