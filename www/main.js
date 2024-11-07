@@ -7,10 +7,12 @@ import myUtilis from './core/myUtilis';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { Device } from '@capacitor/device';
 import { showPage, themeIconChange } from './core/page';
+import _ from 'lodash';
 
 
 window.$ = $;
 window.db = db;
+window._ = _;
 window.Handlebars = Handlebars;
 window.echarts = echarts;
 window.GoogleAuth = GoogleAuth;

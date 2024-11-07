@@ -1,5 +1,3 @@
-// import $ from "jquery";
-
 export function themeIconChange(themeDefault = 'light') {
     if ($('html').data('theme') == themeDefault) {
         $('.theme-controller').prop('checked', true);

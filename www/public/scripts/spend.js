@@ -137,12 +137,23 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
 // Function to load SpendItems when the app starts
 async function loadSpendItem() {
     const listId = $('#select_spendList').selectControl('get');
+    const searchKey = $('#input_spendItem_search').val().trim();
     const sortValue = $('#select_spendItem_sort').selectControl('get');
 
     try {
         if (!listId) return;
 
-        const spendItems = await db.query(`SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1 ORDER BY ${sortValue}`, [listId]);
+        let sql = `SELECT * FROM SpendItem WHERE ListId = ? AND Status = 1`;
+        const params = [listId];
+
+        if (searchKey) {
+            sql += ` AND (Name LIKE ? OR Price LIKE ? OR Details LIKE ?)`;
+            params.push(`%${searchKey}%`, `%${searchKey}%`, `%${searchKey}%`);
+        }
+
+        sql += ` ORDER BY ${sortValue}`;
+
+        const spendItems = await db.query(sql, params);
         const template = convertPlaceHbs($('#table_spendItem_template').html());
         const compiledTemplate = Handlebars.compile(template);
         const html = compiledTemplate({ spendItems: spendItems });
@@ -152,6 +163,11 @@ async function loadSpendItem() {
         showToast('Tải dữ liệu thất bại', 'error');
     }
 }
+
+// Search SpendItem
+$('#input_spendItem_search').on('input', _.debounce(async function () {
+    loadSpendItem();
+}, 200));
 
 // Load spendItems when the app starts and when the list and sort changes
 loadSpendItem();
