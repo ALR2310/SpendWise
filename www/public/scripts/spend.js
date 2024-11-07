@@ -101,37 +101,48 @@ document.querySelectorAll('div.select').forEach(select => {
 
 // Initialize the custom combobox
 document.querySelectorAll('.combobox').forEach((combobox) => {
-    const input = combobox.querySelector('input');
-    const list = combobox.querySelector('ul');
-    const items = list.querySelectorAll('li');
+    $.fn.comboboxControl = function () {
+        return this.each(function () {
+            const combobox = $(this);
+            const input = combobox.find('input');
+            const list = combobox.find('ul');
+            const items = list.find('li');
 
-    input.addEventListener('input', () => {
-        const filter = input.value.trim().toLowerCase();
-        let hasVisibleItem = false;
+            // Helper function to get text content from li
+            const getTextContent = (element) => $(element).text().trim();
 
-        items.forEach((item) => {
-            if (item.textContent.toLowerCase().includes(filter)) {
-                item.style.display = 'block';
-                hasVisibleItem = true;
-            } else item.style.display = 'none';
+            // Filter items based on user input
+            input.on('input', function () {
+                const filter = input.val().trim().toLowerCase();
+                let hasVisibleItem = false;
 
+                items.each(function () {
+                    const itemText = getTextContent(this).toLowerCase();
+                    if (itemText.includes(filter)) {
+                        $(this).show();
+                        hasVisibleItem = true;
+                    } else $(this).hide();
+
+                });
+
+                list.toggle(hasVisibleItem);
+            });
+
+            // Select an item from the list when clicked
+            items.on('click', function () {
+                const text = getTextContent(this);
+                input.val(text);
+                list.hide();
+            });
+
+            // Close the list when clicking outside of the combobox
+            $(document).on('click', function (e) {
+                if (!combobox[0].contains(e.target)) list.hide();
+            });
         });
+    };
 
-        list.style.display = hasVisibleItem ? 'block' : 'none';
-    });
-
-    items.forEach((item) => {
-        item.addEventListener('click', () => {
-            input.value = item.textContent;
-            list.style.display = 'none';
-        });
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!combobox.contains(e.target)) {
-            list.style.display = 'none';
-        }
-    });
+    $(combobox).comboboxControl();
 });
 
 // Function to load SpendItems when the app starts
@@ -174,6 +185,18 @@ loadSpendItem();
 $('#select_spendList, #select_spendItem_sort').selectControl('change', function () {
     loadSpendItem();
 });
+
+// Load suggest for Combobox
+async function loadSuggest() {
+    try {
+        const suggest = await db.query('SELECT DISTINCT Name FROM SpendItem WHERE Status = 1 COLLATE NOCASE');
+        $('#combobox_spendItem_name').find('ul').html(
+            suggest.map(item => `<li>${item.Name}</li>`).join('')
+        ).closest('.combobox').comboboxControl();
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 // Button create SpendList
 $('#btn_spendList_create').on('click', async function () {
@@ -232,7 +255,7 @@ function showSpendItemModal(id) {
         $('#btn_spendItem_update').show();
         $('#btn_spendItem_create').hide();
         $('#input_spendItem_id').val(id);
-        $('#input_spendItem_name').val(spendItem.find('td').eq(1).text());
+        $('#combobox_spendItem_name').find('input').val(spendItem.find('td').eq(1).text());
         $('#input_spendItem_date').val(formatDate(spendItem.find('td').eq(0).text(), 'yyyy-mm-dd', 'dd/mm/yyyy'));
         $('#input_spendItem_price').val(spendItem.find('td').eq(2).text());
         $('#input_spendItem_info').val(spendItem.find('td').eq(3).text());
@@ -241,7 +264,7 @@ function showSpendItemModal(id) {
         $('#btn_spendItem_update').hide();
         $('#btn_spendItem_create').show();
         $('#input_spendItem_id').val('');
-        $('#input_spendItem_name').val('');
+        $('#combobox_spendItem_name').find('input').val('');
         $('#input_spendItem_date').val(new Date().toISOString().split('T')[0]);
         $('#input_spendItem_price').val('');
         $('#input_spendItem_info').val('');
@@ -251,7 +274,7 @@ function showSpendItemModal(id) {
 // Button create SpendItem
 $('#btn_spendItem_create').on('click', async function () {
     const listId = $('#select_spendList').selectControl('get');
-    const name = $('#input_spendItem_name').val().trim();
+    const name = $('#combobox_spendItem_name').find('input').val().trim();
     const dateTime = $('#input_spendItem_date').val().trim() + ` ${getTime()}`;
     const price = $('#input_spendItem_price').val().trim().replace(/\./g, '') || 0;
     const info = $('#input_spendItem_info').val().trim() || "Không có thông tin";
@@ -270,7 +293,7 @@ $('#btn_spendItem_create').on('click', async function () {
 // Button update SpendItem
 $('#btn_spendItem_update').on('click', async function () {
     const id = $('#input_spendItem_id').val();
-    const name = $('#input_spendItem_name').val().trim();
+    const name = $('#combobox_spendItem_name').find('input').val().trim();
     const dateTime = $('#input_spendItem_date').val().trim() + ` ${getTime()}`;
     const price = $('#input_spendItem_price').val().trim().replace(/\./g, '') || 0;
     const info = $('#input_spendItem_info').val().trim() || "Không có thông tin";

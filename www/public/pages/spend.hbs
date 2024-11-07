@@ -126,17 +126,17 @@
 
 <!-- Modal Create SpendItem -->
 <dialog id="modal_spendItem" class="modal">
-    <div class="modal-box">
+    <div class="modal-box overflow-y-visible">
         <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
 
         <div class="flex gap-3 mb-3">
             <input id="input_spendItem_id" type="text" class="input input-sm input-bordered hidden" placeholder="Id">
 
-            <label class="combobox w-[55%]">
-                <input id="input_spendItem_name" type="text" class="input input-sm input-bordered w-full"
+            <label id="combobox_spendItem_name" class="combobox w-[55%]">
+                <input type="text" class="input input-sm input-bordered w-full"
                     placeholder="Tên khoản chi">
                 <i class="fa-sharp fa-regular fa-angles-up-down right-[5%!important] text-xs"></i>
-                <ul>
+                <ul class="max-h-52">
                     <li>Option 1</li>
                     <li>Option 2</li>
                     <li>Option 3</li>

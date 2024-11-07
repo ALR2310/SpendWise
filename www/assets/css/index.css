@@ -3826,6 +3826,10 @@ details.collapse summary::-webkit-details-marker {
   height: 100%;
 }
 
+.max-h-52 {
+  max-height: 13rem;
+}
+
 .min-h-0 {
   min-height: 0px;
 }
@@ -4035,8 +4039,16 @@ details.collapse summary::-webkit-details-marker {
   justify-self: stretch;
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-y-visible {
+  overflow-y: visible;
 }
 
 .overflow-y-scroll {
