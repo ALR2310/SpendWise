@@ -1,13 +1,13 @@
-// Change theme icon on page load
-document.addEventListener('DOMContentLoaded', function () {
-    if ($('html').data('theme') == 'light') {
+// import $ from "jquery";
+
+export function themeIconChange(themeDefault = 'light') {
+    if ($('html').data('theme') == themeDefault) {
         $('.theme-controller').prop('checked', true);
     }
-});
+};
 
-// Hiển thị giao diện khi tải trang
-document.addEventListener('DOMContentLoaded', function () {
-    // Hàm tải nội dung bất đồng bộ và chỉ gán một lần
+
+export async function showPage(page = 'spend') {
     async function loadContentOnce(sectionId, file, data = {}) {
         const section = $('#' + sectionId);
 
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Hàm điều khiển hiển thị nội dung và cập nhật trạng thái nút
     function showContent(sectionId, buttonId, file, data) {
         $("#page > div").hide();
         $("#" + sectionId).show();
@@ -38,8 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
         $("#" + buttonId + " i").removeClass("fa-regular").addClass("fa-solid");
     }
 
-    // Gán sự kiện click vào các nút để mở nội dung chỉ một lần
-    $('#home-btn').on('click', function () { showContent("page-home", this.id, "pages/home.hbs"); });
     $("#spend-btn").on('click', async function () {
         const spendList = await db.query('SELECT * FROM SpendList WHERE STATUS = ?', [1]);
         showContent("page-spend", this.id, "pages/spend.hbs", { spendList: spendList });
@@ -48,6 +45,5 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#note-btn").on('click', function () { showContent("page-note", this.id, "pages/note.hbs"); });
     $("#setting-btn").on('click', function () { showContent("page-setting", this.id, "pages/setting.hbs"); });
 
-    // Hiển thị nội dung mặc định khi tải trang
-    $("#setting-btn").trigger('click');
-});
+    $(`#${page}-btn`).trigger('click');
+}
