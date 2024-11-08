@@ -1,25 +1,3 @@
-<div class="divider mb-3 mt-3 font-bold">Sao lưu</div>
-
-<div class="ms-4 me-4">
-    {{!-- Login --}}
-    <label class="flex justify-between items-center gap-3">
-        <div class="w-[210px]">
-            <p>Đăng nhập</p>
-            <span class="text-sm text-base-content opacity-60">Liên kết với tài khoản google để sao lưu dữ liệu lên
-                Google Drive</span>
-        </div>
-
-        <div class="flex-1 flex justify-center">
-            <button class="btn btn-active gap-0">
-                <img src="/imgs/drive.png" alt="google drive" class="w-7">
-                Liên kết
-            </button>
-        </div>
-    </label>
-</div>
-
-
-
 <div class="divider mb-3 mt-3 font-bold">Chung</div>
 
 <div class="ms-4 me-4">
@@ -147,9 +125,82 @@
     </label>
 </div>
 
-<div class="divider divider-sm"></div>
+<div class="divider mb-3 mt-3 font-bold">Dữ liệu</div>
 
-<div class="ms-4 me-4 mb-4 flex justify-between">
+<div class="ms-4 me-4">
+    {{!-- Login --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Đăng nhập</p>
+            <span class="text-sm text-base-content opacity-60">Đăng nhập tài khoản Google để sao lưu dữ liệu</span>
+        </div>
+
+        <div class="flex-1 flex justify-center">
+            <button id="setting_data-login" class="btn btn-active gap-0">
+                <img src="/imgs/drive.png" alt="google drive" class="w-7">
+                Đăng nhập
+            </button>
+        </div>
+    </label>
+
+    {{!-- Logout --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Đăng xuất</p>
+            <span class="text-sm text-base-content opacity-60">Đăng xuất tài khoản Google khỏi ứng dụng</span>
+        </div>
+
+        <div class="flex-1 flex justify-center">
+            <button id="setting_data-logout" class="btn btn-error text-white gap-0">
+                <img src="/imgs/drive.png" alt="google drive" class="w-7">
+                Đăng xuất
+            </button>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Backup/Restore --}}
+    <label>
+        <div class="mb-2">
+            <p>Sao lưu/Đồng bộ</p>
+            <span class="text-sm text-base-content opacity-60">Khi đã đăng nhập Drive, ứng dụng sẽ tự động sao
+                lưu và đồng bộ dữ liệu, nhấn để thực hiện thủ công</span>
+        </div>
+
+        <div class="flex justify-between gap-2">
+            <button id="setting_data-logout" class="btn btn-info flex-1">
+                <i class="fa-sharp fa-regular fa-cloud-arrow-up"></i> Sao lưu dữ liệu
+            </button>
+
+            <button id="setting_data-logout" class="btn btn-accent flex-1">
+                <i class="fa-sharp fa-regular fa-cloud-arrow-down"></i> Đồng bộ dữ liệu
+            </button>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Export/Import --}}
+    <label>
+        <div class="mb-2">
+            <p>Xuất/Nhập tệp</p>
+            <span class="text-sm text-base-content opacity-60">Xuất/Nhập tệp dữ liệu của ứng dụng ra bên ngoài</span>
+        </div>
+
+        <div class="flex justify-between gap-2">
+            <button id="setting_data-logout" class="btn btn-info flex-1">
+                <i class="fa-sharp fa-regular fa-file-import"></i> Nhập tệp dữ liệu
+            </button>
+
+            <button id="setting_data-logout" class="btn btn-accent flex-1">
+                <i class="fa-sharp fa-regular fa-file-export"></i> Xuất tệp dữ liệu
+            </button>
+        </div>
+    </label>
+</div>
+
+<div class="m-4 flex justify-between">
     <p>Phiên bản: <span>1.0.0</span></p>
 
     <a href="https://github.com/ALR2310/SpendWise" class="auth">ALR2310</a>
