@@ -1,3 +1,5 @@
+import { App } from '@capacitor/app';
+import { Device } from '@capacitor/device';
 import { themeChange } from 'theme-change';
 import Handlebars from 'handlebars';
 import db from "./core/database";
@@ -5,7 +7,6 @@ import * as echarts from 'echarts';
 import $ from "jquery";
 import myUtilis from './core/myUtilis';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { Device } from '@capacitor/device';
 import { showPage, themeIconChange } from './core/page';
 import _ from 'lodash';
 
@@ -48,5 +49,5 @@ document.addEventListener('DOMContentLoaded', async function () {
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn chiều", 30000]);
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn tối", 45000]);
 
-    showPage();
+    showPage('setting');
 });

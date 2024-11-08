@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'Courgette';
+    src: url('../fonts/Courgette/Courgette-Regular.ttf') format('truetype');
+}
+
+.auth {
+    font-family: 'Courgette', sans-serif;
+}
+
 .btm-nav-sm>*:where(.active) {
     border-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-border-opacity))) !important;
 }
@@ -12,8 +21,6 @@
 #modal_spendItem::backdrop {
     background-color: unset !important;
 }
-
-
 
 /* Chức năng trượt cho thẻ */
 .swipeout {
@@ -106,6 +113,16 @@ div.select:hover {
     outline-color: var(--fallback-bc, oklch(var(--bc)/0.2));
 }
 
+div.select .select-value {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 div.select ul {
     display: none;
     margin-top: 0.5rem;
@@ -126,10 +143,31 @@ div.select ul {
 }
 
 div.select ul li {
-    padding: 0 0.75rem;
+    padding: 0.25rem 0.75rem;
 }
 
 div.select ul li:hover {
     --tw-bg-opacity: 1;
     background-color: var(--fallback-pc, oklch(var(--pc)/var(--tw-bg-opacity)));
+}
+
+div.select.select-right .select-value {
+    justify-content: flex-end;
+}
+
+div.select.select-right ul li {
+    text-align: right;
+}
+
+
+/*  */
+
+div.divider.divider-sm {
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+div.divider.divider-sm::before,
+div.divider.divider-sm::after {
+    height: 1px;
 }

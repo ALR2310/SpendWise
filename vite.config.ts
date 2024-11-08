@@ -15,6 +15,6 @@ export default defineConfig({
       port: 8100
    },
    plugins: [
-      ViteMinifyPlugin({})
+      // ViteMinifyPlugin({})
    ]
 });

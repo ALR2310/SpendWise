@@ -1,77 +1,158 @@
-<button class="btn btn-success" id="btn-login">Đăng nhập google</button>
+<div class="divider mb-3 mt-3 font-bold">Sao lưu</div>
 
-<button class="btn btn-info" id="btn-upload">Tải lên drive</button>
+<div class="ms-4 me-4">
+    {{!-- Login --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Đăng nhập</p>
+            <span class="text-sm text-base-content opacity-60">Liên kết với tài khoản google để sao lưu dữ liệu lên
+                Google Drive</span>
+        </div>
 
-<button class="btn btn-accent" id="btn-check">Kiểm tra đăng nhập</button>
+        <div class="flex-1 flex justify-center">
+            <button class="btn btn-active gap-0">
+                <img src="/imgs/drive.png" alt="google drive" class="w-7">
+                Liên kết
+            </button>
+        </div>
+    </label>
+</div>
 
-<textarea id="text-Result" class="w-full h-28"></textarea>
+
+
+<div class="divider mb-3 mt-3 font-bold">Chung</div>
+
+<div class="ms-4 me-4">
+    {{!-- Theme --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Giao diện</p>
+            <span class="text-sm text-base-content opacity-60">chọn giao diện sáng tối</span>
+        </div>
+
+        <div id="setting_general-theme" class="select select-ghost select-right flex-1">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="system">Hệ thống</li>
+                <li data-value="light">Sáng</li>
+                <li data-value="dark">Tối</li>
+            </ul>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Default Page --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Trang mặt định</p>
+            <span class="text-sm text-base-content opacity-60">Chọn trang mặt định sẽ hiển thị khi khởi động ứng
+                dụng</span>
+        </div>
+
+        <div id="setting_general-page" class="select select-ghost select-right flex-1">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="spend">Chi tiêu</li>
+                <li data-value="stats">Thống kê</li>
+                <li data-value="note">Ghi chú</li>
+            </ul>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Language --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Ngôn ngữ</p>
+            <span class="text-sm text-base-content opacity-60">Chọn ngôn ngữ sẽ hiển thị trong ứng dụng</span>
+        </div>
+
+        <div id="setting_general-language" class="select select-ghost select-right flex-1">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="vi">Tiếng việt</li>
+                <li data-value="en">Tiếng anh</li>
+            </ul>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Notification --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Thông báo</p>
+            <span class="text-sm text-base-content opacity-60">Gửi các thông báo nhắc nhở đến điện thoại</span>
+        </div>
+
+        <div class="flex-1 flex justify-center">
+            <input id="setting_general-notify" type="checkbox" class="toggle toggle-md" checked="checked" />
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Update --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Cập nhật</p>
+            <span class="text-sm text-base-content opacity-60">Tự động kiểm tra và cập nhật khi ứng dụng khởi
+                động</span>
+        </div>
+
+        <div class="flex-1 flex justify-center">
+            <input id="setting_general-update" type="checkbox" class="toggle toggle-md" checked="checked" />
+        </div>
+    </label>
+</div>
+
+<div class="divider mb-3 mt-3 font-bold">Chi tiêu</div>
+
+<div class="ms-4 me-4">
+    {{!-- Default List --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Danh sách mặc định</p>
+            <span class="text-sm text-base-content opacity-60">Chọn danh sách mặc định sẽ hiển thị khi mở trang</span>
+        </div>
+
+        <div id="setting_spend-list" class="select select-ghost select-right flex-1">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="1">Danh sách 1</li>
+                <li data-value="2">Danh sách 2</li>
+            </ul>
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Default Sort --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Sắp xếp</p>
+            <span class="text-sm text-base-content opacity-60">Chọn kiểu sẽ sắp xếp dữ liệu trên bảng</span>
+        </div>
+
+        <div id="setting_spend-sort" class="select select-ghost select-right flex-1">
+            <span class="select-value"></span>
+            <ul>
+                <li data-value="1">Thời gian</li>
+                <li data-value="2">Khoản chi</li>
+                <li data-value="3">Số tiền</li>
+            </ul>
+        </div>
+    </label>
+</div>
+
+<div class="divider divider-sm"></div>
+
+<div class="ms-4 me-4 mb-4 flex justify-between">
+    <p>Phiên bản: <span>1.0.0</span></p>
+
+    <a href="https://github.com/ALR2310/SpendWise" class="auth">ALR2310</a>
+</div>
 
 <script src="scripts/setting.js"></script>
-
-<script>
-    let accessToken = null;
-
-    $('#btn-login').on('click', async function () {
-        let googleUser = await GoogleAuth.signIn();
-
-        accessToken = googleUser.authentication.accessToken;
-
-        console.log(googleUser);
-
-        $('#text-Result').val(JSON.stringify(googleUser));
-    });
-
-    $('#btn-check').on('click', async function () {
-        GoogleAuth.refresh()
-            .then((data) => {
-                console.log('Đã đăng nhập');
-                console.log(data);
-                accessToken = data.accessToken;
-                $('#text-Result').val(JSON.stringify(data));
-            })
-            .catch((error) => {
-                if (error.type === 'userLoggedOut') {
-                    this.signin();
-                }
-                console.log('Chưa đăng nhập');
-                console.log(error);
-                $('#text-Result').val(JSON.stringify(error));
-            });
-    });
-
-    $('#btn-upload').on('click', async function () {
-        const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
-
-        const metadata = {
-            name: 'testUpload.txt',
-            mimeType: 'text/plain',
-        };
-
-        const form = new FormData();
-        form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-        form.append("file", new Blob(['Hello World'], { type: "text/plain" }));
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: new Headers({
-                    Authorization: `Bearer ${accessToken}`,
-                }),
-                body: form,
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log("Tệp đã được tải lên thành công:", data);
-                $('#text-Result').val('Tệp đã được tải lên thành công: ' + JSON.stringify(data));
-            } else {
-                console.error("Lỗi khi tải lên tệp:", data);
-                $('#text-Result').val('Lỗi khi tải lên tệp: ' + JSON.stringify(data));
-            }
-        } catch (error) {
-            console.error("Lỗi không xác định:", error);
-            $('#text-Result').val("Lỗi không xác định: " + error.message);
-        }
-    });
-</script>
