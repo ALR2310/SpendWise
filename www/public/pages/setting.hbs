@@ -161,49 +161,78 @@
     <div class="divider divider-sm"></div>
 
     {{!-- Backup/Restore --}}
-    <label>
+    <div>
         <div class="mb-2">
             <p>Sao lưu/Đồng bộ</p>
             <span class="text-sm text-base-content opacity-60">Khi đã đăng nhập Drive, ứng dụng sẽ tự động sao
                 lưu và đồng bộ dữ liệu, nhấn để thực hiện thủ công</span>
         </div>
 
-        <div class="flex justify-between gap-2">
-            <button id="setting_data-logout" class="btn btn-info flex-1">
+        <div class="flex justify-between gap-4">
+            <button id="setting_data-backup" class="btn btn-info flex-1">
                 <i class="fa-sharp fa-regular fa-cloud-arrow-up"></i> Sao lưu dữ liệu
             </button>
 
-            <button id="setting_data-logout" class="btn btn-accent flex-1">
+            <button id="setting_data-restore" class="btn btn-accent flex-1">
                 <i class="fa-sharp fa-regular fa-cloud-arrow-down"></i> Đồng bộ dữ liệu
             </button>
         </div>
-    </label>
+    </div>
 
     <div class="divider divider-sm"></div>
 
     {{!-- Export/Import --}}
-    <label>
+    <div>
         <div class="mb-2">
             <p>Xuất/Nhập tệp</p>
             <span class="text-sm text-base-content opacity-60">Xuất/Nhập tệp dữ liệu của ứng dụng ra bên ngoài</span>
         </div>
 
-        <div class="flex justify-between gap-2">
-            <button id="setting_data-logout" class="btn btn-info flex-1">
+        <div class="flex justify-between gap-4">
+            <button id="setting_data-import" class="btn btn-info flex-1">
                 <i class="fa-sharp fa-regular fa-file-import"></i> Nhập tệp dữ liệu
             </button>
 
-            <button id="setting_data-logout" class="btn btn-accent flex-1">
+            <button id="setting_data-export" class="btn btn-accent flex-1">
                 <i class="fa-sharp fa-regular fa-file-export"></i> Xuất tệp dữ liệu
             </button>
         </div>
-    </label>
+    </div>
+
+    <textarea id="setting_data-result" class="textarea textarea-bordered mt-4 w-full h-32"></textarea>
 </div>
 
+{{!-- App version --}}
 <div class="m-4 flex justify-between">
     <p>Phiên bản: <span>1.0.0</span></p>
 
     <a href="https://github.com/ALR2310/SpendWise" class="auth">ALR2310</a>
 </div>
+
+{{!-- Modal confirm import --}}
+<dialog id="modal_data_import_confirm" class="modal">
+    <div class="modal-box ">
+        <h3 class="text-lg font-bold mb-3">Nhập dữ liệu</h3>
+        <p>Bạn có muốn nhập dữ liệu này không?</p>
+
+        <div class="list flex flex-col mt-4 mb-4 gap-2 overflow-auto max-h-32"></div>
+
+        <p class="text-warning bg-base-300 p-2 mb-4 rounded-btn">
+            <i class="fa-sharp fa-solid fa-triangle-exclamation"></i>
+            Lưu ý: Khi nhập dữ liệu mới sẽ thay thế dữ liệu hiện tại của bạn.
+        </p>
+
+        <div class="flex justify-end gap-3">
+            <form method="dialog">
+                <button class="btn btn-sm w-20">Đóng</button>
+            </form>
+
+            <button class="btn btn-sm btn-accent w-20">Nhập</button>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
 
 <script src="scripts/setting.js"></script>

@@ -69,3 +69,41 @@ $('#btn-upload').on('click', async function () {
         $('#text-Result').val("Lỗi không xác định: " + error.message);
     }
 });
+
+
+$('#setting_data-import').on('click', async function () {
+    const result = await FilePicker.pickFiles({ types: ['application/json'], readData: true });
+    const file = result.files[0];
+
+    const base64Data = file.data;
+
+    try {
+        const textDecoder = new TextDecoder();
+        const decodedContent = textDecoder.decode(Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)));
+        const data = JSON.parse(decodedContent);
+
+        const listContainer = $('#modal_data_import_confirm .list');
+        listContainer.empty();
+
+        data.spendingList.forEach(list => {
+            const count = _.filter(data.spendingItem, { spendlistid: list.id }).length;
+            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-list"></i> ${list.namelist} <div class="badge">${count}</div></button>`);
+            listContainer.append(button);
+        });
+
+        data.noted.forEach(note => {
+            // Tạo thẻ button cho noted không có badge
+            const noteButton = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-note"></i> ${note.namelist}</button>`);
+            listContainer.append(noteButton);
+        });
+
+        modal_data_import_confirm.showModal();
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+        showToast('Có lỗi khi phân tích cú pháp tệp', 'error');
+    }
+});
+
+function importData(data) {
+
+}

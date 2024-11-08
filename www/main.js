@@ -1,22 +1,23 @@
-import { App } from '@capacitor/app';
-import { Device } from '@capacitor/device';
-import { themeChange } from 'theme-change';
-import Handlebars from 'handlebars';
+import $ from "jquery";
+import _ from 'lodash';
 import db from "./core/database";
 import * as echarts from 'echarts';
-import $ from "jquery";
+import Handlebars from 'handlebars';
+import { App } from '@capacitor/app';
 import myUtilis from './core/myUtilis';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Device } from '@capacitor/device';
+import { themeChange } from 'theme-change';
 import { showPage, themeIconChange } from './core/page';
-import _ from 'lodash';
-
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 window.$ = $;
-window.db = db;
 window._ = _;
-window.Handlebars = Handlebars;
+window.db = db;
 window.echarts = echarts;
 window.GoogleAuth = GoogleAuth;
+window.FilePicker = FilePicker;
+window.Handlebars = Handlebars;
 Object.assign(window, myUtilis);
 
 Handlebars.registerHelper('formatDate', myUtilis.formatDate);
