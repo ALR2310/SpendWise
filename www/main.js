@@ -1,5 +1,6 @@
 import $ from "jquery";
 import _ from 'lodash';
+import pages from './core/page';
 import db from "./core/database";
 import * as echarts from 'echarts';
 import Handlebars from 'handlebars';
@@ -7,7 +8,6 @@ import { App } from '@capacitor/app';
 import myUtilis from './core/myUtilis';
 import { Device } from '@capacitor/device';
 import { themeChange } from 'theme-change';
-import { showPage, themeIconChange } from './core/page';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
@@ -18,6 +18,7 @@ window.echarts = echarts;
 window.GoogleAuth = GoogleAuth;
 window.FilePicker = FilePicker;
 window.Handlebars = Handlebars;
+Object.assign(window, pages);
 Object.assign(window, myUtilis);
 
 Handlebars.registerHelper('formatDate', myUtilis.formatDate);
@@ -26,7 +27,7 @@ Handlebars.registerHelper('formatCurrency', myUtilis.formatCurrency);
 themeChange();
 
 document.addEventListener('DOMContentLoaded', async function () {
-    themeIconChange();
+    pages.themeIconChange();
 
     GoogleAuth.initialize({
         clientId: '292298338560-pags40si86ac2o49jjthi6e23c7b1tsl.apps.googleusercontent.com',
@@ -50,5 +51,5 @@ document.addEventListener('DOMContentLoaded', async function () {
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn chiều", 30000]);
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn tối", 45000]);
 
-    showPage('setting');
+    pages.showPage('setting');
 });

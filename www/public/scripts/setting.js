@@ -4,7 +4,7 @@ document.querySelectorAll('div.select').forEach(select => {
 });
 
 
-let accessToken = null;
+var accessToken = null;
 
 $('#btn-login').on('click', async function () {
     let googleUser = await GoogleAuth.signIn();
@@ -70,17 +70,17 @@ $('#btn-upload').on('click', async function () {
     }
 });
 
-
+var importData = null;
 $('#setting_data-import').on('click', async function () {
     const result = await FilePicker.pickFiles({ types: ['application/json'], readData: true });
-    const file = result.files[0];
-
-    const base64Data = file.data;
+    const base64Data = result.files[0].data;
+    importData = null;
 
     try {
         const textDecoder = new TextDecoder();
         const decodedContent = textDecoder.decode(Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)));
         const data = JSON.parse(decodedContent);
+        importData = data;
 
         const listContainer = $('#modal_data_import_confirm .list');
         listContainer.empty();
@@ -93,8 +93,8 @@ $('#setting_data-import').on('click', async function () {
 
         data.noted.forEach(note => {
             // Tạo thẻ button cho noted không có badge
-            const noteButton = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-note"></i> ${note.namelist}</button>`);
-            listContainer.append(noteButton);
+            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-note"></i> ${note.namelist}</button>`);
+            listContainer.append(button);
         });
 
         modal_data_import_confirm.showModal();
@@ -104,6 +104,34 @@ $('#setting_data-import').on('click', async function () {
     }
 });
 
-function importData(data) {
+$('#btn_confirm_import').on('click', async function () {
+    modal_data_import_confirm.close();
 
-}
+    try {
+        // Xóa các bản ghi cũ
+        await db.query('DELETE FROM SpendItem', [], true);
+        await db.query('DELETE FROM SpendList', [], true);
+        await db.query('DELETE FROM Note', [], true);
+
+        importData.spendingList.forEach(async list => {
+            await db.query(`INSERT INTO SpendList(Name, AtCreate, AtUpdate, LastEntry, Status) VALUES (?, ?, ?, ?, ?)`,
+                [list.namelist, list.atcreate, list.atupdate, list.lastentry, list.status]);
+        });
+
+        importData.spendingItem.forEach(async item => {
+            await db.query(`INSERT INTO SpendItem(ListId, Name, Price, Details, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [item.spendlistid, item.nameitem, item.price, item.details, item.atcreate, item.atupdate, item.status]);
+        });
+
+        importData.noted.forEach(async note => {
+            await db.query(`INSERT INTO Note(NameList, Content, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?)`,
+                [note.namelist, note.content, note.atcreate, note.atupdate, note.status]);
+        });
+
+        resetPage(['spend', 'stats', 'note']);
+        showToast("Dữ liệu nhập thành công", 'success');
+    } catch (e) {
+        console.log(e);
+        showToast("Có lỗi trong quá trình nhập", 'error');
+    }
+});
