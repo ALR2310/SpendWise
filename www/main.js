@@ -2,6 +2,7 @@ import $ from "jquery";
 import _ from 'lodash';
 import pages from './core/page';
 import db from "./core/database";
+import drive from './core/drive';
 import * as echarts from 'echarts';
 import Handlebars from 'handlebars';
 import { App } from '@capacitor/app';
@@ -17,6 +18,7 @@ window.$ = $;
 window._ = _;
 window.db = db;
 window.App = App;
+window.drive = drive;
 window.echarts = echarts;
 window.Encoding = Encoding;
 window.Capacitor = Capacitor;
@@ -38,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     GoogleAuth.initialize({
         clientId: '292298338560-pags40si86ac2o49jjthi6e23c7b1tsl.apps.googleusercontent.com',
-        scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'],
+        scopes: ['email', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'],
         grantOfflineAccess: true,
     });
 
@@ -58,5 +60,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn chiều", 30000]);
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn tối", 45000]);
 
-    pages.showPage('setting');
+    console.log(await drive.checkLogin());
+    
+    pages.showPage('spend');
 });

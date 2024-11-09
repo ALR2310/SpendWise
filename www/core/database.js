@@ -74,7 +74,7 @@ const db = {
         }
     },
 
-    initTable: initTable,
+    initTable,
 };
 
 
