@@ -8,17 +8,24 @@ import { App } from '@capacitor/app';
 import myUtilis from './core/myUtilis';
 import { Device } from '@capacitor/device';
 import { themeChange } from 'theme-change';
+import { Capacitor } from '@capacitor/core';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 window.$ = $;
 window._ = _;
 window.db = db;
+window.App = App;
 window.echarts = echarts;
-window.GoogleAuth = GoogleAuth;
-window.FilePicker = FilePicker;
-window.Handlebars = Handlebars;
+window.Encoding = Encoding;
+window.Capacitor = Capacitor;
 Object.assign(window, pages);
+window.Directory = Directory;
+window.FilePicker = FilePicker;
+window.Filesystem = Filesystem;
+window.GoogleAuth = GoogleAuth;
+window.Handlebars = Handlebars;
 Object.assign(window, myUtilis);
 
 Handlebars.registerHelper('formatDate', myUtilis.formatDate);

@@ -70,6 +70,7 @@ $('#btn-upload').on('click', async function () {
     }
 });
 
+// Import data
 var importData = null;
 $('#setting_data-import').on('click', async function () {
     const result = await FilePicker.pickFiles({ types: ['application/json'], readData: true });
@@ -85,15 +86,14 @@ $('#setting_data-import').on('click', async function () {
         const listContainer = $('#modal_data_import_confirm .list');
         listContainer.empty();
 
-        data.spendingList.forEach(list => {
-            const count = _.filter(data.spendingItem, { spendlistid: list.id }).length;
-            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-list"></i> ${list.namelist} <div class="badge">${count}</div></button>`);
+        data.spendList.forEach(list => {
+            const count = _.filter(data.spendItem, { ListId: list.Id }).length;
+            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-list"></i> ${list.Name} <div class="badge">${count}</div></button>`);
             listContainer.append(button);
         });
 
-        data.noted.forEach(note => {
-            // Tạo thẻ button cho noted không có badge
-            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-note"></i> ${note.namelist}</button>`);
+        data.note.forEach(note => {
+            const button = $(`<button class="btn btn-sm btn-active w-full"><i class="fa-sharp fa-regular fa-note"></i> ${note.Name}</button>`);
             listContainer.append(button);
         });
 
@@ -113,19 +113,19 @@ $('#btn_confirm_import').on('click', async function () {
         await db.query('DELETE FROM SpendList', [], true);
         await db.query('DELETE FROM Note', [], true);
 
-        importData.spendingList.forEach(async list => {
+        importData.spendList.forEach(async list => {
             await db.query(`INSERT INTO SpendList(Name, AtCreate, AtUpdate, LastEntry, Status) VALUES (?, ?, ?, ?, ?)`,
-                [list.namelist, list.atcreate, list.atupdate, list.lastentry, list.status]);
+                [list.Name, list.AtCreate, list.AtUpdate, list.LastEntry, list.Status]);
         });
 
-        importData.spendingItem.forEach(async item => {
+        importData.spendItem.forEach(async item => {
             await db.query(`INSERT INTO SpendItem(ListId, Name, Price, Details, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [item.spendlistid, item.nameitem, item.price, item.details, item.atcreate, item.atupdate, item.status]);
+                [item.ListId, item.Name, item.Price, item.Details, item.AtCreate, item.AtUpdate, item.Status]);
         });
 
         importData.noted.forEach(async note => {
-            await db.query(`INSERT INTO Note(NameList, Content, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?)`,
-                [note.namelist, note.content, note.atcreate, note.atupdate, note.status]);
+            await db.query(`INSERT INTO Note(Name, Content, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?)`,
+                [note.Name, note.Content, note.AtCreate, note.AtUpdate, note.Status]);
         });
 
         resetPage(['spend', 'stats', 'note']);
@@ -133,5 +133,37 @@ $('#btn_confirm_import').on('click', async function () {
     } catch (e) {
         console.log(e);
         showToast("Có lỗi trong quá trình nhập", 'error');
+    }
+});
+
+// Export data
+$('#setting_data-export').on('click', async function () {
+    try {
+        const [spendList, spendItem, note] = await db.queryAll([
+            { sql: 'SELECT * FROM SpendList' },
+            { sql: 'SELECT * FROM SpendItem' },
+            { sql: 'SELECT * FROM Note' },
+        ]);
+
+        const spendData = { spendList, spendItem, note };
+        const data = JSON.stringify(spendData, null, 2);
+
+        if (Capacitor.getPlatform() == 'web') {
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            $('<a>', { href: url, download: 'spendData.json' }).appendTo('body')[0].click();
+            URL.revokeObjectURL(url);
+        } else
+            await Filesystem.writeFile({
+                path: "spendData.json",
+                data: data,
+                directory: Directory.External,
+                encoding: Encoding.UTF8,
+            });
+
+        showToast('Xuất dữ liệu thành công', 'success');
+    } catch (e) {
+        console.log(e);
+        showToast("Có lỗi trong quá trình xuất dữ liệu", 'error');
     }
 });

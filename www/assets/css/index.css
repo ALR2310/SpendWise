@@ -2785,12 +2785,6 @@ details.collapse summary::-webkit-details-marker {
   background-color: var(--fallback-bc,oklch(var(--bc)/var(--tw-bg-opacity)));
 }
 
-.progress-success::-moz-progress-bar {
-  border-radius: var(--rounded-box, 1rem);
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-su,oklch(var(--su)/var(--tw-bg-opacity)));
-}
-
 .progress:indeterminate {
   --progress-color: var(--fallback-bc,oklch(var(--bc)/1));
   background-image: repeating-linear-gradient(
@@ -2805,10 +2799,6 @@ details.collapse summary::-webkit-details-marker {
   animation: progress-loading 5s ease-in-out infinite;
 }
 
-.progress-success:indeterminate {
-  --progress-color: var(--fallback-su,oklch(var(--su)/1));
-}
-
 .progress::-webkit-progress-bar {
   border-radius: var(--rounded-box, 1rem);
   background-color: transparent;
@@ -2818,11 +2808,6 @@ details.collapse summary::-webkit-details-marker {
   border-radius: var(--rounded-box, 1rem);
   --tw-bg-opacity: 1;
   background-color: var(--fallback-bc,oklch(var(--bc)/var(--tw-bg-opacity)));
-}
-
-.progress-success::-webkit-progress-value {
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-su,oklch(var(--su)/var(--tw-bg-opacity)));
 }
 
 .progress:indeterminate::-moz-progress-bar {
@@ -3884,6 +3869,10 @@ details.collapse summary::-webkit-details-marker {
   margin-inline-end: 1rem;
 }
 
+.me-5 {
+  margin-inline-end: 1.25rem;
+}
+
 .ms-4 {
   margin-inline-start: 1rem;
 }
@@ -3964,10 +3953,6 @@ details.collapse summary::-webkit-details-marker {
   height: 100%;
 }
 
-.h-3 {
-  height: 0.75rem;
-}
-
 .max-h-32 {
   max-height: 8rem;
 }
@@ -4014,10 +3999,6 @@ details.collapse summary::-webkit-details-marker {
 
 .w-full {
   width: 100%;
-}
-
-.w-56 {
-  width: 14rem;
 }
 
 .flex-1 {

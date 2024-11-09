@@ -105,7 +105,7 @@ async function initTable() {
         await dbInstance.execute(`
             CREATE TABLE IF NOT EXISTS Note (
                 Id          INTEGER  PRIMARY KEY,
-                NameList    TEXT,
+                Name        TEXT,
                 Content     TEXT,
                 AtCreate    DATETIME DEFAULT CURRENT_TIMESTAMP,
                 AtUpdate    DATETIME DEFAULT CURRENT_TIMESTAMP,
