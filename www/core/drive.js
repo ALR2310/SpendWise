@@ -32,11 +32,12 @@ const logout = async () => {
     }
 };
 
-const uploadFile = async ({ fileName, mimeType, data }) => {
+const uploadFile = async ({ fileName, mimeType, data, appDataFolder = false }) => {
     if (!accessToken) return { success: false, message: 'not logged in' };
+    if (!fileName || !mimeType || !data) return { success: false, message: 'missing fileName, mimeType or data' };
 
-    const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
-    const metadata = { name: fileName, mimeType: mimeType, };
+    const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,size";
+    const metadata = { name: fileName, mimeType: mimeType, ...(appDataFolder && { parents: ['appDataFolder'] }) };
 
     const form = new FormData();
     form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
@@ -45,14 +46,12 @@ const uploadFile = async ({ fileName, mimeType, data }) => {
     try {
         const response = await fetch(url, {
             method: "POST",
-            headers: new Headers({
-                Authorization: `Bearer ${accessToken}`,
-            }),
+            headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
             body: form,
         });
 
-        const responseData = await response.json();
-        return { success: true, message: "Tải lên tệp tin thành công", data: responseData };
+        if (!response.ok) return { success: false, message: 'Có lỗi khi tải lên tệp tin', error: await response.json() };
+        return { success: true, message: "Tải lên tệp tin thành công", data: await response.json() };
     } catch (error) {
         console.error("Lỗi không xác định:", error);
         return { success: false, message: "Có lỗi khi tải lên tệp tin", error: error };
@@ -61,32 +60,102 @@ const uploadFile = async ({ fileName, mimeType, data }) => {
 
 const downloadFile = async (fileId) => {
     if (!accessToken) return { success: false, message: 'not logged in' };
+    if (!fileId) return { success: false, message: 'missing fileId' };
 
     const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
 
     try {
         const response = await fetch(url, {
             method: "GET",
-            headers: new Headers({
-                Authorization: `Bearer ${accessToken}`,
-            }),
+            headers: new Headers({ Authorization: `Bearer ${accessToken}`, }),
         });
 
-        if (response.ok) {
-            const data = await response.blob();
-            // console.log(JSON.parse(await data.text()))
-            return { success: true, message: "Tải xuống tệp tin thành công", data: data };
-        } else {
-            const errorData = await response.json();
-            console.error("Lỗi khi tải tệp:", errorData);
-            return { success: false, message: "Có lỗi khi tải xuống tệp tin", error: errorData };
-        }
+        if (!response.ok) return { success: false, message: "Có lỗi khi tải xuống tệp tin", error: await response.json() };
+        return { success: true, message: "Tải xuống tệp tin thành công", data: await response.blob() };
     } catch (error) {
         console.error("Lỗi không xác định:", error);
-        return { success: true, message: "Có lỗi khi tải xuống tệp tin", error: error };
+        return { success: false, message: "Có lỗi khi tải xuống tệp tin", error: error };
     }
 };
 
+const updateFile = async ({ fileId, fileName, mimeType, data }) => {
+    if (!accessToken) return { success: false, message: 'not logged in' };
+    if (!fileId) return { success: false, message: 'missing fileId' };
+    if (!data) return { success: false, message: 'missing data' };
+
+    const url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`;
+
+    const metadata = {
+        ...(fileName && { name: fileName }),
+        ...(mimeType && { mimeType: mimeType })
+    };
+
+    const form = new FormData();
+    form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    form.append("file", new Blob([data], { type: mimeType || 'application/octet-stream' }));
+
+    try {
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
+            body: form,
+        });
+
+        if (!response.ok) return { success: false, message: 'Có lỗi khi cập nhật tệp tin', error: await response.json() };
+        return { success: true, message: "Cập nhật tệp tin thành công", data: await response.json() };
+    } catch (error) {
+        console.error("Lỗi không xác định:", error);
+        return { success: false, message: "Có lỗi khi cập nhật tệp tin", error: error };
+    }
+};
+
+const deleteFile = async (fileId) => {
+    if (!accessToken) return { success: false, message: 'not logged in' };
+    if (!fileId) return { success: false, message: 'missing fileId' };
+
+    const url = `https://www.googleapis.com/drive/v3/files/${fileId}`;
+
+    try {
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
+        });
+
+        if (!response.ok) return { success: false, message: "Có lỗi khi xóa tệp tin", error: await response.json() };
+        return { success: true, message: "Xóa tệp tin thành công" };
+    } catch (error) {
+        console.error("Lỗi không xác định:", error);
+        return { success: false, message: "Có lỗi khi xóa tệp tin", error: error };
+    }
+};
+
+const getFiles = async ({ spaces = 'drive,appDataFolder', orderBy = 'createdTime desc' } = {}) => {
+    if (!accessToken) return { success: false, message: 'not logged in' };
+
+    const params = new URLSearchParams({ spaces, orderBy });
+    const url = `https://www.googleapis.com/drive/v3/files?${params.toString()}`;
+
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
+        });
+
+        if (!response.ok) return { success: false, message: "Có lỗi khi lấy danh sách tệp", error: await response.json() };
+        return { success: true, message: "Lấy danh sách tệp thành công", data: await response.json() };
+    } catch (error) {
+        console.error("Lỗi không xác định:", error);
+        return { success: false, message: "Có lỗi khi lấy danh sách tệp", error: error };
+    }
+};
+
+
+
+const backupData = async () => {
+    if (!accessToken) return { success: false, message: 'Login to backup data' };
+
+
+};
 
 export default {
     getAccessToken: () => accessToken,
@@ -96,4 +165,7 @@ export default {
     logout,
     uploadFile,
     downloadFile,
+    deleteFile,
+    getFiles,
+    updateFile,
 };

@@ -3099,10 +3099,6 @@ details.collapse summary::-webkit-details-marker {
   border-top-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-border-opacity)));
 }
 
-.textarea-bordered {
-  border-color: var(--fallback-bc,oklch(var(--bc)/0.2));
-}
-
 .textarea:focus {
   box-shadow: none;
   border-color: var(--fallback-bc,oklch(var(--bc)/0.2));
@@ -3927,10 +3923,6 @@ details.collapse summary::-webkit-details-marker {
 
 .hidden {
   display: none;
-}
-
-.h-32 {
-  height: 8rem;
 }
 
 .h-7 {
