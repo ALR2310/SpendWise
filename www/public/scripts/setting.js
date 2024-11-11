@@ -46,42 +46,6 @@ $('#setting_data-logout').on('click', async function () {
     }
 });
 
-// $('#btn-upload').on('click', async function () {
-//     const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
-
-//     const metadata = {
-//         name: 'testUpload.txt',
-//         mimeType: 'text/plain',
-//     };
-
-//     const form = new FormData();
-//     form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-//     form.append("file", new Blob(['Hello World'], { type: "text/plain" }));
-
-//     try {
-//         const response = await fetch(url, {
-//             method: "POST",
-//             headers: new Headers({
-//                 Authorization: `Bearer ${accessToken}`,
-//             }),
-//             body: form,
-//         });
-
-//         const data = await response.json();
-
-//         if (response.ok) {
-//             console.log("Tệp đã được tải lên thành công:", data);
-//             $('#text-Result').val('Tệp đã được tải lên thành công: ' + JSON.stringify(data));
-//         } else {
-//             console.error("Lỗi khi tải lên tệp:", data);
-//             $('#text-Result').val('Lỗi khi tải lên tệp: ' + JSON.stringify(data));
-//         }
-//     } catch (error) {
-//         console.error("Lỗi không xác định:", error);
-//         $('#text-Result').val("Lỗi không xác định: " + error.message);
-//     }
-// });
-
 // Import data
 var importData = null;
 $('#setting_data-import').on('click', async function () {
@@ -136,7 +100,7 @@ $('#btn_confirm_import').on('click', async function () {
                 [item.ListId, item.Name, item.Price, item.Details, item.AtCreate, item.AtUpdate, item.Status]);
         });
 
-        importData.noted.forEach(async note => {
+        importData.note.forEach(async note => {
             await db.query(`INSERT INTO Note(Name, Content, AtCreate, AtUpdate, Status) VALUES (?, ?, ?, ?, ?)`,
                 [note.Name, note.Content, note.AtCreate, note.AtUpdate, note.Status]);
         });
@@ -167,16 +131,39 @@ $('#setting_data-export').on('click', async function () {
             $('<a>', { href: url, download: 'spendData.json' }).appendTo('body')[0].click();
             URL.revokeObjectURL(url);
         } else
-            await Filesystem.writeFile({
+            await capFile.Filesystem.writeFile({
                 path: "spendData.json",
                 data: data,
-                directory: Directory.External,
-                encoding: Encoding.UTF8,
+                directory: capFile.Directory.External,
+                encoding: capFile.Encoding.UTF8,
             });
 
         showToast('Xuất dữ liệu thành công', 'success');
     } catch (e) {
         console.log(e);
         showToast("Có lỗi trong quá trình xuất dữ liệu", 'error');
+    }
+});
+
+// Backup data
+$('#setting_data-backup').on('click', async function () {
+    try {
+        await drive.backupData();
+        showToast('Sao lưu dữ liệu thành công', 'success');
+    } catch(e) {
+        console.log(e);
+        showToast("Có lỗi trong quá trình sao lưu dữ liệu", 'error');
+    }
+});
+
+// Restore data
+$('#setting_data-restore').on('click', async function () {
+    try {
+        await drive.restoreData();
+        resetPage(['spend', 'stats', 'note']);
+        showToast('Đồng bộ dữ liệu thành công', 'success');
+    } catch(e) {
+        console.log(e);
+        showToast("Có lỗi trong quá trình đồng bộ dữ liệu", 'error');
     }
 });

@@ -10,9 +10,10 @@ import myUtilis from './core/myUtilis';
 import { Device } from '@capacitor/device';
 import { themeChange } from 'theme-change';
 import { Capacitor } from '@capacitor/core';
+import appSettings from './core/appSettings';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import * as capFile from '@capacitor/filesystem';
 
 window.$ = $;
 window._ = _;
@@ -20,20 +21,20 @@ window.db = db;
 window.App = App;
 window.drive = drive;
 window.echarts = echarts;
-window.Encoding = Encoding;
+window.capFile = capFile;
 window.Capacitor = Capacitor;
 Object.assign(window, pages);
-window.Directory = Directory;
 window.FilePicker = FilePicker;
-window.Filesystem = Filesystem;
 window.GoogleAuth = GoogleAuth;
 window.Handlebars = Handlebars;
 Object.assign(window, myUtilis);
+window.appSettings = appSettings;
 
 Handlebars.registerHelper('formatDate', myUtilis.formatDate);
 Handlebars.registerHelper('formatCurrency', myUtilis.formatCurrency);
 
 themeChange();
+appSettings.init();
 
 document.addEventListener('DOMContentLoaded', async function () {
     pages.themeIconChange();
@@ -61,6 +62,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     await db.query(`INSERT INTO SpendItem(ListId, Name, Price) VALUES (?, ?, ?)`, [2, "Ăn tối", 45000]);
 
     console.log(await drive.checkLogin());
-    
+
     pages.showPage('spend');
 });
