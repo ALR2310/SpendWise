@@ -96,20 +96,20 @@ class AppSettings {
     localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
   }
 
-  public get(path?: string): any {
+  public get(path?: string): string {
     if (!path) return this.settings;
 
     const keys = path.split('.');
     let result: any = this.settings;
 
     for (let key of keys) {
-      if (result[key] === undefined) return null;
+      if (result[key] === undefined) return '';
       result = result[key];
     }
     return result;
   }
 
-  public set(path: string, value: any) {
+  public set(path: string, value: any): void {
     const keys = path.split('.');
     let obj = this.settings;
 

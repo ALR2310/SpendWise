@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { SocialLogin } from '@capgo/capacitor-social-login';
-import { exportData, importData } from '~/common/data.backup';
+import { backupData, exportData, importData } from '~/common/data.backup';
 import { showToast } from '~/common/utils';
 import download from 'downloadjs';
 
@@ -34,8 +34,6 @@ $('#setting_data-logout').on('click', async () => {
   const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
     .isLoggedIn;
 
-  console.log(isLogin);
-
   if (isLogin) {
     $('#login-button-container').hide();
     $('#logout-button-container').show();
@@ -43,6 +41,21 @@ $('#setting_data-logout').on('click', async () => {
     console.log(await SocialLogin.getAuthorizationCode({ provider: 'google' }));
   }
 })();
+
+// Backup data
+$('#setting_data-backup').on('click', async function () {
+  $(this).prop('disabled', true).find('i').toggleClass('fa-spin fa-loader');
+
+  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
+    .isLoggedIn;
+
+  if (!isLogin)
+    return showToast('Vui lòng đăng nhập để sử dụng tính năng này', 'warning');
+
+  const result = await backupData();
+  $(this).prop('disabled', false).find('i').toggleClass('fa-spin fa-loader');
+  showToast(result.message, result.success ? 'success' : 'error');
+});
 
 // Export data
 $('#setting_data-export').on('click', async function () {

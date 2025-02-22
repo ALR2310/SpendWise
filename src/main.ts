@@ -15,7 +15,7 @@ import {
   SpendListModel,
 } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
-import { backupData } from './common/data.backup';
+// import { backupData } from './common/data.backup';
 import { appSettings } from './configs/app.settings';
 
 // Global variable
@@ -45,7 +45,7 @@ themeIconChange();
     },
   });
 
-  backupData().then((res) => console.log(res));
+  // backupData().then((res) => console.log(res));
 
   // Set version app when start
   appSettings.set('general.version', __APP_VERSION__);
@@ -54,5 +54,5 @@ themeIconChange();
   // console.log(await Query('SELECT * FROM SpendList'));
   // console.log(await Query('SELECT * FROM SpendItem'));
 
-  pageManager.show('spend');
+  pageManager.show('setting');
 })();

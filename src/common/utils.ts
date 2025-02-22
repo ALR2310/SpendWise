@@ -8,7 +8,7 @@ export function UniqueId() {
 
 export function showToast(
   message: string,
-  type: string,
+  type: 'success' | 'error' | 'warning' | 'info',
   duration: number = 3000,
 ) {
   const toastContainer = document.getElementById('toast-container');
@@ -101,7 +101,7 @@ export function getDateTime(dateStr: string): string {
 }
 
 export function formatCurrency(value: any, symbol: boolean = true) {
-    value = value.toString().replace(/\./g, '');
-    let formattedValue = new Intl.NumberFormat('vi-VN').format(value);
-    return symbol ? `${formattedValue} ₫` : formattedValue;
+  value = value.toString().replace(/\./g, '');
+  let formattedValue = new Intl.NumberFormat('vi-VN').format(value);
+  return symbol ? `${formattedValue} ₫` : formattedValue;
 }

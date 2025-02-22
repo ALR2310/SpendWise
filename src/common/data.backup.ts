@@ -27,33 +27,43 @@ export async function backupData(): Promise<
 
   drive.setAccessToken(accessToken);
 
+  const version = appSettings.get('general.version');
+
   try {
-    // remove old backup file
-    const listOldFiles = await drive.get({ spaces: 'appDataFolder' });
-    for (const file of listOldFiles.data.files) await drive.delete(file.id);
+    if (compare(version, '0.0.0', '>=')) {
+      // remove old backup file
+      const listOldFiles = await drive.get({ spaces: 'appDataFolder' });
+      for (const file of listOldFiles.data.files) await drive.delete(file.id);
 
-    // get data for backup
-    const [spendList, spendItem, note] = await QueryAll([
-      { sql: 'SELECT * FROM SpendList' },
-      { sql: 'SELECT * FROM SpendItem' },
-      { sql: 'SELECT * FROM Note' },
-    ]);
+      // get data for backup
+      const [spendList, spendItem, note] = await QueryAll([
+        { sql: 'SELECT * FROM SpendList' },
+        { sql: 'SELECT * FROM SpendItem' },
+        { sql: 'SELECT * FROM Note' },
+      ]);
 
-    // compress data
-    const spendData = { spendList, spendItem, note };
-    const data = JSON.stringify(spendData, null, 2);
-    const compressedData = pako.gzip(data);
+      // convert and compress data
+      const spendData = convertData({ spendList, spendItem, note }, 'V2', 'V1');
+      const dataStr = JSON.stringify(spendData, null, 2);
+      const compressedData = pako.gzip(dataStr);
 
-    // upload compressed data
-    const result = await drive.upload({
-      fileName: 'spendData.json.gz',
-      mimeType: 'application/gzip',
-      content: compressedData,
-      appDataFolder: true,
-    });
-    appSettings.set('data.fileId', result.data.id);
-    appSettings.set('data.lastBackup', dayjs().format('DD/MM/YYYY'));
-    return { success: true, message: 'Sao lưu thành công' };
+      // upload compressed data
+      const result = await drive.upload({
+        fileName: 'spendData.json.gz',
+        mimeType: 'application/gzip',
+        content: compressedData,
+        appDataFolder: true,
+      });
+
+      // save info
+      appSettings.set('data.fileId', result.data.id);
+      appSettings.set('data.lastBackup', dayjs().toISOString());
+      return { success: true, message: 'Sao lưu thành công' };
+    } else if (compare(version, '1.0.0', '>=')) {
+      return { success: false, message: 'Version is not supported' };
+    } else {
+      return { success: false, message: 'Version is not supported' };
+    }
   } catch (err) {
     console.error(err);
     return {
@@ -179,9 +189,9 @@ interface SpendData {
 }
 
 export async function importData(data: any) {
-  const version = await appSettings.get('general.version');
+  const version = appSettings.get('general.version');
 
-  if (compare('0.0.0', version, '<=')) {
+  if (compare(version, '0.0.0', '>=')) {
     const spendData: SpendData['V1'] = data;
     try {
       await QueryAll([
@@ -264,13 +274,13 @@ export async function importData(data: any) {
         message: 'Có lỗi khi nhập dữ liệu',
       };
     }
-  } else if (compare('1.0.0', version, '<=')) {
+  } else if (compare(version, '1.0.0', '>=')) {
     // execute other func for version 2
   }
 }
 
 export async function exportData() {
-  const version = await appSettings.get('general.version');
+  const version = appSettings.get('general.version');
 
   const [spendList, spendItem, note] = await QueryAll([
     { sql: 'SELECT * FROM SpendList' },
@@ -278,10 +288,60 @@ export async function exportData() {
     { sql: 'SELECT * FROM Note' },
   ]);
 
-  if (compare('0.0.0', version, '<=')) {
+  if (compare(version, '0.0.0', '>=')) {
+    const result = convertData({ spendList, spendItem, note }, 'V2', 'V1');
+    return result;
+  }
+
+  return { spendList, spendItem, note };
+}
+
+function convertData(data: any, input: 'V1' | 'V2', output: 'V1' | 'V2') {
+  if (input == output) return data;
+
+  if (input == 'V1' && output == 'V2') {
+    const spendList: SpendData['V2']['SpendList'] = data.spendingList.map(
+      (item: SpendData['V1']['spendingList']) => ({
+        _id: item.id,
+        name: item.namelist,
+        status: item.status == 1 ? 'Active' : 'Inactive',
+        createdAt: item.atcreate,
+        updatedAt: item.atupdate,
+        _v: 0,
+      }),
+    );
+
+    const spendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map(
+      (item: SpendData['V1']['spendingItem']) => ({
+        _id: item.id,
+        listId: item.spendlistid,
+        name: item.nameitem,
+        price: item.price,
+        details: item.details,
+        createdAt: item.atcreate,
+        updatedAt: item.atupdate,
+        status: item.status == 1 ? 'Active' : 'Inactive',
+        _v: 0,
+      }),
+    );
+
+    const note: SpendData['V2']['Note'] = data.noted.map(
+      (item: SpendData['V1']['noted']) => ({
+        _id: item.id,
+        name: item.namelist,
+        content: item.content,
+        createdAt: item.atcreate,
+        updatedAt: item.atupdate,
+        status: item.status == 1 ? 'Active' : 'Inactive',
+        _v: 0,
+      }),
+    );
+
+    return { spendList, spendItem, note };
+  } else if (input == 'V2' && output == 'V1') {
     const today = dayjs().toISOString();
 
-    const spendingList: SpendData['V1']['spendingList'] = spendList.map(
+    const spendingList: SpendData['V1']['spendingList'] = data.spendList.map(
       (item: SpendData['V2']['SpendList']) => ({
         id: item._id,
         namelist: item.name,
@@ -292,7 +352,7 @@ export async function exportData() {
       }),
     );
 
-    const spendingItem: SpendData['V1']['spendingItem'] = spendItem.map(
+    const spendingItem: SpendData['V1']['spendingItem'] = data.spendItem.map(
       (item: SpendData['V2']['SpendItem']) => ({
         id: item._id,
         spendlistid: item.listId,
@@ -305,7 +365,7 @@ export async function exportData() {
       }),
     );
 
-    const noted: SpendData['V1']['noted'] = note.map(
+    const noted: SpendData['V1']['noted'] = data.note.map(
       (item: SpendData['V2']['Note']) => ({
         id: item._id,
         namelist: item.name,
@@ -317,6 +377,5 @@ export async function exportData() {
     );
 
     return { spendingList, spendingItem, noted };
-  } else if (compare('1.0.0', version, '<=')) {
   }
 }
