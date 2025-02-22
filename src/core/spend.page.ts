@@ -59,11 +59,16 @@ async function loadSuggest() {
 }
 
 // Function to load SpendItems when the app starts
-async function loadSpendItem() {
+let offset = 0;
+const limit = 20;
+const loadThreshold = 50;
+
+async function loadSpendItem(loadMore = false) {
   const listId = $('#select_spendList').selectControl('get');
   const searchKey = String($('#input_spendItem_search').val()).trim();
   const sortValue = $('#select_spendItem_sort').selectControl('get');
   const dateValue = String($('#input_spendItem_search_date').val()).trim();
+  const tableWrapper = $('#table_spendItem_wrapper');
 
   loadSuggest();
 
@@ -83,20 +88,38 @@ async function loadSpendItem() {
       params.push(dateValue);
     }
 
-    sql += ` ORDER BY ${sortValue}`;
+    sql += ` ORDER BY ${sortValue} DESC LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
 
     const spendItems = await Query(sql, params);
 
     const template = convertPlaceHbs($('#table_spendItem_template').html());
     const templateCompiled = templateBuilder(template, {
-      spendItems: spendItems,
+      spendItems: spendItems.reverse(),
     });
-    $('#table_spendItem').find('tbody').html(templateCompiled);
+
+    const tableBody = $('#table_spendItem').find('tbody');
+
+    if (loadMore) tableBody.prepend(templateCompiled);
+    else tableBody.html(templateCompiled);
+
+    if (!loadMore) {
+      tableWrapper.scrollTop(tableWrapper[0].scrollHeight);
+    }
   } catch (e) {
     console.error(e);
     showToast('Tải dữ liệu thất bại', 'error');
   }
 }
+
+// Load more spendItems when the user scrolls to the top of the page
+$('#table_spendItem_wrapper').on('scroll', function () {
+  // @ts-ignore
+  if ($('#table_spendItem_wrapper').scrollTop() <= loadThreshold) {
+    offset += limit;
+    loadSpendItem(true);
+  }
+});
 
 // Search SpendItem
 $('#input_spendItem_search').on(

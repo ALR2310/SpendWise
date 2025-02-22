@@ -102,12 +102,15 @@ async function getDataForPage(pageName: string) {
 }
 
 class PageManager {
-  show(pageName: string, force: boolean = false) {
+  show(
+    pageName: 'spend' | 'stats' | 'note' | 'setting',
+    force: boolean = false,
+  ) {
     showPage(pageName, force);
   }
 
-  reset(pageName: string[]) {
-    resetPage(pageName);
+  reset(pageName: 'spend' | 'stats' | 'note' | 'setting') {
+    resetPage([pageName]);
   }
 }
 

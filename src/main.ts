@@ -51,8 +51,8 @@ themeIconChange();
   appSettings.set('general.version', __APP_VERSION__);
 
   // console.log(await Query('SELECT * FROM sqlite_master'));
-  console.log(await Query('SELECT * FROM SpendList'));
-  console.log(await Query('SELECT * FROM SpendItem'));
+  // console.log(await Query('SELECT * FROM SpendList'));
+  // console.log(await Query('SELECT * FROM SpendItem'));
 
-  pageManager.show('setting');
+  pageManager.show('spend');
 })();
