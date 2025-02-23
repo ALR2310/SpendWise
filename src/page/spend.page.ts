@@ -10,8 +10,12 @@ import {
 import templateBuilder from '~/common/template.builder';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
 import { NoSqliteModel, Query } from '~/configs/nosql/db.wrapper';
 import { SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
+
+dayjs.extend(customParseFormat);
 
 // init model
 const spendListModel = new NoSqliteModel(SpendListModel);
@@ -125,6 +129,7 @@ $('#table_spendItem_wrapper').on('scroll', function () {
 $('#input_spendItem_search').on(
   'input',
   debounce(() => {
+    offset = 0;
     loadSpendItem();
   }, 200),
 );
@@ -229,7 +234,6 @@ function showSpendItemModal(id: string) {
     $('#input_spendItem_info').val('');
   }
 }
-
 // @ts-ignore
 window.showSpendItemModal = showSpendItemModal;
 
@@ -295,5 +299,14 @@ $('#btn_spendItem_update').on('click', async function () {
     showToast('Cập nhật chi tiêu thất bại', 'error');
   }
 });
+
+// Function to delete spendItem
+async function deleteSpendItem(id: string) {
+  await spendItemModel.deleteById(id);
+  
+  $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
+}
+// @ts-ignore
+window.deleteSpendItem = deleteSpendItem;
 
 export {};

@@ -54,5 +54,5 @@ themeIconChange();
   // console.log(await Query('SELECT * FROM SpendList'));
   // console.log(await Query('SELECT * FROM SpendItem'));
 
-  pageManager.show('setting');
+  pageManager.show('spend');
 })();

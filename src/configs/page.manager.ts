@@ -28,7 +28,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(spendTemplate, data);
           pageContent.html(templateCompiled);
-          import('../core/spend.page');
+          import('../page/spend.page');
         } catch (e) {
           console.error(e);
         }
@@ -38,7 +38,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(statsTemplate, data);
           pageContent.html(templateCompiled);
-          import('../core/stats.page');
+          import('../page/stats.page');
         } catch (e) {
           console.error(e);
         }
@@ -48,7 +48,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(noteTemplate, data);
           pageContent.html(templateCompiled);
-          import('../core/note.page');
+          import('../page/note.page');
         } catch (e) {
           console.error(e);
         }
@@ -63,7 +63,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
             appVersion,
           });
           pageContent.html(templateCompiled);
-          import('../core/setting.page');
+          import('../page/setting.page');
         } catch (e) {
           console.error(e);
         }
