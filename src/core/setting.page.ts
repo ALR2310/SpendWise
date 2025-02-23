@@ -2,7 +2,12 @@ import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { SocialLogin } from '@capgo/capacitor-social-login';
-import { backupData, exportData, importData } from '~/common/data.backup';
+import {
+  backupData,
+  exportData,
+  importData,
+  syncData,
+} from '~/common/data.backup';
 import { showToast } from '~/common/utils';
 import download from 'downloadjs';
 
@@ -49,12 +54,30 @@ $('#setting_data-backup').on('click', async function () {
   const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
     .isLoggedIn;
 
-  if (!isLogin)
+  if (!isLogin) {
+    $(this).prop('disabled', false).find('i').toggleClass('fa-spin fa-loader');
     return showToast('Vui lòng đăng nhập để sử dụng tính năng này', 'warning');
+  }
 
   const result = await backupData();
   $(this).prop('disabled', false).find('i').toggleClass('fa-spin fa-loader');
   showToast(result.message, result.success ? 'success' : 'error');
+});
+
+// Sync data
+$('#setting_data-sync').on('click', async function () {
+  $(this).prop('disabled', true).find('i').toggleClass('fa-spin fa-loader');
+  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
+    .isLoggedIn;
+
+  if (!isLogin) {
+    $(this).prop('disabled', false).find('i').toggleClass('fa-spin fa-loader');
+    return showToast('Vui lòng đăng nhập để sử dụng tính năng này', 'warning');
+  }
+
+  const result = await syncData();
+  showToast(result.message, result.success ? 'success' : 'error');
+  $(this).prop('disabled', false).find('i').toggleClass('fa-spin fa-loader');
 });
 
 // Export data

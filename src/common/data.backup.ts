@@ -83,9 +83,9 @@ export async function syncData(): Promise<
     .isLoggedIn;
 
   if (isLogin) {
-    accessToken = await SocialLogin.getAuthorizationCode({
-      provider: 'google',
-    });
+    accessToken = (
+      await SocialLogin.getAuthorizationCode({ provider: 'google' })
+    ).accessToken;
   } else
     return {
       success: false,
@@ -94,7 +94,7 @@ export async function syncData(): Promise<
 
   drive.setAccessToken(accessToken);
 
-  let fileId = await appSettings.get('data.fileId');
+  let fileId = appSettings.get('data.fileId');
 
   if (!fileId)
     fileId = (await drive.get({ spaces: 'appDataFolder' })).data.files[0].id;
@@ -114,13 +114,17 @@ export async function syncData(): Promise<
     to: 'string',
   });
   const spendData = JSON.parse(decompressedData);
+  const importResult = await importData(spendData);
 
-  console.log(spendData);
-
-  return {
-    success: true,
-    message: 'Đồng bộ dữ liệu thành công',
-  };
+  return importResult.success
+    ? {
+        success: true,
+        message: 'Đồng bộ dữ liệu thành công',
+      }
+    : {
+        success: false,
+        message: 'Có lỗi trong quá trình đồng bộ dữ liệu',
+      };
 }
 
 interface SpendData {
@@ -188,7 +192,9 @@ interface SpendData {
   };
 }
 
-export async function importData(data: any) {
+export async function importData(
+  data: any,
+): Promise<{ success: boolean; message: string }> {
   const version = appSettings.get('general.version');
 
   if (compare(version, '0.0.0', '>=')) {
@@ -275,7 +281,15 @@ export async function importData(data: any) {
       };
     }
   } else if (compare(version, '1.0.0', '>=')) {
-    // execute other func for version 2
+    return {
+      success: false,
+      message: 'Version not supported',
+    };
+  } else {
+    return {
+      success: false,
+      message: 'Version not supported',
+    };
   }
 }
 
