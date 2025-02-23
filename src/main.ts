@@ -1,22 +1,13 @@
-import {
-  formatCurrency,
-  formatDate,
-  getDateTime,
-  showToast,
-  closeToast,
-} from './common/utils';
+import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from './common/utils';
 import $ from 'jquery';
 import Handlebars from 'handlebars';
 import { pageManager, themeIconChange } from './configs/page.manager';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
-import {
-  NoteModel,
-  SpendItemModel,
-  SpendListModel,
-} from './configs/nosql/db.models';
+import { NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 // import { backupData } from './common/data.backup';
 import { appSettings } from './configs/app.settings';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 // Global variable
 window.$ = $;
@@ -26,6 +17,7 @@ window.formatDate = formatDate;
 window.getDateTime = getDateTime;
 window.formatCurrency = formatCurrency;
 window.Query = Query;
+defineCustomElements(window);
 
 // Helper handlebars
 Handlebars.registerHelper('formatDate', formatDate);
@@ -40,8 +32,7 @@ themeIconChange();
   // Init social login
   await SocialLogin.initialize({
     google: {
-      webClientId:
-        '292298338560-h9i7cv3nh68qvril0kdfe96cu5ttf87f.apps.googleusercontent.com',
+      webClientId: '292298338560-h9i7cv3nh68qvril0kdfe96cu5ttf87f.apps.googleusercontent.com',
     },
   });
 

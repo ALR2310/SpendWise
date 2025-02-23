@@ -102,10 +102,7 @@ async function getDataForPage(pageName: string) {
 }
 
 class PageManager {
-  show(
-    pageName: 'spend' | 'stats' | 'note' | 'setting',
-    force: boolean = false,
-  ) {
+  show(pageName: 'spend' | 'stats' | 'note' | 'setting', force: boolean = false) {
     showPage(pageName, force);
   }
 
