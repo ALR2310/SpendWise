@@ -46,7 +46,7 @@
     "theme-change": "^2.5.0"
   },
   "devDependencies": {
-    "@capacitor/android": "7.0.0",
+    "@capacitor/android": "7.0.1",
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^7.0.0",
     "@tailwindcss/vite": "^4.0.6",
