@@ -59,11 +59,7 @@ class AppSettings {
 
   private mergeSettings(target: any, source: any) {
     for (const key in source) {
-      if (
-        typeof source[key] === 'object' &&
-        source[key] !== null &&
-        !Array.isArray(source[key])
-      ) {
+      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
         target[key] = target[key] || {};
         this.mergeSettings(target[key], source[key]);
       } else if (!(key in target)) target[key] = source[key];
@@ -73,18 +69,13 @@ class AppSettings {
   private removeOldSettings(target: any, source: any) {
     for (const key in target)
       if (!(key in source)) delete target[key];
-      else if (
-        typeof target[key] === 'object' &&
-        typeof source[key] === 'object'
-      )
+      else if (typeof target[key] === 'object' && typeof source[key] === 'object')
         this.removeOldSettings(target[key], source[key]);
   }
 
   private init() {
     const storedSettingStr = localStorage.getItem(this.storageKey);
-    const storedSetting = storedSettingStr
-      ? JSON.parse(storedSettingStr)
-      : null;
+    const storedSetting = storedSettingStr ? JSON.parse(storedSettingStr) : null;
 
     if (!storedSetting || storedSetting.version !== defaultConfigs.version) {
       this.settings = { ...defaultConfigs };

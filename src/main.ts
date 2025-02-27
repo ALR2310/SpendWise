@@ -1,13 +1,14 @@
 import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from './common/utils';
 import $ from 'jquery';
 import Handlebars from 'handlebars';
-import { pageManager, themeIconChange } from './configs/page.manager';
+import { pageManager } from './configs/page.manager';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 // import { backupData } from './common/data.backup';
 import { appSettings } from './configs/app.settings';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { themeChange } from 'theme-change';
 
 // Global variable
 window.$ = $;
@@ -24,7 +25,7 @@ Handlebars.registerHelper('formatDate', formatDate);
 Handlebars.registerHelper('formatCurrency', formatCurrency);
 
 // Set theme
-themeIconChange();
+themeChange();
 
 (async () => {
   // Init database
@@ -47,3 +48,10 @@ themeIconChange();
 
   pageManager.show('spend');
 })();
+
+// change theme icon
+document.addEventListener('DOMContentLoaded', () => {
+  $('.theme-controller')
+    .prop('checked', $('html').attr('data-theme') === 'light')
+    .on('change', () => appSettings.set('general.theme', $('html').attr('data-theme')));
+});

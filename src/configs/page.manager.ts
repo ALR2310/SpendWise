@@ -124,10 +124,4 @@ $('#setting-btn').on('click', () => {
   showPage('setting');
 });
 
-export function themeIconChange(themeDefault = 'light') {
-  if ($('html').data('theme') == themeDefault) {
-    $('.theme-controller').prop('checked', true);
-  }
-}
-
 export const pageManager = new PageManager();
