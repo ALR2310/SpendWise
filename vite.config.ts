@@ -27,7 +27,11 @@ export default defineConfig({
       '~': resolve(__dirname, 'src'),
     },
   },
-  define: { global: 'window', __APP_VERSION__: JSON.stringify(version) },
+  define: {
+    global: 'window',
+    __APP_VERSION__: JSON.stringify(version),
+    __GOOGLE_CLIENT_ID__: JSON.stringify('292298338560-h9i7cv3nh68qvril0kdfe96cu5ttf87f.apps.googleusercontent.com'),
+  },
   plugins: [
     tailwindcss(),
     rawPlugin({

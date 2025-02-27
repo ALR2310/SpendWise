@@ -1,4 +1,4 @@
-enum Theme {
+export enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
 }
@@ -8,25 +8,48 @@ enum Language {
   EN = 'en',
 }
 
-const spendPageConfigs = {
-  name: 'Spend',
-  list: '',
-  sort: 'date',
-};
+interface SpendPageConfigs {
+  name: 'Spend';
+  list: string;
+  sort: string;
+}
 
-const statsPageConfigs = {
-  name: 'Stats',
-};
+interface StatsPageConfigs {
+  name: 'Stats';
+}
 
-const notePageConfigs = {
-  name: 'Note',
-};
+interface NotePageConfigs {
+  name: 'Note';
+}
 
-const settingPageConfigs = {
-  name: 'Setting',
-};
+interface SettingPageConfigs {
+  name: 'Setting';
+}
 
-const defaultConfigs = {
+interface AppConfigs {
+  general: {
+    defaultPage: 'spend' | 'stats' | 'note' | 'setting';
+    language: Language;
+    notification: boolean;
+    autoUpdate: boolean;
+    theme: Theme;
+    version: string;
+  };
+  page: {
+    spend: SpendPageConfigs;
+    stats: StatsPageConfigs;
+    note: NotePageConfigs;
+    setting: SettingPageConfigs;
+  };
+  data: {
+    fileId: string;
+    lastBackup: string;
+    lastSync: string;
+  };
+  version: number;
+}
+
+const defaultConfigs: AppConfigs = {
   general: {
     defaultPage: 'spend',
     language: Language.VI,
@@ -36,82 +59,71 @@ const defaultConfigs = {
     version: '',
   },
   page: {
-    spend: spendPageConfigs,
-    stats: statsPageConfigs,
-    note: notePageConfigs,
-    setting: settingPageConfigs,
+    spend: { name: 'Spend', list: '', sort: 'date' },
+    stats: { name: 'Stats' },
+    note: { name: 'Note' },
+    setting: { name: 'Setting' },
   },
-  data: {
-    fileId: '',
-    lastBackup: '',
-    lastSync: '',
-  },
+  data: { fileId: '', lastBackup: '', lastSync: '' },
   version: 1,
 };
 
-class AppSettings {
-  private settings: any;
-  private storageKey = 'appSettings';
+const saveToStorage = (key: string, data: any) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
 
-  constructor() {
-    this.init();
+function createSettingsProxy<T>(data: T, storageKey: string): T {
+  const handler: ProxyHandler<any> = {
+    get(target, prop) {
+      const value = target[prop];
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        return createSettingsProxy(value, storageKey);
+      }
+      return value;
+    },
+    set(target, prop, value) {
+      target[prop] = value;
+      saveToStorage(storageKey, data);
+      return true;
+    },
+  };
+  return new Proxy(data, handler);
+}
+
+function initializeAppConfig(storageKey: string): AppConfigs {
+  const storedSettingStr = localStorage.getItem(storageKey);
+  const storedSetting: AppConfigs | null = storedSettingStr ? JSON.parse(storedSettingStr) : null;
+  let settings: AppConfigs;
+
+  if (!storedSetting || storedSetting.version !== defaultConfigs.version) {
+    settings = { ...defaultConfigs };
+  } else {
+    settings = { ...storedSetting };
+    mergeSettings(settings, defaultConfigs);
+    removeOldSettings(settings, defaultConfigs);
   }
+  saveToStorage(storageKey, settings);
+  return createSettingsProxy(settings, storageKey);
+}
 
-  private mergeSettings(target: any, source: any) {
-    for (const key in source) {
-      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-        target[key] = target[key] || {};
-        this.mergeSettings(target[key], source[key]);
-      } else if (!(key in target)) target[key] = source[key];
+function mergeSettings(target: AppConfigs, source: AppConfigs) {
+  for (const key in source) {
+    if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+      (target as any)[key] = (target as any)[key] || {};
+      mergeSettings((target as any)[key], source[key] as any);
+    } else if (!(key in target)) {
+      (target as any)[key] = source[key];
     }
-  }
-
-  private removeOldSettings(target: any, source: any) {
-    for (const key in target)
-      if (!(key in source)) delete target[key];
-      else if (typeof target[key] === 'object' && typeof source[key] === 'object')
-        this.removeOldSettings(target[key], source[key]);
-  }
-
-  private init() {
-    const storedSettingStr = localStorage.getItem(this.storageKey);
-    const storedSetting = storedSettingStr ? JSON.parse(storedSettingStr) : null;
-
-    if (!storedSetting || storedSetting.version !== defaultConfigs.version) {
-      this.settings = { ...defaultConfigs };
-    } else {
-      this.settings = { ...storedSetting };
-      this.mergeSettings(this.settings, defaultConfigs);
-      this.removeOldSettings(this.settings, defaultConfigs);
-    }
-    localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
-  }
-
-  public get(path?: string): string {
-    if (!path) return this.settings;
-
-    const keys = path.split('.');
-    let result: any = this.settings;
-
-    for (let key of keys) {
-      if (result[key] === undefined) return '';
-      result = result[key];
-    }
-    return result;
-  }
-
-  public set(path: string, value: any): void {
-    const keys = path.split('.');
-    let obj = this.settings;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!obj[keys[i]]) obj[keys[i]] = {};
-      obj = obj[keys[i]];
-    }
-
-    obj[keys[keys.length - 1]] = value;
-    localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
   }
 }
 
-export const appSettings = new AppSettings();
+function removeOldSettings(target: AppConfigs, source: AppConfigs) {
+  for (const key in target) {
+    if (!(key in source)) delete (target as any)[key];
+    else if (typeof (target as any)[key] === 'object' && typeof (source as any)[key] === 'object') {
+      removeOldSettings((target as any)[key], (source as any)[key]);
+    }
+  }
+}
+
+export const appConfig = initializeAppConfig('appConfigs');

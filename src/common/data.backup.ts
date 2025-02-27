@@ -2,7 +2,7 @@ import { SocialLogin } from '@capgo/capacitor-social-login';
 import { drive } from './google.drive';
 import { Query, QueryAll } from '~/configs/nosql/db.wrapper';
 import pako from 'pako';
-import { appSettings } from '~/configs/app.settings';
+import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import { compare } from 'compare-versions';
 
@@ -27,7 +27,7 @@ export async function backupData(): Promise<
 
   drive.setAccessToken(accessToken);
 
-  const version = appSettings.get('general.version');
+  const version = appConfig.general.version;
 
   try {
     if (compare(version, '0.0.0', '>=')) {
@@ -56,8 +56,8 @@ export async function backupData(): Promise<
       });
 
       // save info
-      appSettings.set('data.fileId', result.data.id);
-      appSettings.set('data.lastBackup', dayjs().toISOString());
+      appConfig.data.fileId = result.data.id;
+      appConfig.data.lastBackup = dayjs().toISOString();
       return { success: true, message: 'Sao lưu thành công' };
     } else if (compare(version, '1.0.0', '>=')) {
       return { success: false, message: 'Version is not supported' };
@@ -94,7 +94,7 @@ export async function syncData(): Promise<
 
   drive.setAccessToken(accessToken);
 
-  let fileId = appSettings.get('data.fileId');
+  let fileId = appConfig.data.fileId;
 
   if (!fileId)
     fileId = (await drive.get({ spaces: 'appDataFolder' })).data.files[0].id;
@@ -195,7 +195,7 @@ interface SpendData {
 export async function importData(
   data: any,
 ): Promise<{ success: boolean; message: string }> {
-  const version = appSettings.get('general.version');
+  const version = appConfig.general.version;
 
   if (compare(version, '0.0.0', '>=')) {
     const spendData: SpendData['V1'] = data;
@@ -294,7 +294,7 @@ export async function importData(
 }
 
 export async function exportData() {
-  const version = appSettings.get('general.version');
+  const version = appConfig.general.version;
 
   const [spendList, spendItem, note] = await QueryAll([
     { sql: 'SELECT * FROM SpendList' },

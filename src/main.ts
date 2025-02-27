@@ -6,9 +6,9 @@ import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 // import { backupData } from './common/data.backup';
-import { appSettings } from './configs/app.settings';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { themeChange } from 'theme-change';
+import { appConfig, Theme } from './configs/app.settings';
 
 // Global variable
 window.$ = $;
@@ -33,14 +33,14 @@ themeChange();
   // Init social login
   await SocialLogin.initialize({
     google: {
-      webClientId: '292298338560-h9i7cv3nh68qvril0kdfe96cu5ttf87f.apps.googleusercontent.com',
+      webClientId: __GOOGLE_CLIENT_ID__,
     },
   });
 
   // backupData().then((res) => console.log(res));
 
   // Set version app when start
-  appSettings.set('general.version', __APP_VERSION__);
+  appConfig.general.version = __APP_VERSION__;
 
   // console.log(await Query('SELECT * FROM sqlite_master'));
   // console.log(await Query('SELECT * FROM SpendList'));
@@ -53,5 +53,5 @@ themeChange();
 document.addEventListener('DOMContentLoaded', () => {
   $('.theme-controller')
     .prop('checked', $('html').attr('data-theme') === 'light')
-    .on('change', () => appSettings.set('general.theme', $('html').attr('data-theme')));
+    .on('change', () => (appConfig.general.theme = $('html').attr('data-theme') as Theme));
 });

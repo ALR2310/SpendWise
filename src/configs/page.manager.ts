@@ -7,7 +7,7 @@ import statsTemplate from '../clients/pages/stats.hbs';
 import templateBuilder from '../common/template.builder';
 import $ from 'jquery';
 import driveIcon from '../assets/images/drive.png';
-import { appSettings } from './app.settings';
+import { appConfig } from './app.settings';
 
 const spendListModel = new NoSqliteModel(SpendListModel);
 
@@ -55,7 +55,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
         break;
       case 'setting':
         try {
-          const appVersion = appSettings.get('general.version');
+          const appVersion = appConfig.general.version;
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(settingTemplate, {
             driveIcon,
