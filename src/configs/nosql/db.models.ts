@@ -10,16 +10,16 @@ export class SpendListModel {
   @prop({ type: TEXT, required: true, index: true })
   name!: string;
 
-  @prop({ type: TEXT, required: false, default: 'Active', enum: ['Active', 'Inactive'] })
+  @prop({ type: TEXT, required: false, index: true, default: 'Active', enum: ['Active', 'Inactive'] })
   status!: string;
 
   @prop({ type: TEXT, required: false })
   createdAt?: string;
 
-  @prop({ type: TEXT, required: false })
+  @prop({ type: TEXT, required: false, index: true })
   updatedAt?: string;
 
-  @prop({ type: INTEGER, required: true, default: 0 })
+  @prop({ type: INTEGER, required: true, default: 0, index: true })
   _v?: number;
 }
 
@@ -40,7 +40,7 @@ export class SpendItemModel {
   @prop({ type: TEXT, required: false })
   details?: string;
 
-  @prop({ type: TEXT, required: false, default: 'Active', enum: ['Active', 'Inactive'] })
+  @prop({ type: TEXT, required: false, index: true, default: 'Active', enum: ['Active', 'Inactive'] })
   status!: string;
 
   @prop({ type: TEXT, required: true, index: true })
@@ -49,10 +49,10 @@ export class SpendItemModel {
   @prop({ type: TEXT, required: false })
   createdAt?: string;
 
-  @prop({ type: TEXT, required: false })
+  @prop({ type: TEXT, required: false, index: true })
   updatedAt?: string;
 
-  @prop({ type: INTEGER, required: true, default: 0 })
+  @prop({ type: INTEGER, required: true, default: 0, index: true })
   _v?: number;
 }
 
@@ -67,15 +67,45 @@ export class NoteModel {
   @prop({ type: TEXT, required: false })
   content?: string;
 
-  @prop({ type: TEXT, required: false, default: 'Active', enum: ['Active', 'Inactive'] })
+  @prop({ type: TEXT, required: false, index: true, default: 'Active', enum: ['Active', 'Inactive'] })
   status!: string;
 
   @prop({ type: TEXT, required: false })
   createdAt?: string;
 
-  @prop({ type: TEXT, required: false })
+  @prop({ type: TEXT, required: false, index: true })
   updatedAt?: string;
 
-  @prop({ type: INTEGER, required: true, default: 0 })
+  @prop({ type: INTEGER, required: true, default: 0, index: true })
+  _v?: number;
+}
+
+@table('Income')
+export class IncomeModel {
+  @prop({ type: TEXT, required: true, key: true })
+  _id?: string;
+
+  @prop({ type: TEXT, required: true, index: true })
+  name!: string;
+
+  @prop({ type: REAL, required: false })
+  price?: number;
+
+  @prop({ type: TEXT, required: false })
+  details?: string;
+
+  @prop({ type: TEXT, required: false, index: true, default: 'Active', enum: ['Active', 'Inactive'] })
+  status!: string;
+
+  @prop({ type: TEXT, required: true, index: true })
+  date!: string;
+
+  @prop({ type: TEXT, required: false })
+  createdAt?: string;
+
+  @prop({ type: TEXT, required: false, index: true })
+  updatedAt?: string;
+
+  @prop({ type: INTEGER, required: true, default: 0, index: true })
   _v?: number;
 }

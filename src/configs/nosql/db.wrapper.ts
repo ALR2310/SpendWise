@@ -15,9 +15,7 @@ export async function Query(sql: string, params: any[] = []) {
   return db.query(sql, params);
 }
 
-export async function QueryAll(
-  queries: Array<{ sql: string; params?: any[] }>,
-) {
+export async function QueryAll(queries: Array<{ sql: string; params?: any[] }>) {
   return db.queryAll(queries);
 }
 
@@ -60,6 +58,12 @@ export async function NoSqliteInit(models: any[], checkUpdate = false) {
   }
 }
 
+export async function TableSqlInfo(tableName: string): Promise<any> {
+  return (
+    (await db.query(`SELECT * FROM sqlite_master WHERE type='table' AND tbl_name = ?`, [tableName]))[0]?.sql || null
+  );
+}
+
 export class NoSqliteModel<T> {
   private tableName: string;
   private props: Record<string, any>;
@@ -84,25 +88,18 @@ export class NoSqliteModel<T> {
   async findById(id: string): Promise<T | null> {
     if (!id) throw new Error('Id is required.');
 
-    const primaryKey = Object.keys(this.props).find(
-      (key) => this.props[key].key === true,
-    );
-
+    const primaryKey = Object.keys(this.props).find((key) => this.props[key].key === true);
     const query = `SELECT * FROM ${this.tableName} WHERE ${primaryKey} = ?`;
     const result = await db.query(query, [id]);
     return result.length > 0 ? (result[0] as T) : null;
   }
 
   async insertOne(data: Partial<T>) {
-    if (!data || Object.keys(data).length === 0)
-      throw new Error('Data is required.');
+    if (!data || Object.keys(data).length === 0) throw new Error('Data is required.');
 
     data = buildInsertData(data, this.props);
 
-    const columns = Object.keys(this.props).filter(
-      (col) => data[col] !== undefined,
-    );
-
+    const columns = Object.keys(this.props).filter((col) => data[col] !== undefined);
     const values = columns.map((col) => data[col]);
     const columnNames = columns.join(', ');
     const placeholders = columns.map(() => '?').join(', ');
@@ -112,15 +109,12 @@ export class NoSqliteModel<T> {
   }
 
   async insertMany(dataArray: Partial<T>[]) {
-    if (!dataArray || Object.keys(dataArray).length === 0)
-      throw new Error('Data is required.');
+    if (!dataArray || Object.keys(dataArray).length === 0) throw new Error('Data is required.');
 
     const queries = dataArray.map((data) => {
       data = buildInsertData(data, this.props);
 
-      const columns = Object.keys(this.props).filter(
-        (col) => data[col] !== undefined,
-      );
+      const columns = Object.keys(this.props).filter((col) => data[col] !== undefined);
       const values = columns.map((col) => data[col]);
 
       const columnNames = columns.join(', ');
@@ -134,10 +128,8 @@ export class NoSqliteModel<T> {
   }
 
   async updateOne(filter: Partial<T>, data: Partial<T>) {
-    if (!filter || Object.keys(filter).length === 0)
-      throw new Error('Filter is required.');
-    if (!data || Object.keys(data).length === 0)
-      throw new Error('Data is required.');
+    if (!filter || Object.keys(filter).length === 0) throw new Error('Filter is required.');
+    if (!data || Object.keys(data).length === 0) throw new Error('Data is required.');
 
     data = buildUpdateData(data, this.props);
 
@@ -158,12 +150,9 @@ export class NoSqliteModel<T> {
 
   async updateById(id: string, data: Partial<T>) {
     if (!id) throw new Error('Id is required.');
-    if (!data || Object.keys(data).length === 0)
-      throw new Error('Data is required.');
+    if (!data || Object.keys(data).length === 0) throw new Error('Data is required.');
 
-    const primaryKey = Object.keys(this.props).find(
-      (key) => this.props[key].key === true,
-    );
+    const primaryKey = Object.keys(this.props).find((key) => this.props[key].key === true);
     data = buildUpdateData(data, this.props);
 
     const columns = Object.keys(data);
@@ -175,10 +164,8 @@ export class NoSqliteModel<T> {
   }
 
   async updateMany(filter: Partial<T>, data: Partial<T>) {
-    if (!filter || Object.keys(filter).length === 0)
-      throw new Error('Filter is required.');
-    if (!data || Object.keys(data).length === 0)
-      throw new Error('Data is required.');
+    if (!filter || Object.keys(filter).length === 0) throw new Error('Filter is required.');
+    if (!data || Object.keys(data).length === 0) throw new Error('Data is required.');
 
     data = buildUpdateData(data, this.props);
 
@@ -199,8 +186,7 @@ export class NoSqliteModel<T> {
   }
 
   async deleteOne(filter: Partial<T>) {
-    if (!filter || Object.keys(filter).length === 0)
-      throw new Error('Filter is required.');
+    if (!filter || Object.keys(filter).length === 0) throw new Error('Filter is required.');
 
     const filterColumns = Object.keys(filter);
     const filterValues = filterColumns.map((col) => filter[col]);
@@ -214,17 +200,14 @@ export class NoSqliteModel<T> {
   async deleteById(id: string) {
     if (!id) throw new Error('Id is required.');
 
-    const primaryKey = Object.keys(this.props).find(
-      (key) => this.props[key].key === true,
-    );
+    const primaryKey = Object.keys(this.props).find((key) => this.props[key].key === true);
 
     const query = `DELETE FROM ${this.tableName} WHERE ${primaryKey} = ?`;
     return await db.query(query, [id]);
   }
 
   async deleteMany(filter: Partial<T>) {
-    if (!filter || Object.keys(filter).length === 0)
-      throw new Error('Filter is required.');
+    if (!filter || Object.keys(filter).length === 0) throw new Error('Filter is required.');
 
     const filterColumns = Object.keys(filter);
     const filterValues = filterColumns.map((col) => filter[col]);
@@ -242,10 +225,8 @@ function buildInsertData(data: Partial<any>, props: Record<string, any>) {
 
   if (primaryKey && !data[primaryKey]) data[primaryKey] = UniqueId();
   if (props['_v'] && data['_v'] === undefined) data['_v'] = 0;
-  if (props['createdAt'] && data['createdAt'] === undefined)
-    data['createdAt'] = currentTime;
-  if (props['updatedAt'] && data['updatedAt'] === undefined)
-    data['updatedAt'] = currentTime;
+  if (props['createdAt'] && data['createdAt'] === undefined) data['createdAt'] = currentTime;
+  if (props['updatedAt'] && data['updatedAt'] === undefined) data['updatedAt'] = currentTime;
   return data;
 }
 
@@ -266,15 +247,11 @@ function buildQueryCondition<T>(filter: QueryFilter<T>) {
 
     if (typeof value === 'object' && !Array.isArray(value)) {
       if ('$or' in value) {
-        const orConditions = (value as any).$or
-          .map((_val: any) => `${key} = ?`)
-          .join(' OR ');
+        const orConditions = (value as any).$or.map((_val: any) => `${key} = ?`).join(' OR ');
         conditions.push(`(${orConditions})`);
         values.push(...(value as any).$or);
       } else if ('$and' in value) {
-        const andConditions = (value as any).$and
-          .map((_val: any) => `${key} = ?`)
-          .join(' AND ');
+        const andConditions = (value as any).$and.map((_val: any) => `${key} = ?`).join(' AND ');
         conditions.push(`(${andConditions})`);
         values.push(...(value as any).$and);
       } else if ('$regex' in value) {
@@ -317,15 +294,11 @@ function buildQueryCondition<T>(filter: QueryFilter<T>) {
               values.push(opValue);
               break;
             case '$in':
-              conditions.push(
-                `${key} IN (${(opValue as any[]).map(() => '?').join(', ')})`,
-              );
+              conditions.push(`${key} IN (${(opValue as any[]).map(() => '?').join(', ')})`);
               values.push(...(opValue as any[]));
               break;
             case '$nin':
-              conditions.push(
-                `${key} NOT IN (${(opValue as any[]).map(() => '?').join(', ')})`,
-              );
+              conditions.push(`${key} NOT IN (${(opValue as any[]).map(() => '?').join(', ')})`);
               values.push(...(opValue as any[]));
               break;
           }
@@ -337,7 +310,6 @@ function buildQueryCondition<T>(filter: QueryFilter<T>) {
     }
   }
 
-  const conditionString =
-    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const conditionString = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   return { condition: conditionString, values };
 }

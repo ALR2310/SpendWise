@@ -2,8 +2,8 @@ import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from '
 import $ from 'jquery';
 import Handlebars from 'handlebars';
 import { pageManager } from './configs/page.manager';
-import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
-import { NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
+import { NoSqliteInit, Query, TableSqlInfo } from './configs/nosql/db.wrapper';
+import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 // import { backupData } from './common/data.backup';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
@@ -29,7 +29,7 @@ themeChange();
 
 (async () => {
   // Init database
-  await NoSqliteInit([SpendListModel, SpendItemModel, NoteModel]);
+  await NoSqliteInit([SpendListModel, SpendItemModel, NoteModel, IncomeModel]);
   // Init social login
   await SocialLogin.initialize({
     google: {
