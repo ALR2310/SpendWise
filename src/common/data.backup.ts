@@ -4,6 +4,7 @@ import pako from 'pako';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import { filter } from 'lodash';
+import { fixDate } from './utils';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -187,15 +188,11 @@ interface SpendData {
   };
 }
 
-export async function importData(
-  data: any,
-  removeOldData = false,
-): Promise<{ success: boolean; message: string }> {
+export async function importData(data: any, removeOldData = false): Promise<{ success: boolean; message: string }> {
   let spendData = data;
 
-  if (data.version == 1 || data.Version == 1) {
-    spendData = convertData(data);
-  }
+  // Old format data
+  if (data.spendingList) spendData = convertData(data);
 
   try {
     if (removeOldData) {
@@ -213,55 +210,46 @@ export async function importData(
     const noteQueries: any[] = [];
     const incomeQueries: any[] = [];
 
-    for (const item of spendData?.SpendList ?? []) {
+    for (const i of spendData?.SpendList ?? []) {
+      const [createdAt, updatedAt] = fixDate([i.createdAt, i.updatedAt]);
+      if (!createdAt || !updatedAt) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+
       spendListQueries.push({
         sql: 'INSERT INTO SpendList (_id, name, status, createdAt, updatedAt, _v) VALUES (?, ?, ?, ?, ?, ?)',
-        params: [item._id, item.name, item.status, item.createdAt, item.updatedAt, item._v],
+        params: [i._id, i.name, i.status, createdAt, updatedAt, i._v],
       });
     }
 
-    for (const item of spendData?.SpendItem ?? []) {
+    for (const i of spendData?.SpendItem ?? []) {
+      const [createdAt, updatedAt, date] = fixDate([i.createdAt, i.updatedAt, i.date]);
+      if (!updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+
       spendItemQueries.push({
         sql: `INSERT INTO SpendItem (_id, listId, name, price, details, status, date, createdAt, updatedAt, _v)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: [
-          item._id,
-          item.listId,
-          item.name,
-          item.price,
-          item.details,
-          item.status,
-          item.date,
-          item.createdAt,
-          item.updatedAt,
-          item._v,
-        ],
+        params: [i._id, i.listId, i.name, i.price, i.details, i.status, date, createdAt ?? updatedAt, updatedAt, i._v],
       });
     }
 
-    for (const item of spendData?.Note ?? []) {
+    for (const i of spendData?.Note ?? []) {
+      const [createdAt, updatedAt] = fixDate([i.createdAt, i.updatedAt]);
+      if (!createdAt || !updatedAt) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+
       noteQueries.push({
         sql: `INSERT INTO Note (_id, name, content, status, createdAt, updatedAt, _v)
               VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        params: [item._id, item.name, item.content, item.status, item.createdAt, item.updatedAt, item._v],
+        params: [i._id, i.name, i.content, i.status, createdAt, updatedAt, i._v],
       });
     }
 
-    for (const item of spendData?.Income ?? []) {
+    for (const i of spendData?.Income ?? []) {
+      const [createdAt, updatedAt, date] = fixDate([i.createdAt, i.updatedAt, i.date]);
+      if (!createdAt || !updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+
       incomeQueries.push({
         sql: `INSERT INTO Income (_id, listId, name, price, status, date, createdAt, updatedAt, _v)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: [
-          item._id,
-          item.listId,
-          item.name,
-          item.price,
-          item.status,
-          item.date,
-          item.createdAt,
-          item.updatedAt,
-          item._v,
-        ],
+        params: [i._id, i.listId, i.name, i.price, i.status, date, createdAt, updatedAt, i._v],
       });
     }
 
@@ -295,30 +283,27 @@ export async function exportData() {
 }
 
 function convertData(data: any): SpendData['V2'] {
-  const SpendList: SpendData['V2']['SpendList'] = data.spendingList.map(
-    (item: SpendData['V1']['spendingList']) => ({
-      _id: item.id,
-      name: item.namelist,
-      status: item.status == 1 ? 'Active' : 'Inactive',
-      createdAt: item.atcreate,
-      updatedAt: item.atupdate,
-      _v: 0,
-    }),
-  );
+  const SpendList: SpendData['V2']['SpendList'] = data.spendingList.map((item: SpendData['V1']['spendingList']) => ({
+    _id: item.id,
+    name: item.namelist,
+    status: item.status == 1 ? 'Active' : 'Inactive',
+    createdAt: item.atcreate,
+    updatedAt: item.atupdate,
+    _v: 0,
+  }));
 
-  const SpendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map(
-    (item: SpendData['V1']['spendingItem']) => ({
-      _id: item.id,
-      listId: item.spendlistid,
-      name: item.nameitem,
-      price: item.price,
-      details: item.details,
-      createdAt: item.atcreate,
-      updatedAt: item.atupdate,
-      status: item.status == 1 ? 'Active' : 'Inactive',
-      _v: 0,
-    }),
-  );
+  const SpendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map((item: SpendData['V1']['spendingItem']) => ({
+    _id: item.id,
+    listId: item.spendlistid,
+    name: item.nameitem,
+    price: item.price,
+    details: item.details,
+    date: item.atupdate,
+    createdAt: item.atcreate,
+    updatedAt: item.atupdate,
+    status: item.status == 1 ? 'Active' : 'Inactive',
+    _v: 0,
+  }));
 
   const Note: SpendData['V2']['Note'] = data.noted.map((item: SpendData['V1']['noted']) => ({
     _id: item.id,

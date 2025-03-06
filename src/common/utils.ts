@@ -84,3 +84,27 @@ export function formatCurrency(value: any, symbol: boolean = true) {
   let formattedValue = new Intl.NumberFormat('vi-VN').format(value);
   return symbol ? `${formattedValue} ₫` : formattedValue;
 }
+
+export function fixDate(dateStr: string | string[]): string | string[] {
+  const possibleFormats = ['YYYY-MM-DD', 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DDTHH:mm', 'DD/MM/YYYY'];
+
+  if (Array.isArray(dateStr)) {
+    return dateStr.map((date) => fixDate(date) as string);
+  }
+
+  if (!dateStr) return '';
+
+  let date = dayjs.utc(dateStr);
+
+  if (!date.isValid()) {
+    for (const format of possibleFormats) {
+      const parsedDate = dayjs(dateStr, format, true);
+      if (parsedDate.isValid()) {
+        date = parsedDate;
+        break;
+      }
+    }
+  }
+
+  return date.isValid() ? date.toISOString() : '';
+}
