@@ -85,14 +85,14 @@ export class IncomeModel {
   @prop({ type: TEXT, required: true, key: true })
   _id?: string;
 
+  @prop({ type: TEXT, required: true })
+  listId?: string;
+
   @prop({ type: TEXT, required: true, index: true })
   name!: string;
 
   @prop({ type: REAL, required: false })
   price?: number;
-
-  @prop({ type: TEXT, required: false })
-  details?: string;
 
   @prop({ type: TEXT, required: false, index: true, default: 'Active', enum: ['Active', 'Inactive'] })
   status!: string;

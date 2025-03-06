@@ -2,13 +2,20 @@ import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from '
 import $ from 'jquery';
 import Handlebars from 'handlebars';
 import { pageManager } from './configs/page.manager';
-import { NoSqliteInit, Query, TableSqlInfo } from './configs/nosql/db.wrapper';
+import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 // import { backupData } from './common/data.backup';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { themeChange } from 'theme-change';
 import { appConfig, Theme } from './configs/app.settings';
+import utc from 'dayjs/plugin/utc';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs from 'dayjs';
+
+// Initialize dayjs plugin
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 // Global variable
 window.$ = $;
@@ -18,6 +25,7 @@ window.formatDate = formatDate;
 window.getDateTime = getDateTime;
 window.formatCurrency = formatCurrency;
 window.Query = Query;
+window.appConfig = appConfig;
 defineCustomElements(window);
 
 // Helper handlebars
@@ -38,9 +46,6 @@ themeChange();
   });
 
   // backupData().then((res) => console.log(res));
-
-  // Set version app when start
-  appConfig.general.version = __APP_VERSION__;
 
   // console.log(await Query('SELECT * FROM sqlite_master'));
   // console.log(await Query('SELECT * FROM SpendList'));

@@ -2,10 +2,7 @@ import $ from 'jquery';
 
 declare global {
   interface JQuery<TElement = HTMLElement> {
-    selectControl(
-      action: 'init' | 'set' | 'get' | 'name' | 'del' | 'change',
-      value?: any,
-    ): JQuery | string | void;
+    selectControl(action: 'init' | 'set' | 'get' | 'name' | 'del' | 'change', value?: any): JQuery | string | void;
     comboboxControl(): JQuery;
   }
 }
@@ -28,9 +25,7 @@ $.fn.selectControl = function (action, value) {
     // Initialize or set value if action is 'init' or 'set'
     if (action === 'init' || action === 'set') {
       const optionToSelect =
-        action === 'init'
-          ? optionsList.find('li').first()
-          : optionsList.find(`li[data-value="${value}"]`);
+        action === 'init' ? optionsList.find('li').first() : optionsList.find(`li[data-value="${value}"]`);
 
       if (optionToSelect.length) {
         const text = getTextContent(optionToSelect[0]);
@@ -55,9 +50,7 @@ $.fn.selectControl = function (action, value) {
     // Get the name of the selected option if action is 'name'
     if (action === 'name') {
       const currentValue = selectElement.attr('value');
-      const selectedOption = optionsList.find(
-        `li[data-value="${currentValue}"]`,
-      );
+      const selectedOption = optionsList.find(`li[data-value="${currentValue}"]`);
       result = selectedOption.length ? getTextContent(selectedOption[0]) : null;
     }
 

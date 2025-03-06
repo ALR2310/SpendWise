@@ -43,8 +43,8 @@ interface AppConfigs {
   };
   data: {
     fileId: string;
-    lastBackup: string;
-    lastSync: string;
+    dateBackup: string;
+    dateSync: string;
   };
   version: number;
 }
@@ -56,7 +56,7 @@ const defaultConfigs: AppConfigs = {
     notification: true,
     autoUpdate: true,
     theme: Theme.LIGHT,
-    version: '',
+    version: __APP_VERSION__,
   },
   page: {
     spend: { name: 'Spend', list: '', sort: 'date' },
@@ -64,7 +64,7 @@ const defaultConfigs: AppConfigs = {
     note: { name: 'Note' },
     setting: { name: 'Setting' },
   },
-  data: { fileId: '', lastBackup: '', lastSync: '' },
+  data: { fileId: '', dateBackup: '', dateSync: '' },
   version: 1,
 };
 
@@ -72,18 +72,18 @@ const saveToStorage = (key: string, data: any) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-function createSettingsProxy<T>(data: T, storageKey: string): T {
+function createSettingsProxy<T>(data: T, storageKey: string, rootData: T = data): T {
   const handler: ProxyHandler<any> = {
     get(target, prop) {
       const value = target[prop];
       if (value && typeof value === 'object' && !Array.isArray(value)) {
-        return createSettingsProxy(value, storageKey);
+        return createSettingsProxy(value, storageKey, rootData);
       }
       return value;
     },
     set(target, prop, value) {
       target[prop] = value;
-      saveToStorage(storageKey, data);
+      saveToStorage(storageKey, rootData);
       return true;
     },
   };

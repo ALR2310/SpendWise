@@ -44,7 +44,7 @@
         <div id="select_spendItem_sort" class="select select-sm select-bordered w-28">
             <span class="select-value"></span>
             <ul>
-                <li data-value="updatedAt">Ngày chi</li>
+                <li data-value="date">Ngày chi</li>
                 <li data-value="name">Khoản chi</li>
                 <li data-value="price">Số tiền</li>
             </ul>
@@ -70,7 +70,7 @@
     <script type="text/x-handlebars-template" id="table_spendItem_template">
         %#each spendItems%
             <tr data-id="%this._id%" class="hover cursor-pointer">
-                <td>%formatDate this.updatedAt 'dd/mm/yyyy' 'yyyy-mm-dd'%</td>
+                <td>%formatDate this.date 'DD/MM/YYYY'%</td>
                 <td>%this.name%</td>
                 <td>%formatCurrency this.price%</td>
                 <td class="hidden">%this.details%</td>
@@ -84,7 +84,7 @@
                             <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
                         </summary>
 
-                        <ul class="menu dropdown-content bg-base-200 rounded-box z-1 p-2 shadow-sm flex gap-1">
+                        <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] p-2 shadow-sm flex gap-1">
                             <li><a class="btn btn-info btn-xs w-20" onclick="showSpendItemModal('%this._id%')">Sửa</a></li>
                             <li><a class="btn btn-error btn-xs w-20" onclick="deleteSpendItem('%this._id%')">Xoá</a></li>
                         </ul>

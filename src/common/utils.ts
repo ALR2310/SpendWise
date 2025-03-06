@@ -6,11 +6,7 @@ export function UniqueId() {
   return (timestamp + randomPart).slice(0, 24);
 }
 
-export function showToast(
-  message: string,
-  type: 'success' | 'error' | 'warning' | 'info',
-  duration: number = 3000,
-) {
+export function showToast(message: string, type: 'success' | 'error' | 'warning' | 'info', duration: number = 3000) {
   const toastContainer = document.getElementById('toast-container');
   const toastId = `toast-${UniqueId()}`;
 
@@ -60,17 +56,8 @@ export function convertPlaceHbs(
       return (
         to.start +
         p1
-          .replace(
-            new RegExp(
-              to.start.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
-              'g',
-            ),
-            from.start,
-          )
-          .replace(
-            new RegExp(to.end.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'g'),
-            from.end,
-          ) +
+          .replace(new RegExp(to.start.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'g'), from.start)
+          .replace(new RegExp(to.end.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'g'), from.end) +
         to.end
       );
     });
@@ -80,23 +67,15 @@ export function convertPlaceHbs(
   }
 }
 
-export function formatDate(
-  dateStr: string,
-  output: string = 'DD/MM/YYYY',
-  input: string = 'YYYY-MM-DD',
-) {
-  const date = dayjs(dateStr, input.toUpperCase());
+export function formatDate(dateStr: string, output: string = 'DD/MM/YYYY'): string {
+  const date = dayjs(dateStr);
   return date.format(output.toUpperCase());
 }
 
 export function getDateTime(dateStr: string): string {
-  const date = dayjs(dateStr, 'YYYY/MM/DD', true);
+  const date = dayjs(dateStr, 'YYYY/MM/DD');
   const now = dayjs();
-  const dateTime = date
-    .hour(now.hour())
-    .minute(now.minute())
-    .second(now.second())
-    .millisecond(now.millisecond());
+  const dateTime = date.hour(now.hour()).minute(now.minute()).second(now.second()).millisecond(now.millisecond());
   return dateTime.toISOString();
 }
 

@@ -8,6 +8,7 @@ declare global {
     Query: typeof Query;
     $: typeof $;
     showPage: typeof showPage;
+    appConfig: typeof appConfig;
   }
 }
 

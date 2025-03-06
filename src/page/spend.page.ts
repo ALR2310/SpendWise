@@ -1,21 +1,12 @@
 import $ from 'jquery';
 import '~/common/jquery.custom';
-import {
-  convertPlaceHbs,
-  formatCurrency,
-  formatDate,
-  getDateTime,
-  showToast,
-} from '~/common/utils';
+import { convertPlaceHbs, formatCurrency, formatDate, getDateTime, showToast } from '~/common/utils';
 import templateBuilder from '~/common/template.builder';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import { NoSqliteModel, Query } from '~/configs/nosql/db.wrapper';
 import { SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
-
-dayjs.extend(customParseFormat);
 
 // init model
 const spendListModel = new NoSqliteModel(SpendListModel);
@@ -32,29 +23,17 @@ document.querySelectorAll('.combobox').forEach((combobox) => {
 });
 
 // Modal element
-const modal_spendList = document.getElementById(
-  'modal_spendList',
-) as HTMLDialogElement;
-const modal_spendList_delete = document.getElementById(
-  'modal_spendList_delete',
-) as HTMLDialogElement;
-const modal_spendItem = document.getElementById(
-  'modal_spendItem',
-) as HTMLDialogElement;
+const modal_spendList = document.getElementById('modal_spendList') as HTMLDialogElement;
+const modal_spendList_delete = document.getElementById('modal_spendList_delete') as HTMLDialogElement;
+const modal_spendItem = document.getElementById('modal_spendItem') as HTMLDialogElement;
 
 // Load suggest for Combobox
 async function loadSuggest() {
   try {
-    const suggest = await Query(
-      'SELECT DISTINCT name FROM SpendItem WHERE status = 1 COLLATE NOCASE',
-    );
+    const suggest = await Query('SELECT DISTINCT name FROM SpendItem WHERE status = 1 COLLATE NOCASE');
     $('#combobox_spendItem_name')
       .find('ul')
-      .html(
-        suggest
-          .map((item: { Name: string }) => `<li>${item.Name}</li>`)
-          .join(''),
-      )
+      .html(suggest.map((item: { Name: string }) => `<li>${item.Name}</li>`).join(''))
       .closest('.combobox')
       .comboboxControl();
   } catch (e) {
@@ -136,12 +115,9 @@ $('#input_spendItem_search').on(
 
 // Load spendItems when the app starts and when the list and sort changes
 loadSpendItem();
-$('#select_spendList, #select_spendItem_sort').selectControl(
-  'change',
-  function () {
-    loadSpendItem();
-  },
-);
+$('#select_spendList, #select_spendItem_sort').selectControl('change', function () {
+  loadSpendItem();
+});
 
 // Show/Hide date input
 $('#input_spendItem_search_date').on('input', async function () {
@@ -204,9 +180,7 @@ $('#btn_spendList_delete').on('click', async function () {
 // Function to open modal Create and Update SpendItem
 function showSpendItemModal(id: string) {
   modal_spendItem.showModal();
-  const spendItem = $('#table_spendItem')
-    .find(`tbody`)
-    .find(`tr[data-id="${id}"]`);
+  const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
 
   if (id) {
     $('#modal_spendItem').find('h3').text('Cập nhật chi tiêu');
@@ -214,12 +188,8 @@ function showSpendItemModal(id: string) {
     $('#btn_spendItem_create').hide();
 
     $('#input_spendItem_id').val(id);
-    $('#combobox_spendItem_name')
-      .find('input')
-      .val(spendItem.find('td').eq(1).text());
-    $('#input_spendItem_date').val(
-      formatDate(spendItem.find('td').eq(0).text(), 'yyyy-mm-dd', 'dd/mm/yyyy'),
-    );
+    $('#combobox_spendItem_name').find('input').val(spendItem.find('td').eq(1).text());
+    $('#input_spendItem_date').val(formatDate(spendItem.find('td').eq(0).text(), 'yyyy-mm-dd'));
 
     $('#input_spendItem_price').val(spendItem.find('td').eq(2).text());
     $('#input_spendItem_info').val(spendItem.find('td').eq(3).text());
@@ -242,12 +212,8 @@ $('#btn_spendItem_create').on('click', async function () {
   const listId = String($('#select_spendList').selectControl('get'));
   const name = String($('#combobox_spendItem_name').find('input').val()).trim();
   const dateTime = getDateTime(String($('#input_spendItem_date').val()));
-  const price =
-    parseInt(
-      String($('#input_spendItem_price').val())!.trim().replace(/\./g, ''),
-    ) || 0;
-  const details =
-    String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
+  const price = parseInt(String($('#input_spendItem_price').val())!.trim().replace(/\./g, '')) || 0;
+  const details = String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
 
   try {
     await spendItemModel.insertOne({
@@ -270,12 +236,8 @@ $('#btn_spendItem_update').on('click', async function () {
   const id = String($('#input_spendItem_id').val());
   const name = String($('#combobox_spendItem_name').find('input').val()).trim();
   const dateTime = getDateTime(String($('#input_spendItem_date').val()));
-  const price =
-    parseInt(
-      String($('#input_spendItem_price').val())!.trim().replace(/\./g, ''),
-    ) || 0;
-  const details =
-    String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
+  const price = parseInt(String($('#input_spendItem_price').val())!.trim().replace(/\./g, '')) || 0;
+  const details = String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
 
   try {
     await spendItemModel.updateById(id, {
@@ -287,9 +249,7 @@ $('#btn_spendItem_update').on('click', async function () {
 
     modal_spendItem.close();
 
-    const spendItem = $('#table_spendItem')
-      .find(`tbody`)
-      .find(`tr[data-id="${id}"]`);
+    const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
     spendItem.find('td').eq(0).text(formatDate(dateTime, 'dd/mm/yyyy'));
     spendItem.find('td').eq(1).text(name);
     spendItem.find('td').eq(2).text(formatCurrency(price));
@@ -303,7 +263,7 @@ $('#btn_spendItem_update').on('click', async function () {
 // Function to delete spendItem
 async function deleteSpendItem(id: string) {
   await spendItemModel.deleteById(id);
-  
+
   $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
 }
 // @ts-ignore

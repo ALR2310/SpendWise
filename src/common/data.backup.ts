@@ -1,136 +1,112 @@
-import { SocialLogin } from '@capgo/capacitor-social-login';
 import { drive } from './google.drive';
 import { Query, QueryAll } from '~/configs/nosql/db.wrapper';
 import pako from 'pako';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
-import { compare } from 'compare-versions';
+import { filter } from 'lodash';
 
-let accessToken: any = null;
-
-export async function backupData(): Promise<
-  | { success: boolean; message: string; error?: undefined }
-  | { success: boolean; message: string; error: unknown }
-> {
-  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
-    .isLoggedIn;
-
-  if (isLogin) {
-    accessToken = (
-      await SocialLogin.getAuthorizationCode({ provider: 'google' })
-    ).accessToken;
-  } else
-    return {
-      success: false,
-      message: 'not logged in',
-    };
-
-  drive.setAccessToken(accessToken);
-
-  const version = appConfig.general.version;
+export async function backupData(accessToken: string) {
+  if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
 
   try {
-    if (compare(version, '0.0.0', '>=')) {
-      // remove old backup file
-      const listOldFiles = await drive.get({ spaces: 'appDataFolder' });
-      for (const file of listOldFiles.data.files) await drive.delete(file.id);
+    // remove old backup file
+    const listOldFiles = await drive.get({ spaces: 'appDataFolder' });
+    for (const file of listOldFiles.data.files) await drive.delete(file.id);
 
-      // get data for backup
-      const [spendList, spendItem, note] = await QueryAll([
-        { sql: 'SELECT * FROM SpendList' },
-        { sql: 'SELECT * FROM SpendItem' },
-        { sql: 'SELECT * FROM Note' },
-      ]);
+    // get data for backup
+    const spendWise = await exportData();
 
-      // convert and compress data
-      const spendData = convertData({ spendList, spendItem, note }, 'V2', 'V1');
-      const dataStr = JSON.stringify(spendData, null, 2);
-      const compressedData = pako.gzip(dataStr);
+    // compress data
+    const dataStr = JSON.stringify(spendWise, null, 2);
+    const compressedData = pako.gzip(dataStr);
 
-      // upload compressed data
-      const result = await drive.upload({
-        fileName: 'spendData.json.gz',
-        mimeType: 'application/gzip',
-        content: compressedData,
-        appDataFolder: true,
-      });
+    // upload compressed data
+    const result = await drive.upload({
+      fileName: 'SpendWise.json.gz',
+      mimeType: 'application/gzip',
+      content: compressedData,
+      appDataFolder: true,
+    });
 
-      // save info
-      appConfig.data.fileId = result.data.id;
-      appConfig.data.lastBackup = dayjs().toISOString();
-      return { success: true, message: 'Sao lưu thành công' };
-    } else if (compare(version, '1.0.0', '>=')) {
-      return { success: false, message: 'Version is not supported' };
-    } else {
-      return { success: false, message: 'Version is not supported' };
-    }
+    // save info
+    appConfig.data.fileId = result.data.id;
+    appConfig.data.dateBackup = dayjs().toISOString();
+    return { success: true, message: 'Backup data successfully' };
   } catch (err) {
     console.error(err);
     return {
       success: false,
-      message: 'Có lỗi trong quá trình sao lưu dữ liệu',
+      message: 'An error occurred when backing up data',
       error: err,
     };
   }
 }
 
-export async function syncData(): Promise<
-  | { success: boolean; message: string; data?: undefined; error?: undefined }
-  | { success: boolean; message: string; data: Blob; error?: undefined }
-  | { success: boolean; message: string; error: any; data?: undefined }
-> {
-  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' }))
-    .isLoggedIn;
+export async function syncData(accessToken: string) {
+  if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
 
-  if (isLogin) {
-    accessToken = (
-      await SocialLogin.getAuthorizationCode({ provider: 'google' })
-    ).accessToken;
-  } else
-    return {
-      success: false,
-      message: 'not logged in',
-    };
-
-  drive.setAccessToken(accessToken);
-
+  // get Id file backup
   let fileId = appConfig.data.fileId;
+  if (!fileId) fileId = (await drive.get({ spaces: 'appDataFolder' })).data.files[0].id;
 
-  if (!fileId)
-    fileId = (await drive.get({ spaces: 'appDataFolder' })).data.files[0].id;
-
+  // download file backup
   const result = await drive.download(fileId);
   if (!result.success) return result;
 
+  // convert data
   const arrayBuffer = await result?.data?.arrayBuffer();
   if (!arrayBuffer) {
     return {
       success: false,
-      message: 'Lỗi dữ liệu tải về',
+      message: 'An error occurred when downloading data',
     };
   }
 
+  // decompress data
   const decompressedData = pako.ungzip(new Uint8Array(arrayBuffer), {
     to: 'string',
   });
   const spendData = JSON.parse(decompressedData);
-  const importResult = await importData(spendData);
 
-  return importResult.success
-    ? {
-        success: true,
-        message: 'Đồng bộ dữ liệu thành công',
-      }
-    : {
-        success: false,
-        message: 'Có lỗi trong quá trình đồng bộ dữ liệu',
-      };
+  // import data
+  let importResult: any;
+  const dateSync = dayjs(appConfig.data.dateSync);
+  if (!dateSync.isValid()) {
+    importResult = await importData(spendData);
+  } else {
+    // filter data
+    const filterData = (data: any[], dateSync: dayjs.Dayjs) => {
+      return filter(data, (item: any) => {
+        const updateDate = dayjs(item.updatedAt);
+        return updateDate.isValid() && updateDate.isAfter(dateSync);
+      });
+    };
+
+    importResult = await importData({
+      SpendList: filterData(spendData.SpendList, dateSync),
+      SpendItem: filterData(spendData.SpendItem, dateSync),
+      Note: filterData(spendData.Note, dateSync),
+      Income: filterData(spendData.Income, dateSync),
+    });
+  }
+
+  if (importResult.success) {
+    appConfig.data.dateSync = dayjs().toISOString();
+    return {
+      success: true,
+      message: 'Sync data successfully',
+    };
+  }
+
+  return {
+    success: false,
+    message: 'An error occurred when sync data',
+  };
 }
 
 interface SpendData {
   V1: {
     spendingList: {
-      forEach(arg0: (item: SpendData['V1']['spendingList']) => void): unknown;
       id: number;
       namelist: string;
       atcreate: string;
@@ -139,9 +115,8 @@ interface SpendData {
       status: number;
     };
     spendingItem: {
-      forEach(arg0: (item: SpendData['V1']['spendingItem']) => void): unknown;
       id: number;
-      spendlistid: string;
+      spendlistid: number;
       nameitem: string;
       price: number;
       details: string;
@@ -150,7 +125,6 @@ interface SpendData {
       status: number;
     };
     noted: {
-      forEach(arg0: (item: SpendData['V1']['noted']) => void): unknown;
       id: number;
       namelist: string;
       content: string;
@@ -158,6 +132,15 @@ interface SpendData {
       atupdate: string;
       status: number;
     };
+    income: {
+      id: number;
+      spendlistid: number;
+      price: number;
+      atcreate: string;
+      atupdate: string;
+      status: number;
+    };
+    version: number;
   };
   V2: {
     SpendList: {
@@ -189,207 +172,175 @@ interface SpendData {
       updatedAt: string;
       _v: number;
     };
+    Income: {
+      _id: string;
+      listId: string;
+      name: string;
+      price: number;
+      status: string;
+      date: string;
+      createdAt: string;
+      updatedAt: string;
+      _v: number;
+    };
+    Version?: number;
   };
 }
 
 export async function importData(
   data: any,
+  removeOldData = false,
 ): Promise<{ success: boolean; message: string }> {
-  const version = appConfig.general.version;
+  let spendData = data;
 
-  if (compare(version, '0.0.0', '>=')) {
-    const spendData: SpendData['V1'] = data;
-    try {
+  if (data.version == 1 || data.Version == 1) {
+    spendData = convertData(data);
+  }
+
+  try {
+    if (removeOldData) {
       await QueryAll([
         { sql: 'DELETE FROM SpendItem' },
         { sql: 'DELETE FROM SpendList' },
         { sql: 'DELETE FROM Note' },
+        { sql: 'DELETE FROM Income' },
       ]);
-
-      Query('VACUUM');
-
-      let spendListQueries: any[] = [];
-      let spendItemQueries: any[] = [];
-      let noteQueries: any[] = [];
-
-      spendData.spendingList.forEach(
-        (item: SpendData['V1']['spendingList']) => {
-          spendListQueries.push({
-            sql: 'INSERT INTO SpendList (_id, name, status, createdAt, updatedAt, _v) VALUES (?, ?, ?, ?, ?, ?)',
-            params: [
-              item.id,
-              item.namelist,
-              item.status == 1 ? 'Active' : 'Inactive',
-              item.atcreate,
-              item.atupdate,
-              0,
-            ],
-          });
-        },
-      );
-
-      spendData.spendingItem.forEach(
-        (item: SpendData['V1']['spendingItem']) => {
-          spendItemQueries.push({
-            sql: `INSERT INTO SpendItem (_id, listId, name, price, details, status, date, createdAt, updatedAt, _v)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            params: [
-              item.id,
-              item.spendlistid,
-              item.nameitem,
-              item.price,
-              item.details,
-              item.status == 1 ? 'Active' : 'Inactive',
-              item.atupdate,
-              item.atcreate,
-              item.atupdate,
-              0,
-            ],
-          });
-        },
-      );
-
-      spendData.noted.forEach((item: SpendData['V1']['noted']) => {
-        noteQueries.push({
-          sql: `INSERT INTO Note (_id, name, content, status, createdAt, updatedAt, _v)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          params: [
-            item.id,
-            item.namelist,
-            item.content,
-            item.status == 1 ? 'Active' : 'Inactive',
-            item.atcreate,
-            item.atupdate,
-            0,
-          ],
-        });
-      });
-
-      if (spendListQueries.length > 0) await QueryAll(spendListQueries);
-      if (spendItemQueries.length > 0) await QueryAll(spendItemQueries);
-      if (noteQueries.length > 0) await QueryAll(noteQueries);
-
-      return {
-        success: true,
-        message: 'Nhập dữ liệu thành công',
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        success: false,
-        message: 'Có lỗi khi nhập dữ liệu',
-      };
+      await Query('VACUUM');
     }
-  } else if (compare(version, '1.0.0', '>=')) {
+
+    const spendListQueries: any[] = [];
+    const spendItemQueries: any[] = [];
+    const noteQueries: any[] = [];
+    const incomeQueries: any[] = [];
+
+    for (const item of spendData?.SpendList ?? []) {
+      spendListQueries.push({
+        sql: 'INSERT INTO SpendList (_id, name, status, createdAt, updatedAt, _v) VALUES (?, ?, ?, ?, ?, ?)',
+        params: [item._id, item.name, item.status, item.createdAt, item.updatedAt, item._v],
+      });
+    }
+
+    for (const item of spendData?.SpendItem ?? []) {
+      spendItemQueries.push({
+        sql: `INSERT INTO SpendItem (_id, listId, name, price, details, status, date, createdAt, updatedAt, _v)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        params: [
+          item._id,
+          item.listId,
+          item.name,
+          item.price,
+          item.details,
+          item.status,
+          item.date,
+          item.createdAt,
+          item.updatedAt,
+          item._v,
+        ],
+      });
+    }
+
+    for (const item of spendData?.Note ?? []) {
+      noteQueries.push({
+        sql: `INSERT INTO Note (_id, name, content, status, createdAt, updatedAt, _v)
+              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        params: [item._id, item.name, item.content, item.status, item.createdAt, item.updatedAt, item._v],
+      });
+    }
+
+    for (const item of spendData?.Income ?? []) {
+      incomeQueries.push({
+        sql: `INSERT INTO Income (_id, listId, name, price, status, date, createdAt, updatedAt, _v)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        params: [
+          item._id,
+          item.listId,
+          item.name,
+          item.price,
+          item.status,
+          item.date,
+          item.createdAt,
+          item.updatedAt,
+          item._v,
+        ],
+      });
+    }
+
+    if (spendListQueries.length > 0) await QueryAll(spendListQueries);
+    if (spendItemQueries.length > 0) await QueryAll(spendItemQueries);
+    if (noteQueries.length > 0) await QueryAll(noteQueries);
+    if (incomeQueries.length > 0) await QueryAll(incomeQueries);
+
     return {
-      success: false,
-      message: 'Version not supported',
+      success: true,
+      message: 'Import data successfully',
     };
-  } else {
+  } catch (e) {
+    console.error(e);
     return {
       success: false,
-      message: 'Version not supported',
+      message: 'An error occurred when importing data',
     };
   }
 }
 
 export async function exportData() {
-  const version = appConfig.general.version;
-
-  const [spendList, spendItem, note] = await QueryAll([
+  const [SpendList, SpendItem, Note, Income] = await QueryAll([
     { sql: 'SELECT * FROM SpendList' },
     { sql: 'SELECT * FROM SpendItem' },
     { sql: 'SELECT * FROM Note' },
+    { sql: 'SELECT * FROM Income' },
   ]);
 
-  if (compare(version, '0.0.0', '>=')) {
-    const result = convertData({ spendList, spendItem, note }, 'V2', 'V1');
-    return result;
-  }
-
-  return { spendList, spendItem, note };
+  return { SpendList, SpendItem, Note, Income };
 }
 
-function convertData(data: any, input: 'V1' | 'V2', output: 'V1' | 'V2') {
-  if (input == output) return data;
+function convertData(data: any): SpendData['V2'] {
+  const SpendList: SpendData['V2']['SpendList'] = data.spendingList.map(
+    (item: SpendData['V1']['spendingList']) => ({
+      _id: item.id,
+      name: item.namelist,
+      status: item.status == 1 ? 'Active' : 'Inactive',
+      createdAt: item.atcreate,
+      updatedAt: item.atupdate,
+      _v: 0,
+    }),
+  );
 
-  if (input == 'V1' && output == 'V2') {
-    const spendList: SpendData['V2']['SpendList'] = data.spendingList.map(
-      (item: SpendData['V1']['spendingList']) => ({
-        _id: item.id,
-        name: item.namelist,
-        status: item.status == 1 ? 'Active' : 'Inactive',
-        createdAt: item.atcreate,
-        updatedAt: item.atupdate,
-        _v: 0,
-      }),
-    );
+  const SpendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map(
+    (item: SpendData['V1']['spendingItem']) => ({
+      _id: item.id,
+      listId: item.spendlistid,
+      name: item.nameitem,
+      price: item.price,
+      details: item.details,
+      createdAt: item.atcreate,
+      updatedAt: item.atupdate,
+      status: item.status == 1 ? 'Active' : 'Inactive',
+      _v: 0,
+    }),
+  );
 
-    const spendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map(
-      (item: SpendData['V1']['spendingItem']) => ({
-        _id: item.id,
-        listId: item.spendlistid,
-        name: item.nameitem,
-        price: item.price,
-        details: item.details,
-        createdAt: item.atcreate,
-        updatedAt: item.atupdate,
-        status: item.status == 1 ? 'Active' : 'Inactive',
-        _v: 0,
-      }),
-    );
+  const Note: SpendData['V2']['Note'] = data.noted.map((item: SpendData['V1']['noted']) => ({
+    _id: item.id,
+    name: item.namelist,
+    content: item.content,
+    createdAt: item.atcreate,
+    updatedAt: item.atupdate,
+    status: item.status == 1 ? 'Active' : 'Inactive',
+    _v: 0,
+  }));
 
-    const note: SpendData['V2']['Note'] = data.noted.map(
-      (item: SpendData['V1']['noted']) => ({
-        _id: item.id,
-        name: item.namelist,
-        content: item.content,
-        createdAt: item.atcreate,
-        updatedAt: item.atupdate,
-        status: item.status == 1 ? 'Active' : 'Inactive',
-        _v: 0,
-      }),
-    );
+  const Income: SpendData['V2']['Income'] = data.income.map((item: SpendData['V1']['income']) => ({
+    _id: item.id,
+    listId: item.spendlistid,
+    name: '',
+    price: item.price,
+    status: item.status == 1 ? 'Active' : 'Inactive',
+    date: item.atupdate,
+    createdAt: item.atcreate,
+    updatedAt: item.atupdate,
+    _v: 0,
+  }));
 
-    return { spendList, spendItem, note };
-  } else if (input == 'V2' && output == 'V1') {
-    const today = dayjs().toISOString();
-
-    const spendingList: SpendData['V1']['spendingList'] = data.spendList.map(
-      (item: SpendData['V2']['SpendList']) => ({
-        id: item._id,
-        namelist: item.name,
-        atcreate: item.createdAt,
-        atupdate: item.createdAt,
-        lastentry: today,
-        status: item.status == 'Active' ? 1 : 0,
-      }),
-    );
-
-    const spendingItem: SpendData['V1']['spendingItem'] = data.spendItem.map(
-      (item: SpendData['V2']['SpendItem']) => ({
-        id: item._id,
-        spendlistid: item.listId,
-        nameitem: item.name,
-        price: item.price,
-        details: item.details,
-        atcreate: item.createdAt,
-        atupdate: item.createdAt,
-        status: item.status == 'Active' ? 1 : 0,
-      }),
-    );
-
-    const noted: SpendData['V1']['noted'] = data.note.map(
-      (item: SpendData['V2']['Note']) => ({
-        id: item._id,
-        namelist: item.name,
-        content: item.content,
-        atcreate: item.createdAt,
-        atupdate: item.createdAt,
-        status: item.status == 'Active' ? 1 : 0,
-      }),
-    );
-
-    return { spendingList, spendingItem, noted };
-  }
+  return { SpendList, SpendItem, Note, Income };
 }

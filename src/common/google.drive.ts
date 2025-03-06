@@ -41,21 +41,17 @@ class GoogleDrive {
     if (!fileName || !mimeType || !content)
       return {
         success: false,
-        message: 'missing fileName, mimeType or content',
+        message: 'Missing fileName, mimeType or content',
       };
 
-    const API =
-      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,size';
+    const API = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,size';
     const metadata = {
       name: fileName,
       mimeType,
       ...(appDataFolder && { parents: ['appDataFolder'] }),
     };
     const form = new FormData();
-    form.append(
-      'metadata',
-      new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
-    );
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     form.append('file', new Blob([content], { type: mimeType }));
 
     try {
@@ -67,16 +63,16 @@ class GoogleDrive {
       return response.ok
         ? {
             success: true,
-            message: 'Tải lên thành công',
+            message: 'Upload successfully',
             data: await response.json(),
           }
         : {
             success: false,
-            message: 'Lỗi tải lên',
+            message: 'Upload failed',
             error: await response.json(),
           };
     } catch (err) {
-      return { success: false, message: 'Lỗi tải lên', error: err };
+      return { success: false, message: 'An error occurred when uploading', error: err };
     }
   }
 
@@ -88,7 +84,7 @@ class GoogleDrive {
     | { success: boolean; message: string; error: any; data?: undefined }
   > {
     if (!this.accessToken) return { success: false, message: 'not logged in' };
-    if (!fileId) return { success: false, message: 'missing fileId' };
+    if (!fileId) return { success: false, message: 'Missing fileId' };
 
     const API = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
     try {
@@ -99,16 +95,16 @@ class GoogleDrive {
       return response.ok
         ? {
             success: true,
-            message: 'Tải xuống thành công',
+            message: 'Download successfully',
             data: await response.blob(),
           }
         : {
             success: false,
-            message: 'Lỗi tải xuống',
+            message: 'Download failed',
             error: await response.json(),
           };
     } catch (error) {
-      return { success: false, message: 'Lỗi tải xuống', error };
+      return { success: false, message: 'An error occurred when downloading', error };
     }
   }
 
@@ -124,16 +120,13 @@ class GoogleDrive {
     if (!fileId || !content || !fileName || !mimeType)
       return {
         success: false,
-        message: 'missing fileId, content, fileName or mimeType',
+        message: 'Missing fileId, content, fileName or mimeType',
       };
 
     const API = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`;
     const metadata = { name: fileName, mimeType };
     const form = new FormData();
-    form.append(
-      'metadata',
-      new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
-    );
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     form.append('file', new Blob([content], { type: mimeType }));
 
     try {
@@ -145,27 +138,26 @@ class GoogleDrive {
       return response.ok
         ? {
             success: true,
-            message: 'Cập nhật thành công',
+            message: 'Update successfully',
             data: await response.json(),
           }
         : {
             success: false,
-            message: 'Lỗi cập nhật',
+            message: 'Update failed',
             error: await response.json(),
           };
     } catch (error) {
-      return { success: false, message: 'Lỗi cập nhật', error };
+      return { success: false, message: 'An error occurred when updating', error };
     }
   }
 
   async delete(
     fileId: string,
   ): Promise<
-    | { success: boolean; message: string; error?: undefined }
-    | { success: boolean; message: string; error: any }
+    { success: boolean; message: string; error?: undefined } | { success: boolean; message: string; error: any }
   > {
     if (!this.accessToken) return { success: false, message: 'not logged in' };
-    if (!fileId) return { success: false, message: 'missing fileId' };
+    if (!fileId) return { success: false, message: 'Missing fileId' };
 
     const API = `https://www.googleapis.com/drive/v3/files/${fileId}`;
     try {
@@ -174,10 +166,10 @@ class GoogleDrive {
         headers: this.getHeaders(),
       });
       return response.ok
-        ? { success: true, message: 'Xóa thành công' }
-        : { success: false, message: 'Lỗi xóa', error: await response.json() };
+        ? { success: true, message: 'Delete successfully' }
+        : { success: false, message: 'Delete failed', error: await response.json() };
     } catch (error) {
-      return { success: false, message: 'Lỗi xóa', error };
+      return { success: false, message: 'An error occurred when deleting', error };
     }
   }
 
@@ -203,14 +195,12 @@ class GoogleDrive {
       return response.ok
         ? {
             success: true,
-            message: fileId
-              ? 'Lấy tệp thành công'
-              : 'Lấy danh sách tệp thành công',
+            message: fileId ? 'Get file successfully' : 'Get list of files successfully',
             data: await response.json(),
           }
         : {
             success: false,
-            message: 'Lỗi lấy tệp',
+            message: 'An error occurred when getting',
             error: await response.json(),
           };
     } catch (error) {

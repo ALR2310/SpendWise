@@ -3,8 +3,7 @@ import db from './db.config';
 
 export function buildQueryCreateTableFromModel(model: any): string {
   const tableName: string = Reflect.getMetadata('tableName', model);
-  const props: Record<string, any> =
-    Reflect.getMetadata('props', model.prototype) || {};
+  const props: Record<string, any> = Reflect.getMetadata('props', model.prototype) || {};
 
   let query = `CREATE TABLE IF NOT EXISTS ${tableName} (\n`;
   const columns: string[] = [];
@@ -13,16 +12,13 @@ export function buildQueryCreateTableFromModel(model: any): string {
     let columnDefinition = `${key} ${options.type.name}`;
 
     if (options.enum) {
-      const enumValues = options.enum
-        .map((value: string) => `'${value}'`)
-        .join(', ');
+      const enumValues = options.enum.map((value: string) => `'${value}'`).join(', ');
       columnDefinition += ` CHECK(${key} IN (${enumValues}))`;
     }
 
     if (options.required) columnDefinition += ' NOT NULL';
     if (options.key) columnDefinition += ' PRIMARY KEY';
-    if (options.default !== undefined)
-      columnDefinition += ` DEFAULT '${options.default}'`;
+    if (options.default !== undefined) columnDefinition += ` DEFAULT '${options.default}'`;
 
     columns.push(columnDefinition);
   }
@@ -33,17 +29,14 @@ export function buildQueryCreateTableFromModel(model: any): string {
 
 export function buildQueryCreateIndexFromModel(model: any): string[] {
   const tableName: string = Reflect.getMetadata('tableName', model);
-  const props: Record<string, any> =
-    Reflect.getMetadata('props', model.prototype) || {};
+  const props: Record<string, any> = Reflect.getMetadata('props', model.prototype) || {};
 
   const queries: string[] = [];
 
   for (const [key, options] of Object.entries(props)) {
     if (options.index) {
       const indexName = `idx_${tableName}_${key}`;
-      queries.push(
-        `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName} (${key});`,
-      );
+      queries.push(`CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName} (${key});`);
     }
   }
 
@@ -51,10 +44,7 @@ export function buildQueryCreateIndexFromModel(model: any): string[] {
 }
 
 export async function checkExistsTable(tableName: string): Promise<boolean> {
-  const tables = await db.query(
-    `SELECT tbl_name FROM sqlite_master WHERE type='table' AND tbl_name = ?`,
-    [tableName],
-  );
+  const tables = await db.query(`SELECT tbl_name FROM sqlite_master WHERE type='table' AND tbl_name = ?`, [tableName]);
   return tables.length > 0;
 }
 
@@ -63,8 +53,7 @@ export async function compareTableWithModel(model: any): Promise<{
   columnsToRemove: string[];
 } | null> {
   const tableName: string = Reflect.getMetadata('tableName', model);
-  const props: Record<string, any> =
-    Reflect.getMetadata('props', model.prototype) || {};
+  const props: Record<string, any> = Reflect.getMetadata('props', model.prototype) || {};
 
   const existingColumns = await db.query(`PRAGMA table_info(${tableName});`);
 
@@ -79,9 +68,7 @@ export async function compareTableWithModel(model: any): Promise<{
       let columnDefinition = `${column} ${options.type.name}`;
 
       if (options.enum) {
-        const enumValues = options.enum
-          .map((value: string) => `'${value}'`)
-          .join(', ');
+        const enumValues = options.enum.map((value: string) => `'${value}'`).join(', ');
         columnDefinition += ` CHECK(${column} IN (${enumValues}))`;
       }
 
@@ -91,9 +78,7 @@ export async function compareTableWithModel(model: any): Promise<{
       return { name: column, sql: columnDefinition };
     });
 
-  const columnsToRemove = existingColumnNames.filter(
-    (column: any) => !modelColumnNames.includes(column),
-  );
+  const columnsToRemove = existingColumnNames.filter((column: any) => !modelColumnNames.includes(column));
 
   if (columnsToAdd.length === 0 && columnsToRemove.length === 0) return null;
 

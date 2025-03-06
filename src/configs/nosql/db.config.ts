@@ -7,13 +7,7 @@ let dbInstance: any = null;
 const sqlite = new SQLiteConnection(CapacitorSQLite);
 
 const createConnection = async () => {
-  return await sqlite.createConnection(
-    'SpendWise',
-    false,
-    'no-encryption',
-    1,
-    false,
-  );
+  return await sqlite.createConnection('SpendWise', false, 'no-encryption', 1, false);
 };
 
 const db = {
@@ -41,17 +35,10 @@ const db = {
     }
   },
 
-  query: async (
-    sql: string,
-    params: any[] = [],
-    transaction: boolean = false,
-  ) => {
+  query: async (sql: string, params: any[] = [], transaction: boolean = false) => {
     if (!dbInstance) await db.init();
 
-    if (
-      sql.trim().toLowerCase().startsWith('select') ||
-      sql.trim().toLowerCase().startsWith('pragma')
-    )
+    if (sql.trim().toLowerCase().startsWith('select') || sql.trim().toLowerCase().startsWith('pragma'))
       return (await dbInstance.query(sql, params)).values;
     else return (await dbInstance.run(sql, params, transaction)).changes;
   },
@@ -70,9 +57,7 @@ const db = {
   },
 
   queryAllSafe: async (queries: any) => {
-    const promises = queries.map(({ sql, params = [] }) =>
-      db.query(sql, params),
-    );
+    const promises = queries.map(({ sql, params = [] }) => db.query(sql, params));
     return Promise.all(promises)
       .then((results) => {
         return results;
