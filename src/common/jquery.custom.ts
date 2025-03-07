@@ -116,37 +116,55 @@ $.fn.comboboxControl = function () {
     const combobox = $(this);
     const input = combobox.find('input');
     const list = combobox.find('ul');
-    const items = list.find('li');
+    let items = list.find('li').toArray();
 
-    // Helper function to get text content from li
-    const getTextContent = (element) => $(element).text().trim();
+    const getTextContent = (element: HTMLLIElement) => $(element).text().trim();
 
-    // Filter items based on user input
     input.on('input', function () {
       const filter = input.val()!.trim().toLowerCase();
       let hasVisibleItem = false;
 
-      items.each(function () {
+      if (!filter) {
+        items.sort((a, b) => new Intl.Collator('vi').compare(getTextContent(a), getTextContent(b)));
+      } else {
+        items = items.sort((a, b) => {
+          const textA = getTextContent(a);
+          const textB = getTextContent(b);
+
+          const startsWithA = textA.toLowerCase().startsWith(filter);
+          const startsWithB = textB.toLowerCase().startsWith(filter);
+
+          if (startsWithA && !startsWithB) return -1;
+          if (!startsWithA && startsWithB) return 1;
+          return new Intl.Collator('vi').compare(textA, textB);
+        });
+      }
+
+      list.empty().append(items.map((item) => $(item).show()));
+      list.find('li').each(function () {
         const itemText = getTextContent(this).toLowerCase();
         if (itemText.includes(filter)) {
           $(this).show();
           hasVisibleItem = true;
-        } else $(this).hide();
+        } else {
+          $(this).hide();
+        }
       });
 
       list.toggle(hasVisibleItem);
     });
 
-    // Select an item from the list when clicked
-    items.on('click', function () {
-      const text = getTextContent(this);
-      input.val(text);
+    list.on('click', 'li', function () {
+      input.val(getTextContent(this));
       list.hide();
     });
 
-    // Close the list when clicking outside of the combobox
     $(document).on('click', function (e) {
       if (!combobox[0].contains(e.target)) list.hide();
+    });
+
+    list.on('DOMNodeInserted', function () {
+      items = list.find('li').toArray();
     });
   });
 };
