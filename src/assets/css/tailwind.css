@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+@plugin "daisyui" {
+  themes:
+    light --default,
+    dark --prefersdark,
+    cupcake,
+    garden,
+    dracula;
+}
+
+@font-face {
+  font-family: 'Courgette';
+  src: url('../fonts/Courgette/Courgette-Regular.ttf') format('truetype');
+}
+
+@layer utilities {
+  @keyframes toast-pop-out {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+  }
+
+  .no-scrollbar {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

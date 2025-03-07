@@ -1,9 +1,9 @@
 <div class="flex m-4 gap-2">
-    <div id="select_spendList" class="select select-sm select-bordered w-full">
+    <div id="select_spendList" class="select select-sm w-full">
         <span class="select-value"></span>
         <ul class="max-h-60">
             {{#each spendList}}
-            <li class="flex justify-between" data-value="{{this._id}}">
+            <li class="flex justify-between items-center" data-value="{{this._id}}">
                 {{this.name}}
                 <button class="btn btn-ghost btn-sm text-error"
                     onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
@@ -22,12 +22,12 @@
 {{!-- Search --}}
 <div class="flex m-4 gap-2">
     <label for="input_spendItem_search_date" class="relative">
-        <input id="input_spendItem_search_date" type="date" class="input input-sm input-bordered"
+        <input id="input_spendItem_search_date" type="date" class="input input-sm"
             placeholder="Thời gian" style="width: 42px;">
         <i class="fa-sharp fa-regular fa-calendar absolute right-[14px] top-[50%] translate-y-[-50%]"></i>
     </label>
 
-    <label class="input input-sm input-bordered flex items-center gap-2 flex-1">
+    <label class="input input-sm flex items-center gap-2 flex-1">
         <input id="input_spendItem_search" type="text" class="grow" placeholder="Tìm kiếm" />
         <i class="fa-sharp fa-regular fa-magnifying-glass opacity-70"></i>
     </label>
@@ -41,7 +41,7 @@
 
     <label class="flex items-center gap-2">
         <span>Xếp theo:</span>
-        <div id="select_spendItem_sort" class="select select-sm select-bordered w-28">
+        <div id="select_spendItem_sort" class="select select-sm w-28">
             <span class="select-value"></span>
             <ul>
                 <li data-value="date">Ngày chi</li>
@@ -99,7 +99,7 @@
 <dialog id="modal_spendList" class="modal">
     <div class="modal-box ">
         <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
-        <label class="input input-sm input-bordered flex items-center gap-2 mb-3">
+        <label class="input input-sm flex items-center gap-2 mb-3">
             <i class="fa-sharp fa-solid fa-list opacity-70"></i>
             <input id="input_spendList_name" type="text" class="grow" placeholder="Tên danh sách" />
         </label>
@@ -143,10 +143,10 @@
         <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
 
         <div class="flex gap-3 mb-3">
-            <input id="input_spendItem_id" type="text" class="input input-sm input-bordered hidden" placeholder="Id">
+            <input id="input_spendItem_id" type="text" class="input input-sm hidden" placeholder="Id">
 
             <label id="combobox_spendItem_name" class="combobox w-[55%]">
-                <input type="text" class="input input-sm input-bordered w-full" placeholder="Tên khoản chi">
+                <input type="text" class="input input-sm w-full" placeholder="Tên khoản chi">
                 <i class="fa-sharp fa-regular fa-angles-up-down right-[5%!important] text-xs"></i>
                 <ul class="max-h-52">
                     <li>Option 1</li>
@@ -156,16 +156,16 @@
             </label>
 
             <label class="relative w-[45%]">
-                <input id="input_spendItem_date" type="date" class="input input-sm input-bordered w-full"
+                <input id="input_spendItem_date" type="date" class="input input-sm w-full"
                     placeholder="Thời gian" />
                 <i class="fa-sharp fa-regular fa-calendar absolute right-[10%] top-[50%] translate-y-[-50%]"></i>
             </label>
         </div>
 
         <div class="flex gap-3 mb-3">
-            <input id="input_spendItem_price" type="text" class="input input-sm input-bordered w-[45%]"
+            <input id="input_spendItem_price" type="text" class="input input-sm w-[45%]"
                 placeholder="Số tiền" oninput="this.value = formatCurrency(this.value, false)">
-            <input id="input_spendItem_info" type="text" class="input input-sm input-bordered w-[55%]"
+            <input id="input_spendItem_info" type="text" class="input input-sm w-[55%]"
                 placeholder="Thông tin thêm">
         </div>
 
