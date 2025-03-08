@@ -162,9 +162,5 @@ $.fn.comboboxControl = function () {
     $(document).on('click', function (e) {
       if (!combobox[0].contains(e.target)) list.hide();
     });
-
-    list.on('DOMNodeInserted', function () {
-      items = list.find('li').toArray();
-    });
   });
 };

@@ -9,6 +9,11 @@ import { Toast } from '@capacitor/toast';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 
+// Initialize the custom select
+document.querySelectorAll('div.select').forEach((select) => {
+  $(select).selectControl('init');
+});
+
 $('#setting_data-login').on('click', async () => {
   await SocialLogin.login({
     provider: 'google',

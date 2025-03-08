@@ -145,7 +145,7 @@ $('#btn_spendList_create').on('click', async function () {
       const escapedName = $('<div>').text(name).html();
       const html = `
                 <li class="flex justify-between" data-value="${result._id}">${escapedName}
-                    <button class="btn btn-ghost btn-sm text-error" 
+                    <button class="btn btn-ghost text-error" 
                         onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
                         <i class="fa-sharp fa-trash"></i> Xoá
                     </button>

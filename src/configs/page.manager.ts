@@ -81,9 +81,9 @@ function showButtonBottomNav(buttonId: string) {
   const buttonElement = $(`#${buttonId}`);
   const buttonIconElement = $(`#${buttonId} i`);
 
-  $('#btm-nav button').removeClass('active');
-  $('#btm-nav button i').removeClass('fa-solid').addClass('fa-regular');
-  buttonElement.addClass('active');
+  $('#dock-nav button').removeClass('dock-active');
+  $('#dock-nav button i').removeClass('fa-solid').addClass('fa-regular');
+  buttonElement.addClass('dock-active');
   buttonIconElement.removeClass('fa-regular').addClass('fa-solid');
 }
 
