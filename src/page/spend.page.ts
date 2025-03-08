@@ -269,4 +269,20 @@ async function deleteSpendItem(id: string) {
 // @ts-ignore
 window.deleteSpendItem = deleteSpendItem;
 
+function toggleDetailsRow(id: string, row: HTMLElement) {
+  const detailsRow = document.getElementById(`details-row-${id}`);
+  const icon = document.getElementById(`icon-${id}`);
+
+  $(row).toggleClass('border-b-0');
+
+  if (detailsRow) {
+    detailsRow.classList.toggle('hidden');
+    icon!.classList.toggle('fa-chevron-down');
+    icon!.classList.toggle('fa-chevron-up');
+  }
+}
+
+// @ts-ignore
+window.toggleDetailsRow = toggleDetailsRow;
+
 export {};

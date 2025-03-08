@@ -22,8 +22,7 @@
 {{!-- Search --}}
 <div class="flex m-4 gap-2">
     <label for="input_spendItem_search_date" class="relative">
-        <input id="input_spendItem_search_date" type="date" class="input"
-            placeholder="Thời gian" style="width: 42px;">
+        <input id="input_spendItem_search_date" type="date" class="input" placeholder="Thời gian" style="width: 42px;">
         <i class="fa-sharp fa-regular fa-calendar absolute right-[14px] top-[50%] translate-y-[-50%]"></i>
     </label>
 
@@ -53,8 +52,7 @@
 </div>
 
 {{!-- Table SpendItem --}}
-<div id="table_spendItem_wrapper"
-    class="overflow-x-auto bg-base-100 rounded-box shadow-sm m-4 h-[calc(100vh-52px-32px-32px-32px-32px-32px-16px-48px)]">
+<div id="table_spendItem_wrapper" class="overflow-x-auto bg-base-100 rounded-box shadow-sm m-4 h-[calc(100vh-310px)]">
     <table id="table_spendItem" class="table table-pin-rows">
         <thead>
             <tr>
@@ -69,26 +67,23 @@
     </table>
     <script type="text/x-handlebars-template" id="table_spendItem_template">
         %#each spendItems%
-            <tr data-id="%this._id%" class="hover cursor-pointer">
+            <tr data-id="%this._id%" class="hover cursor-pointer" onclick="toggleDetailsRow('%this._id%', this)">
                 <td>%formatDate this.date 'DD/MM/YYYY'%</td>
                 <td>%this.name%</td>
                 <td>%formatCurrency this.price%</td>
-                <td class="hidden">%this.details%</td>
                 <td>
-                    <details class="dropdown dropdown-left dropdown-end">
-                        <summary tabindex="0" role="button" class="btn btn-circle swap swap-rotate"
-                            onclick="$(this).find('input[type=checkbox]').prop('checked', function(i, val) { return !val; })">
-                            <input type="checkbox">
-
-                            <i class="fa-sharp fa-regular fa-bars swap-off fill-current"></i>
-                            <i class="fa-sharp fa-regular fa-xmark swap-on fill-current"></i>
-                        </summary>
-
-                        <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] p-2 shadow-sm flex gap-1">
-                            <li><a class="btn btn-info btn-xs w-20" onclick="showSpendItemModal('%this._id%')">Sửa</a></li>
-                            <li><a class="btn btn-error btn-xs w-20" onclick="deleteSpendItem('%this._id%')">Xoá</a></li>
-                        </ul>
-                    </details>
+                    <i class="fa-sharp fa-regular fa-chevron-down" id="icon-%this._id%"></i>
+                </td>
+            </tr>
+            <tr id="details-row-%this._id%" class="hidden">
+                <td colspan="2">
+                    <p>%this.details%</p>
+                </td>
+                <td colspan="2" class="text-center">
+                    <div class="flex justify-between">
+                        <button class="btn btn-info btn-sm" onclick="showSpendItemModal('%this._id%')">Sửa</button>
+                        <button class="btn btn-error btn-sm" onclick="deleteSpendItem('%this._id%')">Xoá</button>
+                    </div>
                 </td>
             </tr>
         %/each%
@@ -156,17 +151,15 @@
             </label>
 
             <label class="relative w-[45%]">
-                <input id="input_spendItem_date" type="date" class="input w-full"
-                    placeholder="Thời gian" />
+                <input id="input_spendItem_date" type="date" class="input w-full" placeholder="Thời gian" />
                 <i class="fa-sharp fa-regular fa-calendar absolute right-[10%] top-[50%] translate-y-[-50%]"></i>
             </label>
         </div>
 
         <div class="flex gap-3 mb-3">
-            <input id="input_spendItem_price" type="text" class="input w-[45%]"
-                placeholder="Số tiền" oninput="this.value = formatCurrency(this.value, false)">
-            <input id="input_spendItem_info" type="text" class="input w-[55%]"
-                placeholder="Thông tin thêm">
+            <input id="input_spendItem_price" type="text" class="input w-[45%]" placeholder="Số tiền"
+                oninput="this.value = formatCurrency(this.value, false)">
+            <input id="input_spendItem_info" type="text" class="input w-[55%]" placeholder="Thông tin thêm">
         </div>
 
         <div class="flex justify-end gap-3">

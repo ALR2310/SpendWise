@@ -8,6 +8,8 @@ import download from 'downloadjs';
 import { Toast } from '@capacitor/toast';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
+import $ from 'jquery';
+import '~/common/jquery.custom';
 
 // Initialize the custom select
 document.querySelectorAll('div.select').forEach((select) => {
