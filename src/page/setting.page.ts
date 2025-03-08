@@ -6,7 +6,7 @@ import { backupData, exportData, importData, syncData } from '~/common/data.back
 import { showToast } from '~/common/utils';
 import download from 'downloadjs';
 import { Toast } from '@capacitor/toast';
-import { appConfig } from '~/configs/app.settings';
+import { appConfig, Theme } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import $ from 'jquery';
 import '~/common/jquery.custom';
@@ -14,6 +14,14 @@ import '~/common/jquery.custom';
 // Initialize the custom select
 document.querySelectorAll('div.select').forEach((select) => {
   $(select).selectControl('init');
+});
+
+// Setting change theme
+$('#setting_general-theme').selectControl('set', appConfig.general.theme);
+$('#setting_general-theme').selectControl('change', function (value: string) {
+  appConfig.general.theme = value as Theme;
+  localStorage.setItem('theme', appConfig.general.theme);
+  window.location.reload();
 });
 
 $('#setting_data-login').on('click', async () => {

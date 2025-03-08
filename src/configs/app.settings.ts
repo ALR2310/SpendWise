@@ -1,6 +1,10 @@
 export enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
+  SYSTEM = 'system',
+  CUPCAKE = 'cupcake',
+  GARDEN = 'garden',
+  DRACULA = 'dracula',
 }
 
 enum Language {
