@@ -30,12 +30,10 @@ const modal_spendItem = document.getElementById('modal_spendItem') as HTMLDialog
 // Load suggest for Combobox
 async function loadSuggest() {
   try {
-    const suggest = await Query('SELECT DISTINCT name FROM SpendItem WHERE status = ? COLLATE NOCASE', ['Active']);
-    suggest.sort((a: any, b: any) => new Intl.Collator('vi').compare(a.name, b.name));
-
+    const suggest = await Query('SELECT DISTINCT name FROM SpendItem WHERE status = 1 COLLATE NOCASE');
     $('#combobox_spendItem_name')
       .find('ul')
-      .html(suggest.map((item: any) => `<li>${item.name}</li>`).join(''))
+      .html(suggest.map((item: { Name: string }) => `<li>${item.Name}</li>`).join(''))
       .closest('.combobox')
       .comboboxControl();
   } catch (e) {
