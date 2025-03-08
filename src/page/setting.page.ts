@@ -24,6 +24,11 @@ $('#setting_general-theme').selectControl('change', function (value: string) {
   window.location.reload();
 });
 
+// Setting change default page
+$('#setting_general-page').selectControl('change', function (value: string) {
+  appConfig.general.defaultPage = value as 'spend' | 'stats' | 'note' | 'setting';
+});
+
 $('#setting_data-login').on('click', async () => {
   await SocialLogin.login({
     provider: 'google',

@@ -51,7 +51,8 @@ themeChange();
   // console.log(await Query('SELECT * FROM SpendList'));
   // console.log(await Query('SELECT * FROM SpendItem'));
 
-  pageManager.show('setting');
+  // Load default page when start
+  pageManager.show(appConfig.general.defaultPage);
 })();
 
 // change theme icon
