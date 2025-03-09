@@ -12,6 +12,7 @@ import { appConfig, Theme } from './configs/app.settings';
 import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
+import 'animate.css';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);

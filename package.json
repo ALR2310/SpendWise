@@ -34,6 +34,7 @@
     "@capgo/capacitor-social-login": "^7.2.3",
     "@ionic/pwa-elements": "^3.3.0",
     "@types/jquery": "^3.5.32",
+    "animate.css": "^4.1.1",
     "dayjs": "^1.11.13",
     "downloadjs": "^1.4.7",
     "echarts": "^5.6.0",
@@ -44,6 +45,7 @@
     "lodash": "^4.17.21",
     "pako": "^2.1.0",
     "reflect-metadata": "^0.2.2",
+    "sortablejs": "^1.15.6",
     "theme-change": "^2.5.0"
   },
   "devDependencies": {
@@ -55,6 +57,7 @@
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.9",
     "@types/pako": "^2.0.3",
+    "@types/sortablejs": "^1.15.8",
     "@typescript-eslint/eslint-plugin": "8.26.0",
     "@typescript-eslint/parser": "8.26.0",
     "capacitor-set-version": "^2.2.0",
