@@ -25,6 +25,7 @@ $('#setting_general-theme').selectControl('change', function (value: string) {
 });
 
 // Setting change default page
+$('#setting_general-page').selectControl('set', appConfig.general.defaultPage);
 $('#setting_general-page').selectControl('change', function (value: string) {
   appConfig.general.defaultPage = value as 'spend' | 'stats' | 'note' | 'setting';
 });
