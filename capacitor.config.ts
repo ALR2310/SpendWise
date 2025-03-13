@@ -8,13 +8,18 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 0,
     },
+    CapacitorHttp: {
+      enabled: true,
+    },
   },
   android: {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
     buildOptions: {
-      keystorePath: 'd:\\Tools\\Android\\.android\\debug.keystore',
+      keystorePath: 'D:\\Tools\\Android\\.android\\debug.keystore',
       keystoreAlias: 'androiddebugkey',
+      keystorePassword: 'android',
+      keystoreAliasPassword: 'android',
     },
   },
 };
