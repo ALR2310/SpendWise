@@ -10,3 +10,9 @@ declare module '*.png' {
 
 declare const __APP_VERSION__: string;
 declare const __GOOGLE_CLIENT_ID__: string;
+declare const __GIT_API_URL__: string;
+declare const __GIT_ACCESS_TOKEN__: string;
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

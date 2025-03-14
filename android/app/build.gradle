@@ -28,7 +28,10 @@ android {
             def versionName = variant.versionName
             def versionCode = variant.versionCode
             def newApkName = "${appName}-${versionName}.apk"
-            outputFileName = newApkName
+
+            if (variant.buildType.name != "debug") {
+                outputFileName = newApkName
+            }
         }
     }
 }

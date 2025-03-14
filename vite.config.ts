@@ -4,6 +4,9 @@ import handlebars from 'vite-plugin-handlebars';
 import rawPlugin from 'vite-raw-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { version } from './package.json';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
   root: 'src',
@@ -28,9 +31,10 @@ export default defineConfig({
     },
   },
   define: {
-    global: 'window',
     __APP_VERSION__: JSON.stringify(version),
-    __GOOGLE_CLIENT_ID__: JSON.stringify('292298338560-h9i7cv3nh68qvril0kdfe96cu5ttf87f.apps.googleusercontent.com'),
+    __GOOGLE_CLIENT_ID__: JSON.stringify(process.env.GOOGLE_CLIENT_ID),
+    __GIT_API_URL__: JSON.stringify(process.env.GIT_API_URL),
+    __GIT_ACCESS_TOKEN__: JSON.stringify(process.env.GIT_ACCESS_TOKEN),
   },
   plugins: [
     tailwindcss(),

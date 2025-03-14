@@ -24,6 +24,14 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Setup Environment
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || '' }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || '' }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN || '' }}
+          GITHUB_API_URL: ${{ secrets.GIT_API_URL || '' }}
+        run: echo "Environment variables set"
+
       - name: Install Vite
         run: npm install vite
 
@@ -90,13 +98,13 @@ jobs:
       - name: Get previous tag
         id: previous_tag
         run: echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD^)" >> $GITHUB_OUTPUT
-      
+
       - name: Generate changelog
         id: changelog
         run: |
           CHANGELOG=$(git log --pretty=format:"- %s" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..HEAD)
           COMPARE_URL="https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.PREVIOUS_TAG }}...main"
-          
+
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
