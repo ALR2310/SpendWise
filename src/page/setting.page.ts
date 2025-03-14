@@ -10,6 +10,7 @@ import { appConfig, Theme } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import $ from 'jquery';
 import '~/common/jquery.custom';
+import { appUpdater } from '~/configs/app.updater';
 
 // Initialize the custom select
 document.querySelectorAll('div.select').forEach((select) => {
@@ -161,6 +162,12 @@ $('#setting_data-import').on('click', async function () {
   } finally {
     $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
   }
+});
+
+// Check update
+$('#setting_data-check-update').on('click', function () {
+  $(this).toggleClass('btn-disabled');
+  appUpdater();
 });
 
 export {};

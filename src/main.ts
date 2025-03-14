@@ -61,4 +61,23 @@ document.addEventListener('DOMContentLoaded', () => {
   $('.theme-controller')
     .prop('checked', $('html').attr('data-theme') === 'light')
     .on('change', () => (appConfig.general.theme = $('html').attr('data-theme') as Theme));
+
+  let clickCount = 0;
+  let clickTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  $('#app-title').on('click', () => {
+    clickCount++;
+
+    if (clickCount === 2) {
+      const modal_devLog = document.getElementById('modal_devLog');
+      // @ts-ignore
+      modal_devLog?.show(); // Mở modal khi click 2 lần
+      clickCount = 0; // Reset bộ đếm
+      if (clickTimeout) clearTimeout(clickTimeout); // Xóa timeout nếu có
+    } else {
+      // Reset nếu không click lần 2 trong 500ms
+      if (clickTimeout) clearTimeout(clickTimeout);
+      clickTimeout = setTimeout(() => (clickCount = 0), 500);
+    }
+  });
 });

@@ -37,6 +37,7 @@
                 <li data-value="spend">Chi tiêu</li>
                 <li data-value="stats">Thống kê</li>
                 <li data-value="note">Ghi chú</li>
+                <li data-value="setting">Cài đặt</li>
             </ul>
         </div>
     </label>
@@ -138,7 +139,7 @@
             <span class="text-sm text-base-content opacity-60">Đăng nhập tài khoản Google để sao lưu dữ liệu</span>
         </div>
 
-        <div class="flex-1 flex justify-center">
+        <div class="flex-1 flex justify-end">
             <button id="setting_data-login" class="btn btn-active gap-0">
                 <img src="{{driveIcon}}" alt="google drive" class="w-7">
                 Đăng nhập
@@ -153,7 +154,7 @@
             <span class="text-sm text-base-content opacity-60">Đăng xuất tài khoản Google khỏi ứng dụng</span>
         </div>
 
-        <div class="flex-1 flex justify-center">
+        <div class="flex-1 flex justify-end">
             <button id="setting_data-logout" class="btn btn-error text-white gap-0">
                 <img src="{{driveIcon}}" alt="google drive" class="w-7">
                 Đăng xuất
@@ -201,6 +202,23 @@
             </button>
         </div>
     </div>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Check update --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Kiểm tra cập nhật</p>
+            <span class="text-sm text-base-content opacity-60">Kiểm tra, tải về và cập nhật phiên bản mới của ứng dụng
+                nếu có</span>
+        </div>
+
+        <div class="flex-1 flex justify-end">
+            <button id="setting_data-check-update" class="btn btn-active">
+                <p>Kiểm tra cập nhật</p>
+            </button>
+        </div>
+    </label>
 </div>
 
 {{!-- App version --}}

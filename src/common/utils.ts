@@ -108,3 +108,35 @@ export function fixDate(dateStr: string | string[]): string | string[] {
 
   return date.isValid() ? date.toISOString() : '';
 }
+
+export function devLog(message?: string) {
+  const devLogHtml = `
+    <dialog id="modal_devLog" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="text-lg font-bold">Dev log</h3>
+        </div>
+    </dialog>
+  `;
+
+  let modal_devLog = document.getElementById('modal_devLog');
+
+  if (!modal_devLog) {
+    const temp = document.createElement('div');
+    temp.innerHTML = devLogHtml.trim();
+    modal_devLog = temp.firstElementChild as HTMLElement;
+    document.body.appendChild(modal_devLog);
+  }
+
+  const devLogContent = modal_devLog.querySelector('.modal-box');
+
+  if (devLogContent && message) {
+    const logMessage = document.createElement('p');
+    logMessage.textContent = message;
+    devLogContent.appendChild(logMessage);
+  }
+
+  return modal_devLog;
+}
