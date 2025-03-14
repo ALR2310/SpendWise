@@ -102,7 +102,7 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          CHANGELOG=$(git log --pretty=format:"- %s" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..HEAD)
+          CHANGELOG=$(git log --no-merges --pretty=format:"- %s" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..HEAD)
           COMPARE_URL="https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.PREVIOUS_TAG }}...main"
 
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
