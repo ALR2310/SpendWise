@@ -20,6 +20,8 @@ const config: CapacitorConfig = {
       keystoreAlias: 'androiddebugkey',
       keystorePassword: 'android',
       keystoreAliasPassword: 'android',
+      releaseType: 'APK',
+      signingType: 'apksigner',
     },
   },
 };

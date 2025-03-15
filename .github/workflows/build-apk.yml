@@ -51,15 +51,6 @@ jobs:
         run: yarn install --frozen-lockfile
         if: steps.cache-yarn.outputs.cache-hit != 'true'
 
-      - name: Build Source
-        run: yarn build
-
-      - name: Set Version
-        run: yarn run version
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -80,20 +71,15 @@ jobs:
         run: cd android && chmod +x ./gradlew
 
       - name: Build APK
-        run: cd android && ./gradlew assembleRelease
-
-      - name: Check APK existence
-        run: ls -la android/app/build/outputs/apk/release/
-
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/SpendWise-*.apk
+        run: yarn build:android
 
       - name: Get version from package.json
         id: get_version
         run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Rename APK file
+        run: |
+          mv android/app/build/outputs/apk/release/app-release-signed.apk android/app/build/outputs/apk/release/SpendWise-${{ steps.get_version.outputs.VERSION }}.apk
 
       - name: Get previous tag
         id: previous_tag
@@ -104,7 +90,11 @@ jobs:
         run: |
           CHANGELOG=$(git log --no-merges --pretty=format:"- %s" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..HEAD)
           COMPARE_URL="https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.PREVIOUS_TAG }}...main"
-
+      
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="No changes in this release."
+          fi
+      
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
@@ -122,6 +112,6 @@ jobs:
             ${{ steps.changelog.outputs.CHANGELOG }}
           draft: false
           prerelease: false
-          files: android/app/build/outputs/apk/release/SpendWise-*.apk
+          files: android/app/build/outputs/apk/release/SpendWise-${{ steps.get_version.outputs.VERSION }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
