@@ -1,6 +1,6 @@
 {
   "name": "spendwise",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "versionCode": 2,
   "author": "ALR2310",
   "license": "UNLICENSED",
@@ -15,11 +15,9 @@
     "lint": "eslint \"{src,apps}/**/*.ts\" --fix",
     "dev": "vite --host",
     "dev:android": "yarn build && npx cap sync && npx cap run android",
-    "dev:android-live": "yarn build && npx cap sync && npx cap run android --live-reload --port=8181 --host=192.168.2.18",
+    "dev:android-live": "yarn build && npx cap sync && npx cap run android --live-reload --port=8181 --host=192.168.1.6",
     "build": "vite build",
-    "build:css": "tailwindcss -i ./src/assets/css/tailwind.input.css -o ./src/assets/css/tailwind.output.css --watch",
-    "build:android": "yarn run version && yarn build && npx cap sync && npx cap build android",
-    "build:release": "yarn run version && yarn build && npx cap sync && cd android && ./gradlew assembleRelease"
+    "build:android": "yarn run version && yarn build && npx cap sync && npx cap build android"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "7.0.0",

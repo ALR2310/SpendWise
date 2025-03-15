@@ -4,6 +4,7 @@ import { FileOpener } from '@capawesome-team/capacitor-file-opener';
 import { compareVersions } from 'compare-versions';
 import { showToast } from '~/common/utils';
 import $ from 'jquery';
+import { confirmBox } from '~/common/confirm.box';
 
 export async function appUpdater() {
   const progressBar = $('#download-update-progress');
@@ -27,7 +28,15 @@ export async function appUpdater() {
     const currentVersion = __APP_VERSION__;
     const isLatest = compareVersions(latestVersion, currentVersion);
 
-    if (isLatest == 1) {
+    if (isLatest == 0) {
+      const allowDownload = await confirmBox({
+        message: 'Có bản cập nhật mới, bạn có muốn tải về và cập nhật không?',
+        buttonOk: {
+          color: 'success',
+        },
+      });
+      if (!allowDownload) return;
+
       const findAsset: any = getLatestRelease.data.assets.find((asset: any) => asset.name.endsWith('.apk'));
       const downloadUrl = findAsset.browser_download_url;
 
@@ -46,6 +55,14 @@ export async function appUpdater() {
         path: `../Download/${findAsset.name}`,
         progress: true,
       });
+
+      const allowInstall = await confirmBox({
+        message: 'Tải xuống hoàn tất, bạn có muốn cài đặt không?',
+        buttonOk: {
+          color: 'success',
+        },
+      });
+      if (!allowInstall) return;
 
       // Get file uri
       const fileUri = (

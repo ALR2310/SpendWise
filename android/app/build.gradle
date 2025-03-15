@@ -22,18 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def appName = "SpendWise"
-            def versionName = variant.versionName
-            def versionCode = variant.versionCode
-            def newApkName = "${appName}-${versionName}.apk"
-
-            if (variant.buildType.name != "debug") {
-                outputFileName = newApkName
-            }
-        }
-    }
 }
 
 repositories {

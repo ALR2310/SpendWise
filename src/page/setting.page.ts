@@ -31,6 +31,12 @@ $('#setting_general-page').selectControl('change', function (value: string) {
   appConfig.general.defaultPage = value as 'spend' | 'stats' | 'note' | 'setting';
 });
 
+// Setting auto update
+$('#setting_general-update').prop('checked', appConfig.general.autoUpdate);
+$('#setting_general-update').on('change', function () {
+  appConfig.general.autoUpdate = $(this).prop('checked');
+});
+
 $('#setting_data-login').on('click', async () => {
   await SocialLogin.login({
     provider: 'google',
@@ -165,9 +171,6 @@ $('#setting_data-import').on('click', async function () {
 });
 
 // Check update
-$('#setting_data-check-update').on('click', function () {
-  $(this).toggleClass('btn-disabled');
-  appUpdater();
-});
+$('#setting_data-check-update').on('click', () => appUpdater());
 
 export {};
