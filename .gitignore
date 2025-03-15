@@ -52,7 +52,6 @@ yarn-error.log*
 debug.log
 
 # Security & Credentials
-*.keystore
 *.jks
 *.p12
 *.key
