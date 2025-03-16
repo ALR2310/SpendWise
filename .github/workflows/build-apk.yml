@@ -26,17 +26,21 @@ jobs:
 
       - name: Setup Environment
         env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || '' }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || '' }}
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN || '' }}
-          GITHUB_API_URL: ${{ secrets.GIT_API_URL || '' }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
+          GITHUB_API_URL: ${{ secrets.GIT_API_URL }}
         run: echo "Environment variables set"
 
-      - name: Install Vite
-        run: npm install vite
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > spendwise-release-key.jks
 
       - name: Install Yarn
         run: npm install -g yarn
+
+      - name: Install Vite
+        run: yarn add vite
 
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
@@ -67,19 +71,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Grant execute permission for gradlew
-        run: cd android && chmod +x ./gradlew
-
-      - name: Build APK
-        run: yarn build:android
-
       - name: Get version from package.json
         id: get_version
         run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-      - name: Rename APK file
+      - name: Grant execute permission for gradlew
+        run: cd android && chmod +x ./gradlew
+
+      - name: Build Source
+        run: yarn build
+
+      - name: Set Version
+        run: yarn run version
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build APK
+        run: cd android && ./gradlew assembleRelease
+
+      - name: Sign APK
         run: |
-          mv android/app/build/outputs/apk/release/app-release-signed.apk android/app/build/outputs/apk/release/SpendWise-${{ steps.get_version.outputs.VERSION }}.apk
+          apksigner sign --ks spendwise-release-key.jks \
+            --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
+            --key-pass pass:${{ secrets.ANDROID_KEY_ALIAS_PASSWORD }} \
+            --out android/app/build/outputs/apk/release/SpendWise-${{ steps.get_version.outputs.VERSION }}.apk \
+            android/app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Get previous tag
         id: previous_tag
