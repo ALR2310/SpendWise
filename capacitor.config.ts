@@ -16,7 +16,7 @@ const config: CapacitorConfig = {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
     buildOptions: {
-      keystorePath: './src/assets/debug.keystore',
+      keystorePath: 'D:\\Tools\\Android\\.android\\debug.keystore',
       keystoreAlias: 'androiddebugkey',
       keystorePassword: 'android',
       keystoreAliasPassword: 'android',
