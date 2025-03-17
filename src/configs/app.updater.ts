@@ -28,7 +28,7 @@ export async function appUpdater() {
     const currentVersion = __APP_VERSION__;
     const isLatest = compareVersions(latestVersion, currentVersion);
 
-    if (isLatest == 0) {
+    if (isLatest == 1) {
       const allowDownload = await confirmBox({
         message: 'Có bản cập nhật mới, bạn có muốn tải về và cập nhật không?',
         buttonOk: {

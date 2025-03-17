@@ -59,6 +59,12 @@ jobs:
 
           jq --arg new_version "$NEW_VERSION" '.version=$new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
+      - name: Check version
+        run: |
+          echo "CURRENT_VERSION=${{ steps.get_version.outputs.VERSION }}"
+          echo "NEW_VERSION=${{ steps.update_version.outputs.NEW_VERSION }}"
+          echo "PREVIOUS_VERSION=${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
+      
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:

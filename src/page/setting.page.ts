@@ -40,17 +40,12 @@ $('#setting_general-update').on('change', function () {
 
 // Button login
 $('#setting_data-login').on('click', async () => {
-  try {
-    await SocialLogin.login({
-      provider: 'google',
-      options: {
-        disableOneTap: true,
-      },
-    });
-  } catch (e) {
-    console.log(e);
-    logger('Login failed', e);
-  }
+  await SocialLogin.login({
+    provider: 'google',
+    options: {
+      disableOneTap: true,
+    },
+  });
 
   $('#login-button-container').hide();
   $('#logout-button-container').show();
