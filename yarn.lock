@@ -1912,10 +1912,10 @@ css-what@^6.0.1:
   resolved "https://registry.yarnpkg.com/css-what/-/css-what-6.1.0.tgz#fb5effcf76f1ddea2c81bdfaa4de44e79bac70f4"
   integrity sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==
 
-daisyui@^5.0.0:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.0.3.tgz#a07894de9fa72772ccba598202cfb438b35be22c"
-  integrity sha512-27dou80uFNgxVcmQNzS8QFBoE1/01u7N0smdGqA2pHbaRPTFoHdJfXNzilpvt/0jAVu8cMEhrVPoYxpdxLwumA==
+daisyui@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.0.4.tgz#afac841df7ddfe6173501e22d0bfd2a677f736b9"
+  integrity sha512-9X3oX/k9hPBCslAECk8kYfvwgrz6Grs0lN7VI0/ZTM/hUfq1uFREHxCcBCCq0QROpN183N19B1hTNRWGipO2Eg==
 
 dargs@^7.0.0:
   version "7.0.0"
