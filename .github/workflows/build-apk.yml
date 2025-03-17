@@ -26,8 +26,14 @@ jobs:
       - name: Get previous tag
         id: previous_tag
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "0.0.0")
-          echo "PREVIOUS_TAG=$PREV_TAG" >> $GITHUB_OUTPUT
+          LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // empty')
+
+          if [[ -z "$LATEST_RELEASE" || "$LATEST_RELEASE" == "null" ]]; then
+            LATEST_RELEASE=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "v0.0.0")
+          fi
+
+          echo "PREVIOUS_TAG=$LATEST_RELEASE" >> $GITHUB_OUTPUT
 
       - name: Determine new version & update package.json
         id: update_version
@@ -35,7 +41,8 @@ jobs:
           PREV_TAG="${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
           CUR_VERSION="${{ steps.get_version.outputs.VERSION }}"
 
-          PREV_TAG=${PREV_TAG#v}
+          PREV_TAG=${PREV_TAG#v} # Bỏ 'v' nếu có
+          CUR_VERSION=${CUR_VERSION#v}
 
           IFS='.' read -r -a prev_parts <<< "$PREV_TAG"
           IFS='.' read -r -a cur_parts <<< "$CUR_VERSION"
@@ -48,7 +55,7 @@ jobs:
           cur_minor=${cur_parts[1]:-0}
           cur_patch=${cur_parts[2]:-0}
 
-          if [ "$cur_major" -lt "$prev_major" ] || [ "$cur_major" -eq "$prev_major" -a "$cur_minor" -lt "$prev_minor" ] || [ "$cur_major" -eq "$prev_major" -a "$cur_minor" -eq "$prev_minor" -a "$cur_patch" -le "$prev_patch" ]; then
+          if [ "$prev_major" -gt "$cur_major" ] || [ "$prev_major" -eq "$cur_major" -a "$prev_minor" -gt "$cur_minor" ] || [ "$prev_major" -eq "$cur_major" -a "$prev_minor" -eq "$cur_minor" -a "$prev_patch" -ge "$cur_patch" ]; then
             NEW_VERSION="${prev_major}.${prev_minor}.$((prev_patch + 1))"
           else
             NEW_VERSION="$CUR_VERSION"
@@ -137,8 +144,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            android/app/build/intermediates/javac
-            android/app/build/intermediates/dex
+            android/app/build/intermediates
           key: ${{ runner.os }}-gradle-outputs-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-gradle-outputs-
@@ -159,18 +165,18 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"      
-
+          
           LATEST_TAG="v${{ steps.update_version.outputs.NEW_VERSION }}"
           PREV_TAG="${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
-
+          
           git fetch --tags
-
+          
           if ! git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
             echo "Tag $LATEST_TAG does not exist, creating it now..."
             git tag -a "$LATEST_TAG" -m "Release $LATEST_TAG"
             git push origin "$LATEST_TAG"
           fi
-
+          
           if [ "$PREV_TAG" == "0.0.0" ]; then
             CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $(git rev-list --max-parents=0 HEAD)..$LATEST_TAG)
             COMPARE_URL="https://github.com/${{ github.repository }}/commits/$LATEST_TAG"
@@ -178,14 +184,14 @@ jobs:
             CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $PREV_TAG..$LATEST_TAG)
             COMPARE_URL="https://github.com/${{ github.repository }}/compare/$PREV_TAG...$LATEST_TAG"
           fi
-
+          
           [ -z "$CHANGELOG" ] && CHANGELOG="No changes in this release."
-
+          
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "See full changes: $COMPARE_URL" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT          
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
