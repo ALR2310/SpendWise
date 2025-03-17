@@ -39,14 +39,6 @@ jobs:
       - name: Install Yarn
         run: npm install -g yarn
 
-      - name: Check if Vite is installed
-        id: check-vite
-        run: yarn list vite || echo 'vite_not_installed=true' >> $GITHUB_OUTPUT
-
-      - name: Install Vite
-        if: steps.check-vite.outputs.vite_not_installed == 'true'
-        run: yarn add vite
-
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
         id: cache-yarn
@@ -55,6 +47,14 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
+      - name: Check if Vite is installed
+        id: check-vite
+        run: yarn list vite || echo 'vite_not_installed=true' >> $GITHUB_OUTPUT
+
+      - name: Install Vite
+        if: steps.check-vite.outputs.vite_not_installed == 'true'
+        run: yarn add vite
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -85,7 +85,12 @@ jobs:
 
       - name: Get previous tag
         id: previous_tag
-        run: echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")" >> $GITHUB_OUTPUT
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | tail -n 2 | head -n 1 || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG="0.0.0"
+          fi
+          echo "PREVIOUS_TAG=$PREV_TAG" >> $GITHUB_OUTPUT
 
       - name: Determine new version & update package.json
         id: update_version
@@ -93,7 +98,6 @@ jobs:
           PREV_TAG="${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
           CUR_VERSION="${{ steps.get_version.outputs.VERSION }}"
 
-          # Chuyển đổi thành số nguyên để so sánh
           prev_numeric=$(echo $PREV_TAG | awk -F. '{ printf("%d%03d%03d\n", $1, $2, $3) }')
           cur_numeric=$(echo $CUR_VERSION | awk -F. '{ printf("%d%03d%03d\n", $1, $2, $3) }')
 
@@ -101,32 +105,26 @@ jobs:
             IFS='.' read -r -a parts <<< "$PREV_TAG"
             PATCH=$((parts[2] + 1))
             NEW_VERSION="${parts[0]}.${parts[1]}.$PATCH"
-            echo "Current version ($CUR_VERSION) is not greater than previous tag ($PREV_TAG). Bumping to $NEW_VERSION."
           else
             NEW_VERSION="$CUR_VERSION"
-            echo "Keeping version as $NEW_VERSION."
           fi
-
-          # Cập nhật package.json
-          jq --arg new_version "$NEW_VERSION" '.version=$new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          jq --arg new_version "$NEW_VERSION" '.version=$new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
       - name: Commit updated package.json
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add package.json
-          git commit -m "chore: auto-bump version to ${{ steps.update_version.outputs.NEW_VERSION }}"
-          git push
-        continue-on-error: true
-
-      - name: Build Source
-        run: yarn build
+          git diff --quiet || (git add package.json && git commit -m "chore: auto-bump version to ${{ steps.update_version.outputs.NEW_VERSION }}" && git push)
 
       - name: Set Version
         run: yarn run version
+
+      - name: Build Source
+        run: yarn build
 
       - name: Sync Capacitor
         run: npx cap sync android
@@ -149,22 +147,17 @@ jobs:
           PREV_TAG=$(git tag --sort=-creatordate | grep -v "^$LATEST_TAG$" | head -n 1)
 
           if [ -z "$LATEST_TAG" ]; then
-            echo "First release, including all commits."
             CHANGELOG=$(git log --no-merges --pretty=format:"- %s")
             COMPARE_URL="https://github.com/${{ github.repository }}/commits/main"
           elif [ -z "$PREV_TAG" ]; then
-            echo "Only one tag found, comparing with initial commit."
             CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $(git rev-list --max-parents=0 HEAD)..$LATEST_TAG)
             COMPARE_URL="https://github.com/${{ github.repository }}/commits/$LATEST_TAG"
           else
-            echo "Generating changelog from $PREV_TAG to $LATEST_TAG..."
             CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $PREV_TAG..$LATEST_TAG)
             COMPARE_URL="https://github.com/${{ github.repository }}/compare/$PREV_TAG...$LATEST_TAG"
           fi
 
-          if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="No changes in this release."
-          fi
+          [ -z "$CHANGELOG" ] && CHANGELOG="No changes in this release."
 
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
