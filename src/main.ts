@@ -14,6 +14,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
+import logger from './configs/app.log';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -38,8 +39,14 @@ Handlebars.registerHelper('formatCurrency', formatCurrency);
 themeChange();
 
 (async () => {
+  logger.init();
   // Init database
-  await NoSqliteInit([SpendListModel, SpendItemModel, NoteModel, IncomeModel]);
+  try {
+    await NoSqliteInit([SpendListModel, SpendItemModel, NoteModel, IncomeModel]);
+  } catch (e) {
+    logger('Error init database: ', e);
+  }
+
   // Init social login
   await SocialLogin.initialize({
     google: {
