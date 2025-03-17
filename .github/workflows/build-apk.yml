@@ -145,13 +145,27 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          CHANGELOG=$(git log --no-merges --pretty=format:"- %s" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..HEAD)
-          COMPARE_URL="https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.PREVIOUS_TAG }}...main"
-      
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          PREV_TAG=$(git tag --sort=-creatordate | grep -v "^$LATEST_TAG$" | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "First release, including all commits."
+            CHANGELOG=$(git log --no-merges --pretty=format:"- %s")
+            COMPARE_URL="https://github.com/${{ github.repository }}/commits/main"
+          elif [ -z "$PREV_TAG" ]; then
+            echo "Only one tag found, comparing with initial commit."
+            CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $(git rev-list --max-parents=0 HEAD)..$LATEST_TAG)
+            COMPARE_URL="https://github.com/${{ github.repository }}/commits/$LATEST_TAG"
+          else
+            echo "Generating changelog from $PREV_TAG to $LATEST_TAG..."
+            CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $PREV_TAG..$LATEST_TAG)
+            COMPARE_URL="https://github.com/${{ github.repository }}/compare/$PREV_TAG...$LATEST_TAG"
+          fi
+
           if [ -z "$CHANGELOG" ]; then
             CHANGELOG="No changes in this release."
           fi
-      
+
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
