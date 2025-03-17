@@ -23,7 +23,9 @@ const db = {
       }
 
       const ret = await sqlite.checkConnectionsConsistency();
-      if (!ret.result) dbInstance = await createConnection();
+      if (!ret.result && Capacitor.getPlatform() == 'web') {
+        dbInstance = await createConnection();
+      }
       dbInstance = dbInstance ?? (await createConnection());
 
       await dbInstance.open();
@@ -31,7 +33,6 @@ const db = {
       return dbInstance;
     } catch (e) {
       console.error('Error initializing database', e);
-      throw e;
     }
   },
 
@@ -44,9 +45,7 @@ const db = {
   },
 
   queryAll: async (queries: any) => {
-    const promises = queries.map(({ sql, params = [] }) =>
-      db.query(sql, params).catch((error) => ({ error })),
-    );
+    const promises = queries.map(({ sql, params = [] }) => db.query(sql, params).catch((error) => ({ error })));
 
     const results = await Promise.all(promises);
 

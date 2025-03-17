@@ -20,9 +20,9 @@
     "build:android": "yarn run version && yarn build && npx cap sync && npx cap build android"
   },
   "dependencies": {
-    "@capacitor-community/sqlite": "7.0.0",
+    "@capacitor-community/sqlite": "^7.0.0",
     "@capacitor/app": "^7.0.0",
-    "@capacitor/core": "^7.0.1",
+    "@capacitor/core": "7.0.1",
     "@capacitor/device": "^7.0.0",
     "@capacitor/filesystem": "^7.0.0",
     "@capacitor/splash-screen": "^7.0.0",

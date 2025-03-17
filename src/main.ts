@@ -39,7 +39,8 @@ Handlebars.registerHelper('formatCurrency', formatCurrency);
 themeChange();
 
 (async () => {
-  logger.init();
+  logger.init(); // Init logger
+
   // Init database
   try {
     await NoSqliteInit([SpendListModel, SpendItemModel, NoteModel, IncomeModel]);

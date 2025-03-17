@@ -11,6 +11,15 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true,
     },
+    CapacitorSQLite: {
+      androidIsEncryption: true,
+      androidBiometric: {
+        biometricAuth: false,
+        biometricTitle: 'Biometric login for capacitor sqlite',
+        biometricSubTitle: 'Log in using your biometric',
+        androidDatabaseLocation: 'default',
+      },
+    },
   },
   android: {
     allowMixedContent: true,
