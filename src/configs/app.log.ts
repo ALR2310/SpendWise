@@ -28,7 +28,7 @@ class AppLogs {
     messages.forEach((msg) => {
       const logItem = document.createElement('pre');
       logItem.style.whiteSpace = 'pre-wrap';
-      logItem.innerText = typeof msg === 'object' ? JSON.stringify(msg, null, 2) : String(msg);
+      logItem.innerText = msg;
       this.logContainer!.appendChild(logItem);
     });
 

@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import $ from 'jquery';
 import '~/common/jquery.custom';
 import { appUpdater } from '~/configs/app.updater';
+import logger from '~/configs/app.log';
 
 // Initialize the custom select
 document.querySelectorAll('div.select').forEach((select) => {
@@ -37,23 +38,25 @@ $('#setting_general-update').on('change', function () {
   appConfig.general.autoUpdate = $(this).prop('checked');
 });
 
+// Button login
 $('#setting_data-login').on('click', async () => {
-  await SocialLogin.login({
-    provider: 'google',
-    options: {
-      scopes: [
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/drive.file',
-        'https://www.googleapis.com/auth/drive.appdata',
-      ],
-      disableOneTap: true,
-    },
-  });
+  try {
+    await SocialLogin.login({
+      provider: 'google',
+      options: {
+        disableOneTap: true,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    logger('Login failed', e);
+  }
 
   $('#login-button-container').hide();
   $('#logout-button-container').show();
 });
 
+// Button logout
 $('#setting_data-logout').on('click', async () => {
   await SocialLogin.logout({ provider: 'google' });
 
