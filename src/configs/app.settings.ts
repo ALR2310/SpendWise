@@ -1,3 +1,5 @@
+import { Preferences } from '@capacitor/preferences';
+
 export enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
@@ -72,8 +74,10 @@ const defaultConfigs: AppConfigs = {
   version: 1,
 };
 
-const saveToStorage = (key: string, data: any) => {
-  localStorage.setItem(key, JSON.stringify(data));
+const saveToStorage = async (key: string, data: any) => {
+  const dataStr = JSON.stringify(data);
+  localStorage.setItem(key, dataStr);
+  Preferences.set({ key, value: dataStr });
 };
 
 function createSettingsProxy<T>(data: T, storageKey: string, rootData: T = data): T {
@@ -110,6 +114,24 @@ function initializeAppConfig(storageKey: string): AppConfigs {
   return createSettingsProxy(settings, storageKey);
 }
 
+async function syncFromPreferences(storageKey: string) {
+  const storedSettingStr = (await Preferences.get({ key: storageKey })).value;
+  if (!storedSettingStr) return;
+
+  const storedSetting: AppConfigs = JSON.parse(storedSettingStr);
+
+  if (storedSetting.version !== defaultConfigs.version) {
+    mergeSettings(storedSetting, defaultConfigs);
+    removeOldSettings(storedSetting, defaultConfigs);
+    storedSetting.version = defaultConfigs.version;
+  }
+
+  if (JSON.stringify(storedSetting) !== JSON.stringify(appConfig)) {
+    Object.assign(appConfig, storedSetting);
+    saveToStorage(storageKey, storedSetting);
+  }
+}
+
 function mergeSettings(target: AppConfigs, source: AppConfigs) {
   for (const key in source) {
     if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
@@ -131,3 +153,5 @@ function removeOldSettings(target: AppConfigs, source: AppConfigs) {
 }
 
 export const appConfig = initializeAppConfig('appConfigs');
+
+syncFromPreferences('appConfigs');

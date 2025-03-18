@@ -114,6 +114,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-7.0.0.tgz#3823c5a63dfa2992db401832db1dbe6063f1b1a7"
   integrity sha512-xMzLq+ZaqYBAincYOKF1eNy/3UWwx1XM6TuvWBTVQTHeRsURzqwwbqBKtfkhbRzk5wnXEprWZz5k5iFo2s2BXw==
 
+"@capacitor/preferences@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/preferences/-/preferences-7.0.0.tgz#37a0f5b5d9a83dc316d362b72db0bbdabfbb53ef"
+  integrity sha512-crlTtTIWcdlLfQULJ9ZiCPpvpm51WoZ8CIVG3+XSJGyavjD4bscHP15U24ya5SjpYmI44bGY9lvhvcSCfB5+AA==
+
 "@capacitor/splash-screen@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-7.0.0.tgz#7c59d1bacd051baf7ae133831902654927d23695"

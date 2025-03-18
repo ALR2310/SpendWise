@@ -11,7 +11,6 @@ import dayjs from 'dayjs';
 import $ from 'jquery';
 import '~/common/jquery.custom';
 import { appUpdater } from '~/configs/app.updater';
-import logger from '~/configs/app.log';
 
 // Initialize the custom select
 document.querySelectorAll('div.select').forEach((select) => {

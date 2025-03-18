@@ -15,7 +15,7 @@
     "lint": "eslint \"{src,apps}/**/*.ts\" --fix",
     "dev": "vite --host",
     "dev:android": "yarn build && npx cap sync && npx cap run android",
-    "dev:android-live": "yarn build && npx cap sync && npx cap run android --live-reload --port=8181 --host=192.168.2.22",
+    "dev:android-live": "yarn build && npx cap sync && npx cap run android --live-reload --port=8181 --host=192.168.2.18",
     "build": "vite build",
     "build:android": "yarn run version && yarn build && npx cap sync && npx cap build android"
   },
@@ -25,6 +25,7 @@
     "@capacitor/core": "7.0.1",
     "@capacitor/device": "^7.0.0",
     "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/preferences": "^7.0.0",
     "@capacitor/splash-screen": "^7.0.0",
     "@capacitor/toast": "^7.0.0",
     "@capawesome-team/capacitor-file-opener": "^7.0.1",
