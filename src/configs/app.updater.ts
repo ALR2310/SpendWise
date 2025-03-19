@@ -1,14 +1,55 @@
 import { CapacitorHttp } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { FileOpener } from '@capawesome-team/capacitor-file-opener';
 import { compareVersions } from 'compare-versions';
 import { showToast } from '~/common/utils';
 import $ from 'jquery';
 import { confirmBox } from '~/common/confirm.box';
+import logger from './app.log';
+import { ApkInstaller } from '~/plugins/apkinstaller';
 
-export async function appUpdater() {
+async function getFileUri(path: string): Promise<string | null> {
+  try {
+    const result = await Filesystem.stat({
+      directory: Directory.External,
+      path,
+    });
+    return result.uri;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function downloadFile(pathSave: string, urlFile: string): Promise<string | null> {
   const progressBar = $('#download-update-progress');
 
+  const listener = await Filesystem.addListener('progress', (progress) => {
+    const { bytes, contentLength } = progress;
+    const percentage = ((bytes / contentLength) * 100).toFixed(2);
+    progressBar.removeClass('hidden').find('progress').attr('value', percentage);
+  });
+
+  try {
+    await Filesystem.downloadFile({
+      url: urlFile,
+      recursive: true,
+      directory: Directory.External,
+      path: pathSave,
+      progress: true,
+    });
+
+    return await getFileUri(pathSave);
+  } catch (e) {
+    console.log(e);
+    showToast('Failed to download update', 'error');
+    logger('Failed to download update', e);
+    throw e;
+  } finally {
+    listener.remove();
+    progressBar.addClass('hidden');
+  }
+}
+
+export async function appUpdater() {
   try {
     // Get latest release
     const getLatestRelease = await CapacitorHttp.get({
@@ -20,6 +61,7 @@ export async function appUpdater() {
     });
 
     if (getLatestRelease.status !== 200) {
+      logger('Failed to check for updates', getLatestRelease);
       return showToast('Failed to check for updates', 'error');
     }
 
@@ -30,61 +72,42 @@ export async function appUpdater() {
 
     if (isLatest == 1) {
       const allowDownload = await confirmBox({
-        message: 'Có bản cập nhật mới, bạn có muốn tải về và cập nhật không?',
+        message: 'Found new update, do you want to download and update?',
         buttonOk: {
           color: 'success',
         },
       });
       if (!allowDownload) return;
 
-      const findAsset: any = getLatestRelease.data.assets.find((asset: any) => asset.name.endsWith('.apk'));
-      const downloadUrl = findAsset.browser_download_url;
+      const assetInfo: any = getLatestRelease.data.assets.find((asset: any) => asset.name.endsWith('.apk'));
+      const downloadUrl = assetInfo.browser_download_url;
+      const fileName = assetInfo.name;
 
-      // Add listener
-      const listener = await Filesystem.addListener('progress', (progress) => {
-        const { bytes, contentLength } = progress;
-        const percentage = ((bytes / contentLength) * 100).toFixed(2);
-        progressBar.removeClass('hidden').find('progress').attr('value', percentage);
-      });
+      let fileUri = await getFileUri(fileName);
 
-      // Download file
-      await Filesystem.downloadFile({
-        url: downloadUrl,
-        recursive: true,
-        directory: Directory.Documents,
-        path: `../Download/${findAsset.name}`,
-        progress: true,
-      });
+      if (!fileUri) {
+        fileUri = await downloadFile(fileName, downloadUrl);
+      }
 
       const allowInstall = await confirmBox({
-        message: 'Tải xuống hoàn tất, bạn có muốn cài đặt không?',
+        message: 'Download complete, do you want to install?',
         buttonOk: {
           color: 'success',
         },
       });
       if (!allowInstall) return;
 
-      // Get file uri
-      const fileUri = (
-        await Filesystem.getUri({
-          directory: Directory.Documents,
-          path: `../Download/${findAsset.name}`,
-        })
-      ).uri;
+      if (!fileUri) {
+        return showToast('Cannot find the file', 'error');
+      }
 
-      // Remove listener
-      listener.remove();
-
-      // Open file
-      await FileOpener.openFile({
-        path: fileUri,
-        mimeType: 'application/vnd.android.package-archive',
+      await ApkInstaller.install({
+        filePath: fileUri,
       });
     }
   } catch (e) {
     console.log(e);
-    showToast('Failed to download update', 'error');
-  } finally {
-    progressBar.addClass('hidden');
+    logger('Failed to check for updates', e);
+    showToast('Failed to check for updates', 'error');
   }
 }
