@@ -4,8 +4,8 @@ import { compareVersions } from 'compare-versions';
 import { showToast } from '~/common/utils';
 import $ from 'jquery';
 import { confirmBox } from '~/common/confirm.box';
-import logger from './app.log';
-import { ApkInstaller } from '~/plugins/apkinstaller';
+import logger from './app.logger';
+import { ApkInstaller } from 'capacitor-apkinstaller';
 
 async function getFileUri(path: string): Promise<string | null> {
   try {
@@ -101,7 +101,7 @@ export async function appUpdater() {
         return showToast('Cannot find the file', 'error');
       }
 
-      await ApkInstaller.install({
+      await ApkInstaller.open({
         filePath: fileUri,
       });
     }

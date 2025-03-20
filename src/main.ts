@@ -14,7 +14,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
-import logger from './configs/app.log';
+import logger from './configs/app.logger';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
