@@ -10,6 +10,7 @@ import {
 import dayjs from 'dayjs';
 import { QueryFilter } from './db.type';
 import { UniqueId } from '~/common/utils';
+import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 export async function Query(sql: string, params: any[] = []) {
   return db.query(sql, params);
@@ -73,6 +74,10 @@ export class NoSqliteModel<T> {
     this.props = Reflect.getMetadata('props', model.prototype) || {};
   }
 
+  getProps(): Record<string, any> {
+    return this.props;
+  }
+
   async find(filter: QueryFilter<T> = {}): Promise<T[] | null> {
     const { condition, values } = buildQueryCondition(filter);
     const query = `SELECT * FROM ${this.tableName} ${condition}`;
@@ -111,20 +116,27 @@ export class NoSqliteModel<T> {
   async insertMany(dataArray: Partial<T>[]) {
     if (!dataArray || Object.keys(dataArray).length === 0) throw new Error('Data is required.');
 
-    const queries = dataArray.map((data) => {
-      data = buildInsertData(data, this.props);
+    const dbInstance: SQLiteDBConnection = await db.sqlite();
+    await dbInstance.open();
 
-      const columns = Object.keys(this.props).filter((col) => data[col] !== undefined);
-      const values = columns.map((col) => data[col]);
+    const processedData = dataArray.map((data) => buildInsertData(data, this.props));
 
-      const columnNames = columns.join(', ');
-      const placeholders = columns.map(() => '?').join(', ');
-      const query = `INSERT INTO ${this.tableName} (${columnNames}) VALUES (${placeholders})`;
+    const columns = Object.keys(this.props).filter((col) => processedData.some((data) => data[col] !== undefined));
+    if (columns.length === 0) throw new Error('No valid columns to insert.');
 
-      return { sql: query, params: values };
-    });
+    // Tạo placeholders (?, ?, ?), (?, ?, ?), ...
+    const placeholders = processedData.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
 
-    return await db.queryAll(queries);
+    // Dữ liệu để bind vào câu query
+    const flatValues = processedData.flatMap((data) => columns.map((col) => data[col]));
+
+    // Câu SQL cuối cùng
+    const query = `INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES ${placeholders}`;
+
+    // Thực thi lệnh insert
+    const result = await dbInstance.run(query, flatValues);
+    console.log(`Inserted ${result.changes} rows into ${this.tableName}`);
+    return result.changes;
   }
 
   async updateOne(filter: Partial<T>, data: Partial<T>) {

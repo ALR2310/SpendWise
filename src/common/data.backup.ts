@@ -1,10 +1,11 @@
 import { drive } from './google.drive';
-import { Query, QueryAll } from '~/configs/nosql/db.wrapper';
+import { NoSqliteModel, Query, QueryAll } from '~/configs/nosql/db.wrapper';
 import pako from 'pako';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import { filter } from 'lodash';
 import { fixDate } from './utils';
+import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -190,8 +191,6 @@ interface SpendData {
 
 export async function importData(data: any, removeOldData = false): Promise<{ success: boolean; message: string }> {
   let spendData = data;
-
-  // Old format data
   if (data.spendingList) spendData = convertData(data);
 
   try {
@@ -205,58 +204,51 @@ export async function importData(data: any, removeOldData = false): Promise<{ su
       await Query('VACUUM');
     }
 
-    const spendListQueries: any[] = [];
-    const spendItemQueries: any[] = [];
-    const noteQueries: any[] = [];
-    const incomeQueries: any[] = [];
+    const spendListModel = new NoSqliteModel(SpendListModel);
+    const spendItemModel = new NoSqliteModel(SpendItemModel);
+    const noteModel = new NoSqliteModel(NoteModel);
+    const incomeModel = new NoSqliteModel(IncomeModel);
 
     for (const i of spendData?.SpendList ?? []) {
       const [createdAt, updatedAt] = fixDate([i.createdAt, i.updatedAt]);
       if (!createdAt || !updatedAt) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
 
-      spendListQueries.push({
-        sql: 'INSERT INTO SpendList (_id, name, status, createdAt, updatedAt, _v) VALUES (?, ?, ?, ?, ?, ?)',
-        params: [i._id, i.name, i.status, createdAt, updatedAt, i._v],
-      });
+      i.createdAt = createdAt;
+      i.updatedAt = updatedAt;
     }
 
     for (const i of spendData?.SpendItem ?? []) {
       const [createdAt, updatedAt, date] = fixDate([i.createdAt, i.updatedAt, i.date]);
-      if (!updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+      if (!createdAt || !updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
 
-      spendItemQueries.push({
-        sql: `INSERT INTO SpendItem (_id, listId, name, price, details, status, date, createdAt, updatedAt, _v)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: [i._id, i.listId, i.name, i.price, i.details, i.status, date, createdAt ?? updatedAt, updatedAt, i._v],
-      });
+      i.createdAt = createdAt;
+      i.updatedAt = updatedAt;
+      i.date = date;
     }
 
     for (const i of spendData?.Note ?? []) {
       const [createdAt, updatedAt] = fixDate([i.createdAt, i.updatedAt]);
       if (!createdAt || !updatedAt) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
 
-      noteQueries.push({
-        sql: `INSERT INTO Note (_id, name, content, status, createdAt, updatedAt, _v)
-              VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        params: [i._id, i.name, i.content, i.status, createdAt, updatedAt, i._v],
-      });
+      i.createdAt = createdAt;
+      i.updatedAt = updatedAt;
     }
 
     for (const i of spendData?.Income ?? []) {
       const [createdAt, updatedAt, date] = fixDate([i.createdAt, i.updatedAt, i.date]);
       if (!createdAt || !updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
 
-      incomeQueries.push({
-        sql: `INSERT INTO Income (_id, listId, name, price, status, date, createdAt, updatedAt, _v)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        params: [i._id, i.listId, i.name, i.price, i.status, date, createdAt, updatedAt, i._v],
-      });
+      i.createdAt = createdAt;
+      i.updatedAt = updatedAt;
+      i.date = date;
     }
 
-    if (spendListQueries.length > 0) await QueryAll(spendListQueries);
-    if (spendItemQueries.length > 0) await QueryAll(spendItemQueries);
-    if (noteQueries.length > 0) await QueryAll(noteQueries);
-    if (incomeQueries.length > 0) await QueryAll(incomeQueries);
+    const promises: Promise<any>[] = [];
+    if (spendData?.SpendList?.length) promises.push(spendListModel.insertMany(spendData.SpendList));
+    if (spendData?.SpendItem?.length) promises.push(spendItemModel.insertMany(spendData.SpendItem));
+    if (spendData?.Note?.length) promises.push(noteModel.insertMany(spendData.Note));
+    if (spendData?.Income?.length) promises.push(incomeModel.insertMany(spendData.Income));
+    await Promise.all(promises);
 
     return {
       success: true,
@@ -283,7 +275,7 @@ export async function exportData() {
 }
 
 function convertData(data: any): SpendData['V2'] {
-  const SpendList: SpendData['V2']['SpendList'] = data.spendingList.map((item: SpendData['V1']['spendingList']) => ({
+  const SpendList: SpendData['V2']['SpendList'] = data?.spendingList?.map((item: SpendData['V1']['spendingList']) => ({
     _id: item.id,
     name: item.namelist,
     status: item.status == 1 ? 'Active' : 'Inactive',
@@ -292,7 +284,7 @@ function convertData(data: any): SpendData['V2'] {
     _v: 0,
   }));
 
-  const SpendItem: SpendData['V2']['SpendItem'] = data.spendingItem.map((item: SpendData['V1']['spendingItem']) => ({
+  const SpendItem: SpendData['V2']['SpendItem'] = data?.spendingItem?.map((item: SpendData['V1']['spendingItem']) => ({
     _id: item.id,
     listId: item.spendlistid,
     name: item.nameitem,
@@ -305,7 +297,7 @@ function convertData(data: any): SpendData['V2'] {
     _v: 0,
   }));
 
-  const Note: SpendData['V2']['Note'] = data.noted.map((item: SpendData['V1']['noted']) => ({
+  const Note: SpendData['V2']['Note'] = data?.noted?.map((item: SpendData['V1']['noted']) => ({
     _id: item.id,
     name: item.namelist,
     content: item.content,
@@ -315,7 +307,7 @@ function convertData(data: any): SpendData['V2'] {
     _v: 0,
   }));
 
-  const Income: SpendData['V2']['Income'] = data.income.map((item: SpendData['V1']['income']) => ({
+  const Income: SpendData['V2']['Income'] = data?.income?.map((item: SpendData['V1']['income']) => ({
     _id: item.id,
     listId: item.spendlistid,
     name: '',

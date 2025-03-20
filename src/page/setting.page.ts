@@ -39,12 +39,7 @@ $('#setting_general-update').on('change', function () {
 
 // Button login
 $('#setting_data-login').on('click', async () => {
-  await SocialLogin.login({
-    provider: 'google',
-    options: {
-      disableOneTap: true,
-    },
-  });
+  await SocialLogin.login({ provider: 'google', options: {} });
 
   $('#login-button-container').hide();
   $('#logout-button-container').show();
@@ -64,8 +59,6 @@ $('#setting_data-logout').on('click', async () => {
   if (isLogin) {
     $('#login-button-container').hide();
     $('#logout-button-container').show();
-
-    console.log(await SocialLogin.getAuthorizationCode({ provider: 'google' }));
   }
 })();
 
@@ -159,6 +152,7 @@ $('#setting_data-import').on('click', async function () {
     const data = JSON.parse(decodedContent);
     const result = await importData(data, true);
     showToast(result.message, result.success ? 'success' : 'error');
+    window.location.reload();
   } catch (e) {
     console.error(e);
     showToast('An error occurred when importing data', 'error');

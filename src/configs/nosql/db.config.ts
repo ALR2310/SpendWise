@@ -66,18 +66,7 @@ const db = {
       });
   },
 
-  transaction: async (queries: any) => {
-    await db.query('BEGIN');
-    try {
-      for (const { sql, params } of queries) await db.query(sql, params);
-      await db.query('COMMIT');
-    } catch (error) {
-      await db.query('ROLLBACK');
-      throw error;
-    }
-  },
-
-  close: async () => {
+  closeConnect: async () => {
     if (dbInstance) {
       await dbInstance.close();
       dbInstance = null;

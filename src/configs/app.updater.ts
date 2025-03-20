@@ -10,7 +10,7 @@ import { ApkInstaller } from 'capacitor-apkinstaller';
 async function getFileUri(path: string): Promise<string | null> {
   try {
     const result = await Filesystem.stat({
-      directory: Directory.External,
+      directory: Directory.Cache,
       path,
     });
     return result.uri;
@@ -32,7 +32,7 @@ async function downloadFile(pathSave: string, urlFile: string): Promise<string |
     await Filesystem.downloadFile({
       url: urlFile,
       recursive: true,
-      directory: Directory.External,
+      directory: Directory.Cache,
       path: pathSave,
       progress: true,
     });
