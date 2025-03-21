@@ -43,6 +43,12 @@ $('#setting_data-auto-sync').on('change', function () {
   appConfig.general.autoSync = $(this).prop('checked');
 });
 
+// Setting auto backup
+$('#setting_data-auto-backup').prop('checked', appConfig.general.autoBackup);
+$('#setting_data-auto-backup').on('change', function () {
+  appConfig.general.autoBackup = $(this).prop('checked');
+});
+
 // Button login
 $('#setting_data-login').on('click', async () => {
   await SocialLogin.login({ provider: 'google', options: {} });

@@ -131,7 +131,7 @@ class GoogleDrive {
 
     try {
       const response = await fetch(API, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: this.getHeaders(),
         body: form,
       });

@@ -10,7 +10,6 @@ import {
 import dayjs from 'dayjs';
 import { QueryFilter } from './db.type';
 import { UniqueId } from '~/common/utils';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 export async function Query(sql: string, params: any[] = []) {
   return db.query(sql, params);
@@ -116,9 +115,6 @@ export class NoSqliteModel<T> {
   async insertMany(dataArray: Partial<T>[]) {
     if (!dataArray || Object.keys(dataArray).length === 0) throw new Error('Data is required.');
 
-    const dbInstance: SQLiteDBConnection = await db.sqlite();
-    await dbInstance.open();
-
     const processedData = dataArray.map((data) => buildInsertData(data, this.props));
 
     const columns = Object.keys(this.props).filter((col) => processedData.some((data) => data[col] !== undefined));
@@ -128,7 +124,7 @@ export class NoSqliteModel<T> {
     const flatValues = processedData.flatMap((data) => columns.map((col) => data[col]));
     const query = `INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES ${placeholders}`;
 
-    const result = await dbInstance.run(query, flatValues);
+    const result = await db.query(query, flatValues);
     console.log(`Inserted ${result.changes} rows into ${this.tableName}`);
     return result.changes;
   }

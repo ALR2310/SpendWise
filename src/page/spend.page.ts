@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 
 import { NoSqliteModel, Query } from '~/configs/nosql/db.wrapper';
 import { SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
+import { autoBackupData } from '~/common/data.backup';
 
 // init model
 const spendListModel = new NoSqliteModel(SpendListModel);
@@ -154,6 +155,8 @@ $('#btn_spendList_create').on('click', async function () {
     } catch (e) {
       console.log(e);
       showToast('Tạo danh sách thất bại', 'error');
+    } finally {
+      autoBackupData();
     }
   } else {
     showToast('Vui lòng nhập tên danh sách chi tiêu', 'warning');
@@ -173,6 +176,8 @@ $('#btn_spendList_delete').on('click', async function () {
     } catch (e) {
       console.log(e);
       showToast('Xoá danh sách thất bại', 'error');
+    } finally {
+      autoBackupData();
     }
   else showToast('Vui lòng chọn danh sách muốn xoá', 'warning');
 });
@@ -228,6 +233,8 @@ $('#btn_spendItem_create').on('click', async function () {
   } catch (e) {
     console.log(e);
     showToast('Thêm chi tiêu thất bại', 'error');
+  } finally {
+    autoBackupData();
   }
 });
 
@@ -257,15 +264,23 @@ $('#btn_spendItem_update').on('click', async function () {
   } catch (e) {
     console.log(e);
     showToast('Cập nhật chi tiêu thất bại', 'error');
+  } finally {
+    autoBackupData();
   }
 });
 
 // Function to delete spendItem
 async function deleteSpendItem(id: string) {
-  await spendItemModel.deleteById(id);
-
-  $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
-  $('#details-row-' + id).remove();
+  try {
+    await spendItemModel.deleteById(id);
+    $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
+    $('#details-row-' + id).remove();
+  } catch (e) {
+    console.log(e);
+    showToast('Xoá chi tiêu thất bại', 'error');
+  } finally {
+    autoBackupData();
+  }
 }
 // @ts-ignore
 window.deleteSpendItem = deleteSpendItem;

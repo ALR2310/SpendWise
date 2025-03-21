@@ -7,6 +7,7 @@ import { filter } from 'lodash';
 import { fixDate, showToast } from './utils';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
+import { Network } from '@capacitor/network';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -107,7 +108,12 @@ export async function syncData(accessToken: string) {
   };
 }
 
-export async function autoSyncData() {
+export async function autoSyncData(): Promise<void> {
+  // If not connected to the network, return
+  const currentNetwork = await Network.getStatus();
+  if (!currentNetwork.connected) return;
+
+  // If not logged in, return
   const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
   if (!isLogin) return;
 
@@ -135,6 +141,23 @@ export async function autoSyncData() {
         .closest('div')
         .find('span')
         .text(result.message);
+  });
+}
+
+export async function autoBackupData(): Promise<void> {
+  if(!appConfig.general.autoBackup) return;
+
+  // If not connected to the network, return
+  const currentNetwork = await Network.getStatus();
+  if (!currentNetwork.connected) return;
+
+  // If not logged in, return
+  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
+  if (!isLogin) return;
+
+  showToast('Backing up data...', 'info', 0, async () => {
+    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
+    await backupData(accessToken!);
   });
 }
 

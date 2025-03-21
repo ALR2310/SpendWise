@@ -16,6 +16,7 @@ import 'animate.css';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
 import { autoSyncData } from './common/data.backup';
+import { App } from '@capacitor/app';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -66,7 +67,11 @@ themeChange();
   pageManager.show(appConfig.general.defaultPage);
 })();
 
-// change theme icon
+// Minimize app when back button is pressed
+App.addListener('backButton', () => {
+  App.minimizeApp();
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   // check auto update
   if (appConfig.general.autoUpdate) appUpdater();
