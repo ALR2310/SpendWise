@@ -1,11 +1,11 @@
-import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from './common/utils';
+import { formatCurrency, formatDate, getDateTime } from './common/utils';
+import { closeToast, showToast } from './common/toast';
 import $ from 'jquery';
 import Handlebars from 'handlebars';
 import { pageManager } from './configs/page.manager';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
-// import { backupData } from './common/data.backup';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { themeChange } from 'theme-change';
 import { appConfig, Theme } from './configs/app.settings';
@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
-import { autoSyncData } from './common/data.backup';
+import { autoSyncData } from './configs/app.data';
 import { App } from '@capacitor/app';
 
 // Initialize dayjs plugin
@@ -56,12 +56,6 @@ themeChange();
       webClientId: __GOOGLE_CLIENT_ID__,
     },
   });
-
-  // backupData().then((res) => console.log(res));
-
-  // console.log(await Query('SELECT * FROM sqlite_master'));
-  // console.log(await Query('SELECT * FROM SpendList'));
-  // console.log(await Query('SELECT * FROM SpendItem'));
 
   // Load default page when start
   pageManager.show(appConfig.general.defaultPage);

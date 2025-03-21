@@ -1,9 +1,9 @@
 import { NoSqliteModel } from '~/configs/nosql/db.wrapper';
 import { SpendListModel } from '~/configs/nosql/db.models';
-import noteTemplate from '../clients/pages/note.hbs';
-import settingTemplate from '../clients/pages/setting.hbs';
-import spendTemplate from '../clients/pages/spend.hbs';
-import statsTemplate from '../clients/pages/stats.hbs';
+import noteTemplate from '../page/note.hbs';
+import settingTemplate from '../page/setting.hbs';
+import spendTemplate from '../page/spend.hbs';
+import statsTemplate from '../page/stats.hbs';
 import templateBuilder from '../common/template.builder';
 import $ from 'jquery';
 import driveIcon from '../assets/images/drive.png';
@@ -28,7 +28,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(spendTemplate, data);
           pageContent.html(templateCompiled);
-          import('../page/spend.page');
+          import('../core/spend.page');
         } catch (e) {
           console.error(e);
         }
@@ -38,7 +38,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(statsTemplate, data);
           pageContent.html(templateCompiled);
-          import('../page/stats.page');
+          import('../core/stats.page');
         } catch (e) {
           console.error(e);
         }
@@ -48,7 +48,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
           const data = await getDataForPage(pageName);
           const templateCompiled = templateBuilder(noteTemplate, data);
           pageContent.html(templateCompiled);
-          import('../page/note.page');
+          import('../core/note.page');
         } catch (e) {
           console.error(e);
         }
@@ -63,7 +63,7 @@ export async function showPage(pageName: string, forceReload: boolean = false) {
             appVersion,
           });
           pageContent.html(templateCompiled);
-          import('../page/setting.page');
+          import('../core/setting.page');
         } catch (e) {
           console.error(e);
         }

@@ -1,13 +1,14 @@
-import { drive } from './google.drive';
+import { drive } from '../common/google.drive';
 import { NoSqliteModel, Query, QueryAll } from '~/configs/nosql/db.wrapper';
 import pako from 'pako';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import { filter } from 'lodash';
-import { fixDate, showToast } from './utils';
+import { fixDate } from '../common/utils';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 import { Network } from '@capacitor/network';
+import { showToast } from '~/common/toast';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -145,7 +146,7 @@ export async function autoSyncData(): Promise<void> {
 }
 
 export async function autoBackupData(): Promise<void> {
-  if(!appConfig.general.autoBackup) return;
+  if (!appConfig.general.autoBackup) return;
 
   // If not connected to the network, return
   const currentNetwork = await Network.getStatus();

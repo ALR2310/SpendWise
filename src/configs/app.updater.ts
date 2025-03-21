@@ -1,7 +1,7 @@
 import { CapacitorHttp } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { compareVersions } from 'compare-versions';
-import { showToast } from '~/common/utils';
+import { showToast } from '~/common/toast';
 import $ from 'jquery';
 import { confirmBox } from '~/common/confirm.box';
 import logger from './app.logger';

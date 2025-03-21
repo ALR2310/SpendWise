@@ -41,10 +41,8 @@ export default defineConfig({
     rawPlugin({
       fileRegex: /.*\.hbs$/,
     }),
-    // @ts-ignore
     handlebars({
-      // @ts-ignore
-      partialDirectory: resolve(__dirname, 'src', 'clients', 'partials'),
+      partialDirectory: resolve(__dirname, 'src', 'components', 'partials'),
     }),
   ],
 });
