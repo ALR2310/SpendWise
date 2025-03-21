@@ -4,8 +4,9 @@ import pako from 'pako';
 import { appConfig } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import { filter } from 'lodash';
-import { fixDate } from './utils';
+import { fixDate, showToast } from './utils';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
+import { SocialLogin } from '@capgo/capacitor-social-login';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -74,7 +75,7 @@ export async function syncData(accessToken: string) {
   let importResult: any;
   const dateSync = dayjs(appConfig.data.dateSync);
   if (!dateSync.isValid()) {
-    importResult = await importData(spendData);
+    importResult = await importData(spendData, true);
   } else {
     // filter data
     const filterData = (data: any[], dateSync: dayjs.Dayjs) => {
@@ -104,6 +105,37 @@ export async function syncData(accessToken: string) {
     success: false,
     message: 'An error occurred when sync data',
   };
+}
+
+export async function autoSyncData() {
+  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
+  if (!isLogin) return;
+
+  showToast('Syncing data...', 'info', 3000, async (toastElement) => {
+    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
+    const result = await syncData(accessToken!);
+
+    if (result.success)
+      $(toastElement)
+        .addClass('alert-success')
+        .find('button')
+        .addClass('btn-success')
+        .find('i')
+        .addClass('fa-circle-check')
+        .closest('div')
+        .find('span')
+        .text(result.message);
+    else
+      $(toastElement)
+        .addClass('alert-error')
+        .find('button')
+        .addClass('btn-error')
+        .find('i')
+        .addClass('fa-circle-xmark')
+        .closest('div')
+        .find('span')
+        .text(result.message);
+  });
 }
 
 interface SpendData {

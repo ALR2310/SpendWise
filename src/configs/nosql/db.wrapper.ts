@@ -124,16 +124,10 @@ export class NoSqliteModel<T> {
     const columns = Object.keys(this.props).filter((col) => processedData.some((data) => data[col] !== undefined));
     if (columns.length === 0) throw new Error('No valid columns to insert.');
 
-    // Tạo placeholders (?, ?, ?), (?, ?, ?), ...
     const placeholders = processedData.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
-
-    // Dữ liệu để bind vào câu query
     const flatValues = processedData.flatMap((data) => columns.map((col) => data[col]));
-
-    // Câu SQL cuối cùng
     const query = `INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES ${placeholders}`;
 
-    // Thực thi lệnh insert
     const result = await dbInstance.run(query, flatValues);
     console.log(`Inserted ${result.changes} rows into ${this.tableName}`);
     return result.changes;

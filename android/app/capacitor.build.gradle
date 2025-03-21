@@ -19,7 +19,6 @@ dependencies {
     implementation project(':capawesome-team-capacitor-file-opener')
     implementation project(':capawesome-capacitor-file-picker')
     implementation project(':capgo-capacitor-social-login')
-    implementation project(':capacitor-apkinstaller')
 
 }
 

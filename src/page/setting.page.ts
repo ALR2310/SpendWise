@@ -37,6 +37,12 @@ $('#setting_general-update').on('change', function () {
   appConfig.general.autoUpdate = $(this).prop('checked');
 });
 
+// Setting auto sync
+$('#setting_data-auto-sync').prop('checked', appConfig.general.autoSync);
+$('#setting_data-auto-sync').on('change', function () {
+  appConfig.general.autoSync = $(this).prop('checked');
+});
+
 // Button login
 $('#setting_data-login').on('click', async () => {
   await SocialLogin.login({ provider: 'google', options: {} });

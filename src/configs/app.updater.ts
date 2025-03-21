@@ -5,7 +5,7 @@ import { showToast } from '~/common/utils';
 import $ from 'jquery';
 import { confirmBox } from '~/common/confirm.box';
 import logger from './app.logger';
-import { ApkInstaller } from 'capacitor-apkinstaller';
+import { FileOpener } from '@capawesome-team/capacitor-file-opener';
 
 async function getFileUri(path: string): Promise<string | null> {
   try {
@@ -101,8 +101,9 @@ export async function appUpdater() {
         return showToast('Cannot find the file', 'error');
       }
 
-      await ApkInstaller.open({
-        filePath: fileUri,
+      await FileOpener.openFile({
+        path: fileUri,
+        mimeType: 'application/vnd.android.package-archive',
       });
     }
   } catch (e) {

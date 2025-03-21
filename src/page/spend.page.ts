@@ -265,6 +265,7 @@ async function deleteSpendItem(id: string) {
   await spendItemModel.deleteById(id);
 
   $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
+  $('#details-row-' + id).remove();
 }
 // @ts-ignore
 window.deleteSpendItem = deleteSpendItem;

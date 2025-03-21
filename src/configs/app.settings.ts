@@ -39,6 +39,7 @@ interface AppConfigs {
     notification: boolean;
     autoUpdate: boolean;
     theme: Theme;
+    autoSync: boolean;
     version: string;
   };
   page: {
@@ -62,6 +63,7 @@ const defaultConfigs: AppConfigs = {
     notification: true,
     autoUpdate: true,
     theme: Theme.LIGHT,
+    autoSync: true,
     version: __APP_VERSION__,
   },
   page: {

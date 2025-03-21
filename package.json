@@ -34,7 +34,6 @@
     "@ionic/pwa-elements": "^3.3.0",
     "@types/jquery": "^3.5.32",
     "animate.css": "^4.1.1",
-    "capacitor-apkinstaller": "^0.0.1",
     "compare-versions": "^6.1.1",
     "dayjs": "^1.11.13",
     "downloadjs": "^1.4.7",

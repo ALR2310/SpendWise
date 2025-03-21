@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
+import { autoSyncData } from './common/data.backup';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -68,10 +69,9 @@ themeChange();
 // change theme icon
 document.addEventListener('DOMContentLoaded', async () => {
   // check auto update
-  if (appConfig.general.autoUpdate) {
-    appUpdater();
-  }
-
+  if (appConfig.general.autoUpdate) appUpdater();
+  // check auto sync
+  if (appConfig.general.autoSync) autoSyncData();
   // change theme when start
   $('.theme-controller')
     .prop('checked', $('html').attr('data-theme') === 'light')

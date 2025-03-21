@@ -1539,11 +1539,6 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
-capacitor-apkinstaller@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/capacitor-apkinstaller/-/capacitor-apkinstaller-0.0.1.tgz#de0ced1c8f0465e9ff70fbd1a49bcd053835d70e"
-  integrity sha512-8uDtEN5EXtj0QYdVLubL79WuJZc85+svgy5gDIzwdVGeLxPXdt3VDlQyakFicGqMhHTtJ21o8RwAIUBHZt59JA==
-
 capacitor-set-version@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/capacitor-set-version/-/capacitor-set-version-2.2.0.tgz#eda7f1f273c1bfc3ee0f07011a18a77eaecaa71c"
