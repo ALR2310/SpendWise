@@ -109,7 +109,7 @@ export async function syncData(accessToken: string) {
   };
 }
 
-export async function autoSyncData(): Promise<void> {
+export async function handleSyncData(): Promise<void> {
   // If not connected to the network, return
   const currentNetwork = await Network.getStatus();
   if (!currentNetwork.connected) return;
@@ -145,7 +145,7 @@ export async function autoSyncData(): Promise<void> {
   });
 }
 
-export async function autoBackupData(): Promise<void> {
+export async function handleBackupData(): Promise<void> {
   if (!appConfig.general.autoBackup) return;
 
   // If not connected to the network, return
@@ -275,9 +275,9 @@ export async function importData(data: any, removeOldData = false): Promise<{ su
 
     for (const i of spendData?.SpendItem ?? []) {
       const [createdAt, updatedAt, date] = fixDate([i.createdAt, i.updatedAt, i.date]);
-      if (!createdAt || !updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
+      if (!updatedAt || !date) throw new Error('Error date on record:' + JSON.stringify(i, null, 2));
 
-      i.createdAt = createdAt;
+      i.createdAt = createdAt ?? updatedAt;
       i.updatedAt = updatedAt;
       i.date = date;
     }
@@ -305,6 +305,11 @@ export async function importData(data: any, removeOldData = false): Promise<{ su
     if (spendData?.Note?.length) promises.push(noteModel.insertMany(spendData.Note));
     if (spendData?.Income?.length) promises.push(incomeModel.insertMany(spendData.Income));
     await Promise.all(promises);
+
+    // Reload module
+    window.spendOnLoad();
+    window.statsOnLoad();
+    window.noteOnLoad();
 
     return {
       success: true,

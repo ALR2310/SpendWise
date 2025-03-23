@@ -103,9 +103,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Install Vite
-        run: yarn add vite
-
       - name: Install dependencies
         run: |
           if [[ "${{ steps.cache-yarn.outputs.cache-hit }}" == 'true' ]]; then

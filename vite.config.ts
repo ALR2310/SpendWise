@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import handlebars from 'vite-plugin-handlebars';
 import rawPlugin from 'vite-raw-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { version } from './package.json';
@@ -40,9 +39,6 @@ export default defineConfig({
     tailwindcss(),
     rawPlugin({
       fileRegex: /.*\.hbs$/,
-    }),
-    handlebars({
-      partialDirectory: resolve(__dirname, 'src', 'components', 'partials'),
     }),
   ],
 });

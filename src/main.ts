@@ -2,7 +2,7 @@ import { formatCurrency, formatDate, getDateTime } from './common/utils';
 import { closeToast, showToast } from './common/toast';
 import $ from 'jquery';
 import Handlebars from 'handlebars';
-import { pageManager } from './configs/page.manager';
+import { pageManager } from './configs/app.page';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
 import { SocialLogin } from '@capgo/capacitor-social-login';
@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
-import { autoSyncData } from './configs/app.data';
+import { handleSyncData } from './configs/app.data';
 import { App } from '@capacitor/app';
 
 // Initialize dayjs plugin
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // check auto update
   if (appConfig.general.autoUpdate) appUpdater();
   // check auto sync
-  if (appConfig.general.autoSync) autoSyncData();
+  if (appConfig.general.autoSync) handleSyncData();
   // change theme when start
   $('.theme-controller')
     .prop('checked', $('html').attr('data-theme') === 'light')
