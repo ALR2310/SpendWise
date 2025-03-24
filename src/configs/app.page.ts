@@ -4,7 +4,7 @@ const updateBottomNav = (btnId: string) =>
   $('#dock-nav button')
     .removeClass('dock-active')
     .find('i')
-    .removeClass('fa-solid fa-regular')
+    .removeClass('fa-solid')
     .end()
     .filter(`#${btnId}`)
     .addClass('dock-active')

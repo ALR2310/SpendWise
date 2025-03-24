@@ -5,7 +5,6 @@ import Handlebars from 'handlebars';
 import { pageManager } from './configs/app.page';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
-import { SocialLogin } from '@capgo/capacitor-social-login';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { themeChange } from 'theme-change';
 import { appConfig, Theme } from './configs/app.settings';
@@ -17,6 +16,7 @@ import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
 import { handleSyncData } from './configs/app.data';
 import { App } from '@capacitor/app';
+import { googleAuthenticate } from './configs/app.auth';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -50,12 +50,8 @@ themeChange();
     logger('Error init database: ', e);
   }
 
-  // Init social login
-  await SocialLogin.initialize({
-    google: {
-      webClientId: __GOOGLE_CLIENT_ID__,
-    },
-  });
+  // Initialize google
+  await googleAuthenticate.initialize();
 
   // Load default page when start
   pageManager.show(appConfig.general.defaultPage);

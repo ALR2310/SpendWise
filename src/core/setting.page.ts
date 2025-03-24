@@ -1,7 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
-import { SocialLogin } from '@capgo/capacitor-social-login';
 import { backupData, exportData, importData, syncData } from '~/configs/app.data';
 import { showToast } from '~/common/toast';
 import download from 'downloadjs';
@@ -14,6 +13,7 @@ import { appUpdater } from '~/configs/app.updater';
 import templateBuilder from '~/common/template.builder';
 import template from '~/page/setting.hbs';
 import driveIcon from '~/assets/images/drive.png';
+import { googleAuthenticate } from '~/configs/app.auth';
 
 // When module loaded
 async function settingOnLoad() {
@@ -66,7 +66,7 @@ async function settingOnLoad() {
 
   // Button login
   $('#setting_data-login').on('click', async () => {
-    await SocialLogin.login({ provider: 'google', options: {} });
+    await googleAuthenticate.login();
 
     $('#login-button-container').hide();
     $('#logout-button-container').show();
@@ -74,16 +74,20 @@ async function settingOnLoad() {
 
   // Button logout
   $('#setting_data-logout').on('click', async () => {
-    await SocialLogin.logout({ provider: 'google' });
+    const result = await googleAuthenticate.logout();
 
-    $('#login-button-container').show();
-    $('#logout-button-container').hide();
+    showToast(result.message, result.success ? 'success' : 'error');
+
+    if (result.success) {
+      $('#login-button-container').show();
+      $('#logout-button-container').hide();
+    }
   });
 
   (async () => {
-    const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
+    const isLogged = (await googleAuthenticate.isLoggedIn()).success;
 
-    if (isLogin) {
+    if (isLogged) {
       $('#login-button-container').hide();
       $('#logout-button-container').show();
     }
@@ -93,16 +97,16 @@ async function settingOnLoad() {
   $('#setting_data-backup').on('click', async function () {
     $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
 
-    const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
+    const isLogged = (await googleAuthenticate.isLoggedIn()).success;
 
-    if (!isLogin) {
+    if (!isLogged) {
       $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
       return showToast('Please login to use this feature', 'warning');
     }
 
-    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
+    const accessToken = (await googleAuthenticate.getAccessToken()).data.access_token;
 
-    const result = await backupData(accessToken!);
+    const result = await backupData(accessToken);
     $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
     showToast(result.message, result.success ? 'success' : 'error');
   });
@@ -110,16 +114,16 @@ async function settingOnLoad() {
   // Sync data
   $('#setting_data-sync').on('click', async function () {
     $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
-    const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
+    const isLogged = (await googleAuthenticate.isLoggedIn()).success;
 
-    if (!isLogin) {
+    if (!isLogged) {
       $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
       return showToast('Please login to use this feature', 'warning');
     }
 
-    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
+    const accessToken = (await googleAuthenticate.getAccessToken()).data.access_token;
 
-    const result = await syncData(accessToken!);
+    const result = await syncData(accessToken);
     showToast(result.message, result.success ? 'success' : 'error');
     $(this).toggleClass('btn-disabled').find('i').toggleClass('fa-spin fa-loader');
   });

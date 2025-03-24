@@ -6,9 +6,9 @@ import dayjs from 'dayjs';
 import { filter } from 'lodash';
 import { fixDate } from '../common/utils';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
-import { SocialLogin } from '@capgo/capacitor-social-login';
 import { Network } from '@capacitor/network';
 import { showToast } from '~/common/toast';
+import { googleAuthenticate } from './app.auth';
 
 export async function backupData(accessToken: string) {
   if (!drive.getAccessToken()) drive.setAccessToken(accessToken);
@@ -115,12 +115,12 @@ export async function handleSyncData(): Promise<void> {
   if (!currentNetwork.connected) return;
 
   // If not logged in, return
-  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
-  if (!isLogin) return;
+  const isLogged = (await googleAuthenticate.isLoggedIn()).success;
+  if (!isLogged) return;
 
   showToast('Syncing data...', 'info', 3000, async (toastElement) => {
-    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
-    const result = await syncData(accessToken!);
+    const accessToken = (await googleAuthenticate.getAccessToken()).data.access_token;
+    const result = await syncData(accessToken);
 
     if (result.success)
       $(toastElement)
@@ -153,12 +153,12 @@ export async function handleBackupData(): Promise<void> {
   if (!currentNetwork.connected) return;
 
   // If not logged in, return
-  const isLogin = (await SocialLogin.isLoggedIn({ provider: 'google' })).isLoggedIn;
-  if (!isLogin) return;
+  const isLogged = (await googleAuthenticate.isLoggedIn()).success;
+  if (!isLogged) return;
 
   showToast('Backing up data...', 'info', 0, async () => {
-    const accessToken = (await SocialLogin.getAuthorizationCode({ provider: 'google' })).accessToken;
-    await backupData(accessToken!);
+    const accessToken = (await googleAuthenticate.getAccessToken()).data.access_token;
+    await backupData(accessToken);
   });
 }
 
