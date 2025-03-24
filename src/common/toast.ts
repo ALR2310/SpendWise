@@ -24,14 +24,15 @@ export function showToast(
   toast.id = toastId;
   toast.className = `alert ${toastClass} alert-soft p-2 flex justify-between`;
 
-  toast.innerHTML = `
-          <div>
-              <i id="${toastId}-icon" class="fa-sharp fa-regular ${iconClass}"></i>
-              <span class="text-wrap">${message}</span>
-          </div>
+  const messageContainer = document.createElement('div');
+  messageContainer.innerHTML = `
+          <i id="${toastId}-icon" class="fa-sharp fa-regular ${iconClass}"></i>
+          <span class="text-wrap"></span>
           <button class="btn ${buttonClass} btn-xs btn-circle text-white" onclick="closeToast('${toastId}')">
               <i class="fa-light fa-xmark"></i>
           </button>`;
+  messageContainer.querySelector('.text-wrap').innerText = message;
+  toast.appendChild(messageContainer);
 
   toastContainer.appendChild(toast);
 
