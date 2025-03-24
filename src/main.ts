@@ -1,11 +1,10 @@
-import { formatCurrency, formatDate, getDateTime, showToast, closeToast } from './common/utils';
+import { formatCurrency, formatDate, getDateTime } from './common/utils';
+import { closeToast, showToast } from './common/toast';
 import $ from 'jquery';
 import Handlebars from 'handlebars';
-import { pageManager } from './configs/page.manager';
+import { pageManager } from './configs/app.page';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
-import { SocialLogin } from '@capgo/capacitor-social-login';
-// import { backupData } from './common/data.backup';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { themeChange } from 'theme-change';
 import { appConfig, Theme } from './configs/app.settings';
@@ -15,6 +14,9 @@ import dayjs from 'dayjs';
 import 'animate.css';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
+import { handleSyncData } from './configs/app.data';
+import { App } from '@capacitor/app';
+import { googleAuthenticate } from './configs/app.auth';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -48,30 +50,23 @@ themeChange();
     logger('Error init database: ', e);
   }
 
-  // Init social login
-  await SocialLogin.initialize({
-    google: {
-      webClientId: __GOOGLE_CLIENT_ID__,
-    },
-  });
-
-  // backupData().then((res) => console.log(res));
-
-  // console.log(await Query('SELECT * FROM sqlite_master'));
-  // console.log(await Query('SELECT * FROM SpendList'));
-  // console.log(await Query('SELECT * FROM SpendItem'));
+  // Initialize google
+  await googleAuthenticate.initialize();
 
   // Load default page when start
   pageManager.show(appConfig.general.defaultPage);
 })();
 
-// change theme icon
+// Minimize app when back button is pressed
+App.addListener('backButton', () => {
+  App.minimizeApp();
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   // check auto update
-  if (appConfig.general.autoUpdate) {
-    appUpdater();
-  }
-
+  if (appConfig.general.autoUpdate) appUpdater();
+  // check auto sync
+  if (appConfig.general.autoSync) handleSyncData();
   // change theme when start
   $('.theme-controller')
     .prop('checked', $('html').attr('data-theme') === 'light')

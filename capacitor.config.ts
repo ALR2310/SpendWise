@@ -1,4 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config();
 
 const config: CapacitorConfig = {
   appId: 'com.alr.spendwise',
@@ -25,10 +29,9 @@ const config: CapacitorConfig = {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
     buildOptions: {
-      keystorePath: 'D:\\Tools\\Android\\.android\\debug.keystore',
-      keystoreAlias: 'androiddebugkey',
-      keystorePassword: 'android',
-      keystoreAliasPassword: 'android',
+      keystorePath: path.resolve(__dirname, 'spendwise-release-key.jks'),
+      keystoreAlias: process.env.ANDROID_KEY_ALIAS,
+      keystorePassword: process.env.ANDROID_KEYSTORE_PASSWORD,
       releaseType: 'APK',
       signingType: 'apksigner',
     },

@@ -83,6 +83,8 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GITHUB_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
           GITHUB_API_URL: ${{ secrets.GIT_API_URL }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: echo "Environment variables set"
 
       - name: Decode keystore
@@ -100,9 +102,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-
-      - name: Install Vite
-        run: yarn add vite
 
       - name: Install dependencies
         run: |
@@ -131,26 +130,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: cd android && chmod +x ./gradlew
 
-      - name: Set Version
-        run: yarn run version
-
-      - name: Build Source
-        run: yarn build
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Cache Gradle build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            android/app/build/intermediates
-          key: ${{ runner.os }}-gradle-outputs-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-outputs-
-
-      - name: Build APK
-        run: cd android && ./gradlew assembleRelease
+      - name: Build Android Release
+        run: yarn build:android
 
       - name: Sign APK
         run: |

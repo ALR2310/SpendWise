@@ -1,16 +1,16 @@
 import { CapacitorHttp } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { compareVersions } from 'compare-versions';
-import { showToast } from '~/common/utils';
+import { showToast } from '~/common/toast';
 import $ from 'jquery';
 import { confirmBox } from '~/common/confirm.box';
 import logger from './app.logger';
-import { ApkInstaller } from 'capacitor-apkinstaller';
+import { FileOpener } from '@capawesome-team/capacitor-file-opener';
 
 async function getFileUri(path: string): Promise<string | null> {
   try {
     const result = await Filesystem.stat({
-      directory: Directory.External,
+      directory: Directory.Cache,
       path,
     });
     return result.uri;
@@ -32,7 +32,7 @@ async function downloadFile(pathSave: string, urlFile: string): Promise<string |
     await Filesystem.downloadFile({
       url: urlFile,
       recursive: true,
-      directory: Directory.External,
+      directory: Directory.Cache,
       path: pathSave,
       progress: true,
     });
@@ -101,8 +101,9 @@ export async function appUpdater() {
         return showToast('Cannot find the file', 'error');
       }
 
-      await ApkInstaller.open({
-        filePath: fileUri,
+      await FileOpener.openFile({
+        path: fileUri,
+        mimeType: 'application/vnd.android.package-archive',
       });
     }
   } catch (e) {

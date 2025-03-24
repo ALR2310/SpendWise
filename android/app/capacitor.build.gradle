@@ -13,13 +13,14 @@ dependencies {
     implementation project(':capacitor-app')
     implementation project(':capacitor-device')
     implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-network')
     implementation project(':capacitor-preferences')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-toast')
     implementation project(':capawesome-team-capacitor-file-opener')
     implementation project(':capawesome-capacitor-file-picker')
     implementation project(':capgo-capacitor-social-login')
-    implementation project(':capacitor-apkinstaller')
+    implementation project(':capacitor-secure-storage-plugin')
 
 }
 

@@ -132,6 +132,34 @@
 <div class="divider mb-3 mt-3 font-bold">Dữ liệu</div>
 
 <div class="ms-4 me-4">
+    {{!-- Auto Sync --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Đồng bộ dữ liệu</p>
+            <span class="text-sm text-base-content opacity-60">Tự động đồng bộ dữ liệu khi ứng dụng khởi động</span>
+        </div>
+
+        <div class="flex-1 flex justify-end">
+            <input id="setting_data-auto-sync" type="checkbox" class="toggle toggle-md me-5" checked="checked" />
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
+    {{!-- Auto backup --}}
+    <label class="flex justify-between items-center gap-3">
+        <div class="w-[210px]">
+            <p>Sao lưu dữ liệu</p>
+            <span class="text-sm text-base-content opacity-60">Tự động sao lưu dữ liệu khi ứng dụng khởi động</span>
+        </div>
+
+        <div class="flex-1 flex justify-end">
+            <input id="setting_data-auto-backup" type="checkbox" class="toggle toggle-md me-5" checked="checked" />
+        </div>
+    </label>
+
+    <div class="divider divider-sm"></div>
+
     {{!-- Login --}}
     <label id="login-button-container" class="flex justify-between items-center gap-3">
         <div class="w-[210px]">

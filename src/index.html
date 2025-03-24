@@ -6,7 +6,7 @@
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover" />
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="assets/images/logo.png" type="image/x-icon" />
     <link rel="stylesheet" href="assets/css/tailwind.css" />
@@ -25,13 +25,57 @@
 
     <div id="app" class="bg-base-200">
         <!-- Navbar -->
-        {{> header.navbar }}
+        <div class="navbar min-h-0 p-3 bg-base-100">
+            <div class="flex-none">
+                <img src="/assets/images/logo.png" class="w-7 h-7">
+            </div>
+            <div class="flex-1">
+                <a id="app-title" class="font-extrabold ps-1 text-xl text-base-content">SpendWise</a>
+            </div>
+            <div class="flex-none">
+                <label class="swap swap-rotate">
+                    <input type="checkbox" data-toggle-theme="light,dark" class="theme-controller" value="light" />
+
+                    <i class="fa-sharp fa-regular fa-moon swap-off fill-current text-2xl"></i>
+                    <i class="fa-sharp fa-regular fa-brightness swap-on fill-current text-2xl"></i>
+                </label>
+            </div>
+        </div>
 
         <!-- Main content -->
-        {{> page.content }}
+        <div id="page-container" class="overflow-y-scroll no-scrollbar" style="height: calc(100vh - 50px - 60px);">
+            <div id="page-spend"></div>
+            <div id="page-stats"></div>
+            <div id="page-note"></div>
+            <div id="page-setting"></div>
+        </div>
 
         <!-- Bottom navigation -->
-        {{> bottom.navbar }}
+        <div id="dock-nav" class="dock">
+            <button id="spend-btn" data-page="spend">
+                <i class="fa-sharp fa-regular fa-wallet"></i>
+                <span class="dock-label">Spend</span>
+            </button>
+
+            <button id="stats-btn" data-page="stats">
+                <i class="fa-sharp fa-regular fa-chart-simple"></i>
+                <span class="dock-label">Stats</span>
+            </button>
+
+            <button id="note-btn" data-page="note">
+                <i class="fa-sharp fa-regular fa-note"></i>
+                <span class="dock-label">Note</span>
+            </button>
+
+            <button id="setting-btn" data-page="setting">
+                <i class="fa-sharp fa-regular fa-gear"></i>
+                <span class="dock-label">Setting</span>
+            </button>
+        </div>
+
+        <div id="download-update-progress" class="fixed w-full bottom-[50px] p-2 hidden">
+            <progress class="progress h-[3px]" value="50" max="100"></progress>
+        </div>
     </div>
 </body>
 

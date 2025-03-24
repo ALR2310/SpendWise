@@ -73,6 +73,10 @@ export class NoSqliteModel<T> {
     this.props = Reflect.getMetadata('props', model.prototype) || {};
   }
 
+  getProps(): Record<string, any> {
+    return this.props;
+  }
+
   async find(filter: QueryFilter<T> = {}): Promise<T[] | null> {
     const { condition, values } = buildQueryCondition(filter);
     const query = `SELECT * FROM ${this.tableName} ${condition}`;
@@ -111,20 +115,18 @@ export class NoSqliteModel<T> {
   async insertMany(dataArray: Partial<T>[]) {
     if (!dataArray || Object.keys(dataArray).length === 0) throw new Error('Data is required.');
 
-    const queries = dataArray.map((data) => {
-      data = buildInsertData(data, this.props);
+    const processedData = dataArray.map((data) => buildInsertData(data, this.props));
 
-      const columns = Object.keys(this.props).filter((col) => data[col] !== undefined);
-      const values = columns.map((col) => data[col]);
+    const columns = Object.keys(this.props).filter((col) => processedData.some((data) => data[col] !== undefined));
+    if (columns.length === 0) throw new Error('No valid columns to insert.');
 
-      const columnNames = columns.join(', ');
-      const placeholders = columns.map(() => '?').join(', ');
-      const query = `INSERT INTO ${this.tableName} (${columnNames}) VALUES (${placeholders})`;
+    const placeholders = processedData.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
+    const flatValues = processedData.flatMap((data) => columns.map((col) => data[col]));
+    const query = `INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES ${placeholders}`;
 
-      return { sql: query, params: values };
-    });
-
-    return await db.queryAll(queries);
+    const result = await db.query(query, flatValues);
+    console.log(`Inserted ${result.changes} rows into ${this.tableName}`);
+    return result.changes;
   }
 
   async updateOne(filter: Partial<T>, data: Partial<T>) {
