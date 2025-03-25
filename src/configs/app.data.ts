@@ -307,9 +307,9 @@ export async function importData(data: any, removeOldData = false): Promise<{ su
     await Promise.all(promises);
 
     // Reload module
-    window.spendOnLoad();
-    window.statsOnLoad();
-    window.noteOnLoad();
+    window?.spendOnLoad?.();
+    window?.statsOnLoad?.();
+    window?.noteOnLoad?.();
 
     return {
       success: true,
