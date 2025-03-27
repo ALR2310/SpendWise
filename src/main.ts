@@ -1,7 +1,6 @@
 import { formatCurrency, formatDate, getDateTime } from './common/utils';
 import { closeToast, showToast } from './common/toast';
 import $ from 'jquery';
-import Handlebars from 'handlebars';
 import { pageManager } from './configs/app.page';
 import { NoSqliteInit, Query } from './configs/nosql/db.wrapper';
 import { IncomeModel, NoteModel, SpendItemModel, SpendListModel } from './configs/nosql/db.models';
@@ -12,11 +11,13 @@ import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import 'animate.css';
+import '~/common/hbs.helpers';
 import { appUpdater } from './configs/app.updater';
 import logger from './configs/app.logger';
 import { handleSyncData } from './configs/app.data';
 import { App } from '@capacitor/app';
 import { googleAuthenticate } from './configs/app.auth';
+import { t } from './configs/app.language';
 
 // Initialize dayjs plugin
 dayjs.extend(utc);
@@ -31,11 +32,8 @@ window.getDateTime = getDateTime;
 window.formatCurrency = formatCurrency;
 window.Query = Query;
 window.appConfig = appConfig;
+window.t = t;
 defineCustomElements(window);
-
-// Helper handlebars
-Handlebars.registerHelper('formatDate', formatDate);
-Handlebars.registerHelper('formatCurrency', formatCurrency);
 
 // Set theme
 themeChange();

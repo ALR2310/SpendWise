@@ -1,0 +1,106 @@
+{
+  "nav": {
+    "header": {
+      "title": "SpendWise"
+    },
+    "bottom": {
+      "spend": "Chi tiêu",
+      "stats": "Thống kê",
+      "note": "Lưu ý",
+      "setting": "Cài đặt"
+    }
+  },
+  "button": {
+    "add": "Thêm",
+    "save": "Lưu",
+    "edit": "Sửa",
+    "update": "Cập nhật",
+    "delete": "Xoá",
+    "cancel": "Hủy",
+    "close": "Đóng"
+  },
+  "error": {
+    "general": "Đã xảy ra lỗi. Vui lòng thử lại sau",
+    "network": "Lỗi kết nối mạng. Vui lòng kiểm tra kết nối của bạn",
+    "timeout": "Yêu cầu hết hạn. Vui lòng thử lại sau",
+    "unauthorized": "Không có quyền truy cập",
+    "forbidden": "Hành động không được phép",
+    "not_found": "Không tìm thấy tài nguyên",
+    "server": "Lỗi máy chủ. Vui lòng thử lại sau",
+    "validation": "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại"
+  },
+  "spend": {
+    "button": {
+      "create": {
+        "list": "Thêm",
+        "item": "Thêm chi tiêu"
+      }
+    },
+    "search": {
+      "placeholder": "Tìm kiếm"
+    },
+    "sort": {
+      "title": "Xếp theo:"
+    },
+    "table": {
+      "col": {
+        "date": "Ngày chi",
+        "name": "Khoản chi",
+        "price": "Số tiền"
+      }
+    },
+    "modal": {
+      "spendList": {
+        "title": {
+          "create": "Thêm danh sách mới",
+          "update": "Cập nhật danh sách"
+        },
+        "placeholder": "Tên danh sách",
+        "message": {
+          "create": {
+            "success": "Create spending list successfully",
+            "require": "Please enter the name of the spending list"
+          },
+          "update": {
+            "success": "Update spending list successfully"
+          },
+          "delete": {
+            "require": "Please select the list you want to delete",
+            "confirm": {
+              "title": "Confirm delete",
+              "message": "Do you want to delete this list? After deleting, you cannot recover the data"
+            },
+            "success": "Delete spending list successfully"
+          }
+        }
+      },
+      "spendItem": {
+        "title": {
+          "create": "Add spending item",
+          "update": "Edit spending item"
+        },
+        "message": {
+          "create": {
+            "success": "Create spending item successfully",
+            "require": {
+              "list": "Please select the list you want to add the item to",
+              "name": "Please enter the name of the spending item"
+            }
+          },
+          "update": {
+            "success": "Update spending item successfully",
+            "require": {
+              "id": "Please select the item you want to update"
+            }
+          },
+          "delete": {
+            "require": "Please select the item you want to delete"
+          }
+        }
+      }
+    }
+  },
+  "stats": {},
+  "note": {},
+  "setting": {}
+}

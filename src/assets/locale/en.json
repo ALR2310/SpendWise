@@ -1,0 +1,106 @@
+{
+  "nav": {
+    "header": {
+      "title": "SpendWise"
+    },
+    "bottom": {
+      "spend": "Spend",
+      "stats": "Stats",
+      "note": "Note",
+      "setting": "Setting"
+    }
+  },
+  "button": {
+    "add": "Add",
+    "save": "Save",
+    "edit": "Edit",
+    "update": "Update",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "error": {
+    "general": "Something went wrong. Please try again.",
+    "network": "Network issue. Please check your connection.",
+    "timeout": "Request timed out. Try again later.",
+    "unauthorized": "Unauthorized access.",
+    "forbidden": "Action not allowed.",
+    "not_found": "Resource not found.",
+    "server": "Server error. Try again later.",
+    "validation": "Invalid input. Please check again."
+  },
+  "spend": {
+    "button": {
+      "create": {
+        "list": "New List",
+        "item": "New Spending"
+      }
+    },
+    "search": {
+      "placeholder": "Search"
+    },
+    "sort": {
+      "title": "Sort by:"
+    },
+    "table": {
+      "col": {
+        "date": "Date",
+        "name": "Name",
+        "price": "Price"
+      }
+    },
+    "modal": {
+      "spendList": {
+        "title": {
+          "create": "Add spending list",
+          "update": "Edit spending list"
+        },
+        "placeholder": "Name list",
+        "message": {
+          "create": {
+            "success": "Create spending list successfully",
+            "require": "Please enter the name of the spending list"
+          },
+          "update": {
+            "success": "Update spending list successfully"
+          },
+          "delete": {
+            "require": "Please select the list you want to delete",
+            "confirm": {
+              "title": "Confirm delete",
+              "message": "Do you want to delete this list? After deleting, you cannot recover the data"
+            },
+            "success": "Delete spending list successfully"
+          }
+        }
+      },
+      "spendItem": {
+        "title": {
+          "create": "Add spending item",
+          "update": "Edit spending item"
+        },
+        "message": {
+          "create": {
+            "success": "Create spending item successfully",
+            "require": {
+              "list": "Please select the list you want to add the item to",
+              "name": "Please enter the name of the spending item"
+            }
+          },
+          "update": {
+            "success": "Update spending item successfully",
+            "require": {
+              "id": "Please select the item you want to update"
+            }
+          },
+          "delete": {
+            "require": "Please select the item you want to delete"
+          }
+        }
+      }
+    }
+  },
+  "stats": {},
+  "note": {},
+  "setting": {}
+}

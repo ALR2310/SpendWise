@@ -1,51 +1,43 @@
 <div class="flex m-4 gap-2">
     <div id="select_spendList" class="select w-full">
         <span class="select-value"></span>
-        <ul class="max-h-60">
-            {{#each spendList}}
-            <li class="flex justify-between items-center" data-value="{{this._id}}">
-                {{this.name}}
-                <button class="btn btn-ghost text-error"
-                    onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
-                    <i class="fa-sharp fa-trash"></i> Xoá
-                </button>
-            </li>
-            {{/each}}
-        </ul>
+        <ul class="max-h-60"></ul>
     </div>
 
-    <button class="btn btn-active" onclick="modal_spendList.showModal()">
-        <i class="fa-sharp fa-plus"></i> Thêm
+    <button class="btn btn-active" onclick="openModalSpendList('create')">
+        <i class="fa-sharp fa-plus"></i> {{t "spend.button.create.list"}}
     </button>
 </div>
 
 {{!-- Search --}}
 <div class="flex m-4 gap-2">
     <label for="input_spendItem_search_date" class="relative">
-        <input id="input_spendItem_search_date" type="date" class="input" placeholder="Thời gian" style="width: 42px;">
+        <input id="input_spendItem_search_date" type="date" class="input" style="width: 42px;">
         <i class="fa-sharp fa-regular fa-calendar absolute right-[14px] top-[50%] translate-y-[-50%]"></i>
     </label>
 
     <label class="input flex items-center gap-2 flex-1">
-        <input id="input_spendItem_search" type="text" class="grow" placeholder="Tìm kiếm" />
+        <input id="input_spendItem_search" type="text" class="grow" placeholder="{{t 'spend.search.placeholder'}}" />
         <i class="fa-sharp fa-regular fa-magnifying-glass opacity-70"></i>
     </label>
 </div>
 
-{{!-- Sort --}}
+
 <div class="flex m-4 justify-between">
-    <button id="btn_spendItem_showCreate" class="btn btn-accent" onclick="showSpendItemModal()">
-        <i class="fa-sharp fa-plus"></i> Thêm chi tiêu
+    {{!-- Create --}}
+    <button class="btn btn-accent" onclick="openModalSpendItem('create')">
+        <i class="fa-sharp fa-plus"></i> {{t 'spend.button.create.item'}}
     </button>
 
+    {{!-- Sort --}}
     <label class="flex items-center gap-2">
-        <span>Xếp theo:</span>
+        <span>{{t 'spend.sort.title'}}</span>
         <div id="select_spendItem_sort" class="select w-28">
             <span class="select-value"></span>
             <ul>
-                <li data-value="date">Ngày chi</li>
-                <li data-value="name">Khoản chi</li>
-                <li data-value="price">Số tiền</li>
+                <li data-value="date">{{t 'spend.table.col.date'}}</li>
+                <li data-value="name">{{t 'spend.table.col.name'}}</li>
+                <li data-value="price">{{t 'spend.table.col.price'}}</li>
             </ul>
         </div>
     </label>
@@ -56,86 +48,45 @@
     <table id="table_spendItem" class="table table-pin-rows">
         <thead>
             <tr>
-                <th class="text-base-content">Ngày chi</th>
-                <th class="text-base-content">Khoản chi</th>
-                <th class="text-base-content">Số tiền</th>
+                <th class="text-base-content">{{t 'spend.table.col.date'}}</th>
+                <th class="text-base-content">{{t 'spend.table.col.name'}}</th>
+                <th class="text-base-content">{{t 'spend.table.col.price'}}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
+            {{!-- Render template --}}
         </tbody>
     </table>
-    <script type="text/x-handlebars-template" id="table_spendItem_template">
-        %#each spendItems%
-            <tr data-id="%this._id%" class="hover cursor-pointer" onclick="toggleDetailsRow('%this._id%', this)">
-                <td>%formatDate this.date 'DD/MM/YYYY'%</td>
-                <td>%this.name%</td>
-                <td>%formatCurrency this.price%</td>
-                <td>
-                    <i class="fa-sharp fa-regular fa-chevron-down" id="icon-%this._id%"></i>
-                </td>
-            </tr>
-            <tr id="details-row-%this._id%" class="hidden">
-                <td colspan="2">
-                    <p>%this.details%</p>
-                </td>
-                <td colspan="2" class="text-center">
-                    <div class="flex justify-between">
-                        <button class="btn btn-info btn-sm" onclick="showSpendItemModal('%this._id%')">Sửa</button>
-                        <button class="btn btn-error btn-sm" onclick="deleteSpendItem('%this._id%')">Xoá</button>
-                    </div>
-                </td>
-            </tr>
-        %/each%
-    </script>
 </div>
 
-<!-- Modal Create SpendList -->
+<!-- Modal Create or Update SpendList -->
 <dialog id="modal_spendList" class="modal">
     <div class="modal-box ">
-        <h3 class="text-lg font-bold mb-3">Thêm danh sách chi tiêu</h3>
+        <h3 class="text-lg font-bold mb-3">placeholder....</h3>
         <label class="input flex items-center gap-2 mb-3">
             <i class="fa-sharp fa-solid fa-list opacity-70"></i>
-            <input id="input_spendList_name" type="text" class="grow" placeholder="Tên danh sách" />
+            <input id="input_name" type="text" class="grow" placeholder="{{t 'spend.modal.spendList.placeholder'}}" />
         </label>
 
         <div class="flex justify-end gap-3">
             <form method="dialog">
                 <button class="btn btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                <button class="btn w-20">Đóng</button>
+                <button class="btn w-20">{{t 'button.close'}}</button>
             </form>
 
-            <button id="btn_spendList_create" class="btn btn-success w-20">Thêm</button>
+            <button id="btn_create" class="btn btn-success w-20">{{t 'button.save'}}</button>
+            <button id="btn_delete" class="btn btn-error w-20">{{t 'button.delete'}}</button>
+            <button id="btn_update" class="btn btn-success w-20">{{t 'button.save'}}</button>
         </div>
     </div>
-    <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-    </form>
-</dialog>
-
-<!-- Modal Delete SpendList -->
-<dialog id="modal_spendList_delete" class="modal">
-    <div class="modal-box ">
-        <h3 class="text-lg font-bold mb-3"></h3>
-        <p>Bạn có chắc muốn xoá danh sách này không?. Sau khi xoá sẽ không thể khôi phục lại dữ liệu</p>
-
-        <div class="flex justify-end gap-3">
-            <form method="dialog">
-                <button class="btn w-20">Đóng</button>
-            </form>
-
-            <button id="btn_spendList_delete" class="btn btn-error w-20">Xoá</button>
-        </div>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-    </form>
+    <form method="dialog" class="modal-backdrop"><button></button></form>
 </dialog>
 
 <!-- Modal Create SpendItem -->
 <dialog id="modal_spendItem" class="modal">
     <div class="modal-box overflow-y-visible">
-        <h3 class="text-lg font-bold mb-3">Thêm chi tiêu</h3>
+        <h3 class="text-lg font-bold mb-3">placeholder....</h3>
 
         <div class="flex gap-3 mb-3">
             <input id="input_spendItem_id" type="text" class="input hidden" placeholder="Id">
@@ -143,11 +94,7 @@
             <label id="combobox_spendItem_name" class="combobox w-[55%]">
                 <input type="text" class="input w-full" placeholder="Tên khoản chi">
                 <i class="fa-sharp fa-regular fa-angles-up-down right-[5%!important] text-xs"></i>
-                <ul class="max-h-52">
-                    <li>Option 1</li>
-                    <li>Option 2</li>
-                    <li>Option 3</li>
-                </ul>
+                <ul class="max-h-52"></ul>
             </label>
 
             <label class="relative w-[45%]">
@@ -165,11 +112,11 @@
         <div class="flex justify-end gap-3">
             <form method="dialog">
                 <button class="btn btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                <button class="btn w-20">Đóng</button>
+                <button class="btn w-20">{{t 'button.close'}}</button>
             </form>
 
-            <button id="btn_spendItem_create" class="btn btn-success w-20">Thêm</button>
-            <button id="btn_spendItem_update" class="btn btn-success w-20">Lưu</button>
+            <button id="btn_create" class="btn btn-success w-20">{{t 'button.save'}}</button>
+            <button id="btn_update" class="btn btn-success w-20">{{t 'button.save'}}</button>
         </div>
     </div>
     <form method="dialog" class="modal-backdrop">
