@@ -9,13 +9,15 @@ declare global {
     $;
     showPage;
     appConfig;
-    showSpendItemModal;
     deleteSpendItem;
     toggleDetailsRow;
     spendOnLoad;
     statsOnLoad;
     noteOnLoad;
     settingOnLoad;
+    t;
+    openModalSpendList;
+    openModalSpendItem;
   }
 }
 

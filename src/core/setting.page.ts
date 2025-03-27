@@ -5,7 +5,7 @@ import { backupData, exportData, importData, syncData } from '~/configs/app.data
 import { showToast } from '~/common/toast';
 import download from 'downloadjs';
 import { Toast } from '@capacitor/toast';
-import { appConfig, Theme } from '~/configs/app.settings';
+import { appConfig, Language, Page, Theme } from '~/configs/app.settings';
 import dayjs from 'dayjs';
 import $ from 'jquery';
 import '~/common/jquery.custom';
@@ -33,7 +33,7 @@ async function settingOnLoad() {
   });
 
   // Setting change theme
-  $('#setting_general-theme').selectControl('set', appConfig.general.theme);
+  $('#setting_general-theme').selectControl('set', appConfig.general.theme);  
   $('#setting_general-theme').selectControl('change', function (value: string) {
     appConfig.general.theme = value as Theme;
     localStorage.setItem('theme', appConfig.general.theme);
@@ -43,7 +43,14 @@ async function settingOnLoad() {
   // Setting change default page
   $('#setting_general-page').selectControl('set', appConfig.general.defaultPage);
   $('#setting_general-page').selectControl('change', function (value: string) {
-    appConfig.general.defaultPage = value as 'spend' | 'stats' | 'note' | 'setting';
+    appConfig.general.defaultPage = value as Page;
+  });
+
+  // Setting change language
+  $('#setting_general-language').selectControl('set', appConfig.general.language);
+  $('#setting_general-language').selectControl('change', function (value: Language) {
+    appConfig.general.language = value;
+    window.location.reload();
   });
 
   // Setting auto update

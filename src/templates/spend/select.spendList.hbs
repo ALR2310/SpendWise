@@ -1,0 +1,8 @@
+{{#each spendList}}
+<li class="flex justify-between items-center" data-value="{{_id}}">
+    {{name}}
+    <button class="btn btn-ghost text-primary" onclick="openModalSpendList('update', '{{name}}')">
+        <i class="fa-sharp fa-regular fa-pen-to-square"></i> {{t "button.edit"}}
+    </button>
+</li>
+{{/each}}

@@ -9,32 +9,39 @@ export enum Theme {
   DRACULA = 'dracula',
 }
 
-enum Language {
+export enum Language {
   VI = 'vi',
   EN = 'en',
 }
 
+export enum Page {
+  SPEND = 'spend',
+  STATS = 'stats',
+  NOTE = 'note',
+  SETTING = 'setting',
+}
+
 interface SpendPageConfigs {
-  name: 'Spend';
+  name: Page.SPEND;
   list: string;
   sort: string;
 }
 
 interface StatsPageConfigs {
-  name: 'Stats';
+  name: Page.STATS;
 }
 
 interface NotePageConfigs {
-  name: 'Note';
+  name: Page.NOTE;
 }
 
 interface SettingPageConfigs {
-  name: 'Setting';
+  name: Page.SETTING;
 }
 
 interface AppConfigs {
   general: {
-    defaultPage: 'spend' | 'stats' | 'note' | 'setting';
+    defaultPage: Page;
     language: Language;
     notification: boolean;
     autoUpdate: boolean;
@@ -59,7 +66,7 @@ interface AppConfigs {
 
 const defaultConfigs: AppConfigs = {
   general: {
-    defaultPage: 'spend',
+    defaultPage: Page.SPEND,
     language: Language.VI,
     notification: true,
     autoUpdate: true,
@@ -69,10 +76,10 @@ const defaultConfigs: AppConfigs = {
     version: __APP_VERSION__,
   },
   page: {
-    spend: { name: 'Spend', list: '', sort: 'date' },
-    stats: { name: 'Stats' },
-    note: { name: 'Note' },
-    setting: { name: 'Setting' },
+    spend: { name: Page.SPEND, list: '', sort: 'date' },
+    stats: { name: Page.STATS },
+    note: { name: Page.NOTE },
+    setting: { name: Page.SETTING },
   },
   data: { fileId: '', dateBackup: '', dateSync: '' },
   version: 1,

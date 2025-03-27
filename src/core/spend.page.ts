@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import '~/common/jquery.custom';
 import { showToast } from '~/common/toast';
-import { convertPlaceHbs, formatCurrency, formatDate, getDateTime } from '~/common/utils';
+import { formatCurrency, formatDate, getDateTime } from '~/common/utils';
 import templateBuilder from '~/common/template.builder';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
@@ -9,6 +9,11 @@ import { NoSqliteModel, Query } from '~/configs/nosql/db.wrapper';
 import { SpendItemModel, SpendListModel } from '~/configs/nosql/db.models';
 import { handleBackupData } from '~/configs/app.data';
 import template from '~/page/spend.hbs';
+import tableSpendItemTemplate from '~/templates/spend/table.spendItem.hbs';
+import selectSpendListTemplate from '~/templates/spend/select.spendList.hbs';
+import { confirmBox } from '~/common/confirm.box';
+import { t } from 'i18next';
+import logger from '~/configs/app.logger';
 
 // Init model
 const spendListModel = new NoSqliteModel(SpendListModel);
@@ -16,9 +21,8 @@ const spendItemModel = new NoSqliteModel(SpendItemModel);
 
 // When module loaded
 async function spendOnLoad() {
-  // Load data
-  const spendList = await spendListModel.find({ status: 'Active' });
-  $('#page-spend').html(templateBuilder(template, { spendList }));
+  // Render template
+  $('#page-spend').html(templateBuilder(template));
 
   // Initialize the custom select
   document.querySelectorAll('div.select').forEach((select) => {
@@ -31,19 +35,111 @@ async function spendOnLoad() {
   });
 
   // Global variable
-  window.showSpendItemModal = showSpendItemModal;
   window.deleteSpendItem = deleteSpendItem;
   window.toggleDetailsRow = toggleDetailsRow;
   window.spendOnLoad = spendOnLoad;
+  window.openModalSpendList = openModalSpendList;
+  window.openModalSpendItem = openModalSpendItem;
 
   // Modal element
   const modal_spendList = document.getElementById('modal_spendList') as HTMLDialogElement;
-  const modal_spendList_delete = document.getElementById('modal_spendList_delete') as HTMLDialogElement;
   const modal_spendItem = document.getElementById('modal_spendItem') as HTMLDialogElement;
 
+  // Variable for spendItem
   let offset = 0;
   const limit = 20;
   const loadThreshold = 100;
+
+  // Function create or update spendList
+  async function openModalSpendList(action: 'create' | 'update', name?: string) {
+    const $el = $(modal_spendList);
+    const title = $el.find('h3');
+    const inputName = $el.find('#input_name');
+    const btnCreate = $el.find('#btn_create');
+    const btnDelete = $el.find('#btn_delete');
+    const btnUpdate = $el.find('#btn_update');
+
+    switch (action) {
+      case 'create':
+        title.text(t('spend.modal.spendList.title.create'));
+        btnCreate.show();
+        btnDelete.hide();
+        btnUpdate.hide();
+        inputName.val('');
+        break;
+      case 'update':
+        title.text(t('spend.modal.spendList.title.update'));
+        btnCreate.hide();
+        btnDelete.show();
+        btnUpdate.show();
+        inputName.val(name!);
+        break;
+    }
+
+    modal_spendList.showModal();
+  }
+
+  // Function to load spending list
+  async function loadSpendList() {
+    const spendList = await spendListModel.find({ status: 'Active' });
+    $('#select_spendList').find('ul').html(templateBuilder(selectSpendListTemplate, { spendList }));
+    $('#select_spendList').selectControl('init');
+
+    await loadSpendItem();
+  }
+  await loadSpendList();
+
+  // Button create, update and delete SpendList
+  $(modal_spendList)
+    .find('#btn_create, #btn_update, #btn_delete')
+    .on('click', async function () {
+      const action = this.id.replace('btn_', '');
+      const listId = String($('#select_spendList').selectControl('get'));
+      const listNameEl = $(this).closest('dialog').find('#input_name');
+      const listNameVal = String(listNameEl.val());
+      let insertId = listId;
+
+      if ((action !== 'delete' && !listNameVal) || (action === 'delete' && !listId)) {
+        return showToast(
+          action === 'delete'
+            ? t('spend.modal.spendList.message.delete.require')
+            : t('spend.modal.spendList.message.create.require'),
+          'warning',
+        );
+      }
+
+      try {
+        if (action === 'create') {
+          const result = await spendListModel.insertOne({ name: listNameVal });
+          showToast(t('spend.modal.spendList.message.create.success'), 'success', 3000);
+          insertId = result._id!;
+        } else if (action === 'update') {
+          await spendListModel.updateById(listId, { name: listNameVal });
+          showToast(t('spend.modal.spendList.message.update.success'), 'success', 3000);
+        } else {
+          const result = await confirmBox({
+            title: t('spend.modal.spendList.message.delete.confirm.title'),
+            message: t('spend.modal.spendList.message.delete.confirm.message'),
+          });
+          if (!result) return;
+          await spendListModel.deleteById(listId);
+          showToast(t('spend.modal.spendList.message.delete.success'), 'success', 3000);
+          insertId = '';
+        }
+
+        await loadSpendList();
+        if (action !== 'delete') {
+          $('#select_spendList').selectControl('set', insertId);
+        }
+
+        listNameEl.val('');
+        modal_spendList.close();
+        handleBackupData();
+      } catch (e) {
+        console.log(e);
+        showToast(t('error.general'), 'error');
+      }
+    });
 
   // Load suggest for Combobox
   async function loadSuggest() {
@@ -90,8 +186,7 @@ async function spendOnLoad() {
 
       const spendItems = await Query(sql, params);
 
-      const template = convertPlaceHbs($('#table_spendItem_template').html());
-      const templateCompiled = templateBuilder(template, {
+      const templateCompiled = templateBuilder(tableSpendItemTemplate, {
         spendItems: spendItems.reverse(),
       });
 
@@ -105,14 +200,14 @@ async function spendOnLoad() {
       }
     } catch (e) {
       console.error(e);
-      showToast('Tải dữ liệu thất bại', 'error');
+      logger(e);
+      showToast(t('error.general'), 'error');
     }
   }
 
   // Load more spendItems when the user scrolls to the top of the page
   $('#table_spendItem_wrapper').on('scroll', async function () {
-    // @ts-ignore
-    if ($('#table_spendItem_wrapper').scrollTop() <= loadThreshold) {
+    if ($(this).scrollTop()! <= loadThreshold) {
       offset += limit;
       await loadSpendItem(true);
     }
@@ -127,8 +222,7 @@ async function spendOnLoad() {
     }, 200),
   );
 
-  // Load spendItems and when the list and sort changes
-  await loadSpendItem();
+  // Load spendItems when sort changes
   $('#select_spendList, #select_spendItem_sort').selectControl('change', async function () {
     await loadSpendItem();
   });
@@ -140,144 +234,93 @@ async function spendOnLoad() {
     else $(this).css('width', '42px');
   });
 
-  // Button create SpendList
-  $('#btn_spendList_create').on('click', async function () {
-    const name = String($('#input_spendList_name').val());
-
-    if (name) {
-      try {
-        const result = await spendListModel.insertOne({
-          name: name,
-        });
-
-        showToast('Tạo danh sách thành công', 'success', 3000);
-        $('#input_spendList_name').val('');
-        modal_spendList.close();
-
-        const escapedName = $('<div>').text(name).html();
-        const html = `
-                <li class="flex justify-between" data-value="${result._id}">${escapedName}
-                    <button class="btn btn-ghost text-error" 
-                        onclick="modal_spendList_delete.showModal();setTimeout(() => {$('#modal_spendList_delete').find('h3').text($('#select_spendList').selectControl('name'))}, 50);">
-                        <i class="fa-sharp fa-trash"></i> Xoá
-                    </button>
-                </li>`;
-        $('#select_spendList').find('ul').append(html);
-        $('#select_spendList').selectControl('init');
-        $('#select_spendList').selectControl('set', `${result._id}`);
-        handleBackupData();
-      } catch (e) {
-        console.log(e);
-        showToast('Tạo danh sách thất bại', 'error');
-      }
-    } else {
-      showToast('Vui lòng nhập tên danh sách chi tiêu', 'warning');
-    }
-  });
-
-  // Button delete SpendList
-  $('#btn_spendList_delete').on('click', async function () {
-    const listId = String($('#select_spendList').selectControl('get'));
-
-    if (listId)
-      try {
-        await spendListModel.deleteById(listId);
-        showToast('Xoá danh sách thành công', 'success');
-        modal_spendList_delete.close();
-        $('#select_spendList').selectControl('del', listId);
-        handleBackupData();
-      } catch (e) {
-        console.log(e);
-        showToast('Xoá danh sách thất bại', 'error');
-      }
-    else showToast('Vui lòng chọn danh sách muốn xoá', 'warning');
-  });
-
-  // Function to open modal Create and Update SpendItem
-  function showSpendItemModal(id: string) {
+  // Show modal Create or Update SpendItem
+  function openModalSpendItem(action: 'create' | 'update', id?: string) {
     modal_spendItem.showModal();
-    const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
+    const dataRow = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
+    const detailsRow = $(`#details-row-${id}`).find('p');
 
-    if (id) {
-      $('#modal_spendItem').find('h3').text('Cập nhật chi tiêu');
-      $('#btn_spendItem_update').show();
-      $('#btn_spendItem_create').hide();
+    const $el = $(modal_spendItem);
+    const title = $el.find('h3');
+    const inputId = $el.find('#input_spendItem_id');
+    const inputName = $el.find('#combobox_spendItem_name').find('input');
+    const inputDate = $el.find('#input_spendItem_date');
+    const inputPrice = $el.find('#input_spendItem_price');
+    const inputInfo = $el.find('#input_spendItem_info');
+    const btnCreate = $el.find('#btn_create');
+    const btnUpdate = $el.find('#btn_update');
 
-      $('#input_spendItem_id').val(id);
-      $('#combobox_spendItem_name').find('input').val(spendItem.find('td').eq(1).text());
-      $('#input_spendItem_date').val(formatDate(spendItem.find('td').eq(0).text(), 'yyyy-mm-dd'));
+    switch (action) {
+      case 'create':
+        title.text(t('spend.modal.spendItem.title.create'));
+        btnCreate.show();
+        btnUpdate.hide();
 
-      $('#input_spendItem_price').val(spendItem.find('td').eq(2).text());
-      $('#input_spendItem_info').val(spendItem.find('td').eq(3).text());
-    } else {
-      $('#modal_spendItem').find('h3').text('Thêm chi tiêu');
-      $('#btn_spendItem_update').hide();
-      $('#btn_spendItem_create').show();
-      $('#input_spendItem_id').val('');
-      $('#combobox_spendItem_name').find('input').val('');
-      $('#input_spendItem_date').val(dayjs().format('YYYY-MM-DD'));
-      $('#input_spendItem_price').val('');
-      $('#input_spendItem_info').val('');
+        inputId.val('');
+        inputName.val('');
+        inputDate.val(dayjs().format('YYYY-MM-DD'));
+        inputPrice.val('');
+        inputInfo.val('');
+        break;
+      case 'update':
+        title.text(t('spend.modal.spendItem.title.update'));
+        btnCreate.hide();
+        btnUpdate.show();
+
+        inputId.val(id!);
+        inputName.val(dataRow.find('td').eq(1).text());
+        inputDate.val(formatDate(dataRow.find('td').eq(0).text(), 'yyyy-mm-dd', 'dd/mm/yyyy'));
+        inputPrice.val(dataRow.find('td').eq(2).text().replace('₫', '')?.trim());
+        inputInfo.val(detailsRow.text());
+        break;
     }
   }
 
-  // Button create SpendItem
-  $('#btn_spendItem_create').on('click', async function () {
-    const listId = String($('#select_spendList').selectControl('get'));
-    const name = String($('#combobox_spendItem_name').find('input').val()).trim();
-    const dateTime = getDateTime(String($('#input_spendItem_date').val()));
-    const price = parseInt(String($('#input_spendItem_price').val())!.trim().replace(/\./g, '')) || 0;
-    const details = String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
+  // Button create and update spendItem
+  $(modal_spendItem)
+    .find('#btn_create, #btn_update')
+    .on('click', async function () {
+      const action = this.id.replace('btn_', '');
+      const itemId = String($('#input_spendItem_id').val());
+      const listId = String($('#select_spendList').selectControl('get'));
+      const name = String($('#combobox_spendItem_name').find('input').val()).trim();
+      const date = getDateTime(String($('#input_spendItem_date').val()));
+      const price = parseInt(String($('#input_spendItem_price').val())!.trim().replace(/\./g, '')) || 0;
+      const details = String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
+      const dataRow = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${itemId}"]`);
+      const detailsRow = $(`#details-row-${itemId}`).find('p');
 
-    try {
-      await spendItemModel.insertOne({
-        listId: listId,
-        name: name,
-        price: price,
-        details: details,
-        date: dateTime,
-      });
-      modal_spendItem.close();
-      loadSpendItem();
-      handleBackupData();
-    } catch (e) {
-      console.log(e);
-      showToast('Thêm chi tiêu thất bại', 'error');
-    }
-  });
+      try {
+        if (action == 'create') {
+          if (!listId) return showToast(t('spend.modal.spendItem.message.create.require.list'), 'warning');
+          else if (!name) return showToast(t('spend.modal.spendItem.message.create.require.name'), 'warning');
 
-  // Button update SpendItem
-  $('#btn_spendItem_update').on('click', async function () {
-    const id = String($('#input_spendItem_id').val());
-    const name = String($('#combobox_spendItem_name').find('input').val()).trim();
-    const dateTime = getDateTime(String($('#input_spendItem_date').val()));
-    const price = parseInt(String($('#input_spendItem_price').val())!.trim().replace(/\./g, '')) || 0;
-    const details = String($('#input_spendItem_info').val()).trim() || 'Không có thông tin';
+          await spendItemModel.insertOne({ listId, name, price, details, date });
+          loadSpendItem();
+        } else if (action == 'update') {
+          if (!itemId) return showToast(t('spend.modal.spendItem.message.update.require.id'), 'warning');
+          if (!name) return showToast(t('spend.modal.spendItem.message.create.require.name'), 'warning');
 
-    try {
-      await spendItemModel.updateById(id, {
-        name: name,
-        price: price,
-        details: details,
-        date: dateTime,
-      });
+          await spendItemModel.updateById(itemId, { name, price, details, date });
 
-      modal_spendItem.close();
+          dataRow.find('td').eq(0).text(formatDate(date, 'dd/mm/yyyy'));
+          dataRow.find('td').eq(1).text(name);
+          dataRow.find('td').eq(2).text(formatCurrency(price));
+          detailsRow.text(details);
+        }
 
-      const spendItem = $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`);
-      spendItem.find('td').eq(0).text(formatDate(dateTime, 'dd/mm/yyyy'));
-      spendItem.find('td').eq(1).text(name);
-      spendItem.find('td').eq(2).text(formatCurrency(price));
-      spendItem.find('td').eq(3).text(details);
-      handleBackupData();
-    } catch (e) {
-      console.log(e);
-      showToast('Cập nhật chi tiêu thất bại', 'error');
-    }
-  });
+        modal_spendItem.close();
+        handleBackupData();
+      } catch (e) {
+        console.log(e);
+        showToast(t('error.general'), 'error');
+      }
+    });
 
   // Function to delete spendItem
   async function deleteSpendItem(id: string) {
+    if (!id) return showToast(t('spend.modal.spendItem.message.delete.require'), 'warning');
+    
     try {
       await spendItemModel.deleteById(id);
       $('#table_spendItem').find(`tbody`).find(`tr[data-id="${id}"]`).remove();
@@ -285,7 +328,7 @@ async function spendOnLoad() {
       handleBackupData();
     } catch (e) {
       console.log(e);
-      showToast('Xoá chi tiêu thất bại', 'error');
+      showToast(t('error.general'), 'error');
     }
   }
 

@@ -34,8 +34,8 @@ export function convertPlaceHbs(
   }
 }
 
-export function formatDate(dateStr: string, output: string = 'DD/MM/YYYY'): string {
-  const date = dayjs(dateStr);
+export function formatDate(dateStr: string, output: string = 'DD/MM/YYYY', input?: string): string {
+  const date = input ? dayjs(dateStr, input?.toUpperCase()) : dayjs(dateStr);
   return date.format(output.toUpperCase());
 }
 
