@@ -5161,10 +5161,15 @@ synckit@^0.10.2:
     "@pkgr/core" "^0.2.0"
     tslib "^2.8.1"
 
-tailwindcss@4.0.15, tailwindcss@^4.0.15:
+tailwindcss@4.0.15:
   version "4.0.15"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.0.15.tgz#73933640624b4188fedb07492cd9b354643e6cb3"
   integrity sha512-6ZMg+hHdMJpjpeCCFasX7K+U615U9D+7k5/cDK/iRwl6GptF24+I/AbKgOnXhVKePzrEyIXutLv36n4cRsq3Sg==
+
+tailwindcss@^4.1.10:
+  version "4.1.10"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.1.10.tgz#515741b0a79316d1971d182f7fbc435b68679373"
+  integrity sha512-P3nr6WkvKV/ONsTzj6Gb57sWPMX29EPNPopo7+FcpkQaNsrNpZ1pv8QmrYI2RqEKD7mlGqLnGovlcYnBK0IqUA==
 
 tapable@^2.2.0:
   version "2.2.1"
