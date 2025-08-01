@@ -1,153 +1,92 @@
-.auth {
-  font-family: 'Courgette', sans-serif;
+@import 'tailwindcss';
+
+@plugin "daisyui" {
+  themes:
+    light --default,
+    dark --prefersdark,
+    cupcake,
+    garden,
+    dracula;
 }
 
-#modal_spendList:not(dialog:not(.modal-open)),
-#modal_spendList::backdrop,
-#modal_spendItem:not(dialog:not(.modal-open)),
-#modal_spendItem::backdrop {
-  background-color: unset !important;
+@layer utilities {
+  .no-scrollbar {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .select:focus,
+  .select:focus-within,
+  .input:focus,
+  .input:focus-within {
+    --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  }
 }
 
-/* .swipeout {
-  position: relative;
-  overflow: hidden;
-  clip-path: inset(0);
-  z-index: 1;
-  border-radius: 0.5rem;
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
+@utility container {
+  @variant 2xl {
+    max-width: 80rem;
+  }
 }
 
-.swipeout-actions-left,
-.swipeout-actions-right {
-  display: flex;
-  position: absolute;
-  height: 98%;
-  z-index: 0;
-}
-
-.swipeout-actions-left {
-  left: 0;
-}
-
-.swipeout-actions-right {
-  right: 1px;
-}
-
-.swipeout-content {
-  padding: 0.5rem;
-  position: relative;
-  z-index: 10;
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
-} */
-
-.combobox {
-  position: relative;
-}
-
-.combobox ul {
-  position: absolute;
-  display: none;
+.input-editor {
+  --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  border: var(--border) solid #0000;
   background-color: var(--color-base-100);
-  width: 100%;
-  padding: 0.25rem;
-  border-radius: var(--radius-box);
-  border-width: 1px;
-  margin-top: 0.5rem;
-  overflow: auto;
-}
-
-.combobox ul li {
-  cursor: pointer;
-  padding: 0.25rem 0.75rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.combobox ul li:hover {
-  background-color: var(--color-base-200);
-  border-radius: var(--radius-box);
-}
-
-.combobox i {
-  position: absolute;
-  right: 2.5%;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.6;
-}
-
-/* Thẻ select tuỳ chỉnh */
-div.select {
-  position: relative;
-}
-
-div.select:hover {
-  box-shadow: none;
-  border-color: var(--color-base-content);
-  outline-style: solid;
-  outline-width: 2px;
-  outline-offset: 2px;
-  outline-color: var(--color-base-content);
-}
-
-div.select .select-value {
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-div.select ul {
-  display: none;
-  margin-top: 0.5rem;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  position: absolute;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: var(--radius-box);
-  background-color: var(--color-base-100);
-  --tw-shadow:
-    0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  border-start-start-radius: var(--join-ss, var(--radius-field));
+  border-start-end-radius: var(--join-se, var(--radius-field));
+  border-end-start-radius: var(--join-es, var(--radius-field));
+  border-end-end-radius: var(--join-ee, var(--radius-field));
+  border-color: var(--input-color);
   box-shadow:
-    var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-    var(--tw-shadow);
+    0 1px color-mix(in oklab, var(--input-color) calc(var(--depth) * 10%), #0000) inset,
+    0 -1px oklch(100% 0 0 / calc(var(--depth) * 0.1)) inset;
 }
 
-div.select ul li {
-  padding: 0.25rem 0.75rem;
+.input-editor:focus,
+.input-editor:focus-within {
+  --input-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  outline: 2px solid var(--input-color);
+  outline-offset: 2px;
+  isolation: isolate;
+  z-index: 1;
 }
 
-div.select ul li:hover {
-  background-color: var(--color-neutral-content);
+.react-datepicker {
+  color: var(--color-base-content) !important;
+  border: 1px solid var(--color-base-300) !important;
+  background-color: var(--color-base-100) !important;
 }
 
-div.select.select-right .select-value {
-  justify-content: flex-end;
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: var(--color-base-content) !important;
 }
 
-div.select.select-right ul li {
-  text-align: center;
+.react-datepicker__header {
+  background-color: var(--color-base-200) !important;
 }
 
-/*  */
-
-div.divider.divider-sm {
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: var(--color-base-content) !important;
 }
 
-div.divider.divider-sm::before,
-div.divider.divider-sm::after {
-  height: 1px;
+.react-datepicker__day:not([aria-disabled='true']):hover,
+.react-datepicker__month-text:not([aria-disabled='true']):hover,
+.react-datepicker__quarter-text:not([aria-disabled='true']):hover,
+.react-datepicker__year-text:not([aria-disabled='true']):hover {
+  background-color: var(--color-primary) !important;
+}
+
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__quarter-text--keyboard-selected,
+.react-datepicker__year-text--keyboard-selected {
+  background-color: var(--color-primary) !important;
 }

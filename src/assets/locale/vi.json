@@ -1,106 +1,132 @@
 {
-  "nav": {
-    "header": {
-      "title": "SpendWise"
-    },
-    "bottom": {
-      "spend": "Chi tiêu",
-      "stats": "Thống kê",
-      "note": "Lưu ý",
-      "setting": "Cài đặt"
-    }
+  "dock": {
+    "expenses": "Chi tiêu",
+    "statistics": "Thống kê",
+    "notes": "Ghi chú",
+    "settings": "Cài đặt"
   },
-  "button": {
-    "add": "Thêm",
-    "save": "Lưu",
-    "edit": "Sửa",
-    "update": "Cập nhật",
-    "delete": "Xoá",
-    "cancel": "Hủy",
-    "close": "Đóng"
-  },
-  "error": {
-    "general": "Đã xảy ra lỗi. Vui lòng thử lại sau",
-    "network": "Lỗi kết nối mạng. Vui lòng kiểm tra kết nối của bạn",
-    "timeout": "Yêu cầu hết hạn. Vui lòng thử lại sau",
-    "unauthorized": "Không có quyền truy cập",
-    "forbidden": "Hành động không được phép",
-    "not_found": "Không tìm thấy tài nguyên",
-    "server": "Lỗi máy chủ. Vui lòng thử lại sau",
-    "validation": "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại"
-  },
-  "spend": {
-    "button": {
-      "create": {
-        "list": "Thêm",
-        "item": "Thêm chi tiêu"
-      }
-    },
-    "search": {
-      "placeholder": "Tìm kiếm"
-    },
-    "sort": {
-      "title": "Xếp theo:"
-    },
+  "expenses": {
     "table": {
-      "col": {
-        "date": "Ngày chi",
-        "name": "Khoản chi",
-        "price": "Số tiền"
+      "header": {
+        "date": "Ngày",
+        "expense": "Khoản chi",
+        "amount": "Số tiền"
       }
     },
     "modal": {
-      "spendList": {
-        "title": {
-          "create": "Thêm danh sách mới",
-          "update": "Cập nhật danh sách"
+      "create": {
+        "form": {
+          "name": "Tên khoản chi",
+          "date": "Ngày",
+          "amount": "Số tiền",
+          "type": {
+            "title": "Loại",
+            "expense": "Chi tiêu",
+            "income": "Thu nhập"
+          },
+          "note": "Ghi chú",
+          "recurring": "Lặp lại"
         },
-        "placeholder": "Tên danh sách",
-        "message": {
-          "create": {
-            "success": "Create spending list successfully",
-            "require": "Please enter the name of the spending list"
-          },
-          "update": {
-            "success": "Update spending list successfully"
-          },
-          "delete": {
-            "require": "Please select the list you want to delete",
-            "confirm": {
-              "title": "Confirm delete",
-              "message": "Do you want to delete this list? After deleting, you cannot recover the data"
-            },
-            "success": "Delete spending list successfully"
-          }
-        }
+        "title": "Thêm chi tiêu"
       },
-      "spendItem": {
-        "title": {
-          "create": "Add spending item",
-          "update": "Edit spending item"
-        },
-        "message": {
-          "create": {
-            "success": "Create spending item successfully",
-            "require": {
-              "list": "Please select the list you want to add the item to",
-              "name": "Please enter the name of the spending item"
-            }
-          },
-          "update": {
-            "success": "Update spending item successfully",
-            "require": {
-              "id": "Please select the item you want to update"
-            }
-          },
-          "delete": {
-            "require": "Please select the item you want to delete"
-          }
-        }
+      "edit": {
+        "title": "Chỉnh sửa chi tiêu"
       }
+    },
+    "filter": {
+      "search": "Nhập từ khóa..."
     }
   },
-  "stats": {},
-  "note": {},
-  "setting": {}
+  "calendar": {
+    "clear": "Xóa"
+  },
+  "settings": {
+    "account": {
+      "google": {
+        "login": {
+          "title": "Đăng nhập",
+          "desc": "Đăng nhập vào tài khoản Google của bạn",
+          "success": "Đăng nhập Google thành công"
+        },
+        "logout": {
+          "title": "Đăng xuất",
+          "desc": "Đăng xuất khỏi tài khoản Google của bạn",
+          "success": "Đăng xuất Google thành công"
+        }
+      }
+    },
+    "theme": {
+      "title": "Chủ đề",
+      "desc": "Chọn chủ đề cho ứng dụng"
+    },
+    "language": {
+      "title": "Ngôn ngữ",
+      "desc": "Chọn ngôn ngữ cho ứng dụng"
+    },
+    "notification": {
+      "title": "Thông báo",
+      "desc": "Bật/tắt thông báo của ứng dụng"
+    },
+    "data": {
+      "import": {
+        "title": "Nhập dữ liệu",
+        "desc": "Nhập dữ liệu chi tiêu",
+        "error": "Đã xảy ra lỗi khi nhập dữ liệu",
+        "success": "Nhập dữ liệu thành công"
+      },
+      "export": {
+        "title": "Xuất dữ liệu",
+        "desc": "Xuất dữ liệu chi tiêu",
+        "error": "Đã xảy ra lỗi khi xuất dữ liệu",
+        "success": "Xuất dữ liệu thành công"
+      },
+      "cache": {
+        "title": "Xóa bộ nhớ đệm",
+        "desc": "Xóa dữ liệu bộ nhớ đệm của ứng dụng"
+      },
+      "title": "Dữ liệu",
+      "desc": "Cài đặt nhập, xuất và đồng bộ dữ liệu",
+      "backup": {
+        "title": "Sao lưu",
+        "description": "Nhấn để sao lưu dữ liệu thủ công",
+        "success": "Sao lưu dữ liệu thành công",
+        "error": "Đã xảy ra lỗi khi sao lưu dữ liệu"
+      },
+      "sync": {
+        "title": "Đồng bộ",
+        "description": "Nhấn để đồng bộ dữ liệu thủ công",
+        "success": "Đồng bộ dữ liệu thành công",
+        "error": "Có lỗi khi đồng bộ dữ liệu",
+        "confirm": "Bạn có muốn thay thế dữ liệu cục bộ bằng dữ liệu sao lưu không?"
+      }
+    },
+    "autoUpdate": {
+      "title": "Tự động cập nhật",
+      "desc": "Bật/tắt tự động cập nhật ứng dụng"
+    },
+    "checkUpdate": {
+      "title": "Kiểm tra cập nhật"
+    },
+    "general": {
+      "checkUpdate": {
+        "desc": "Kiểm tra phiên bản mới thủ công"
+      }
+    },
+    "defaultPage": {
+      "title": "Trang mặc định",
+      "desc": "Chọn trang mặc định khi mở ứng dụng"
+    }
+  },
+  "btn": {
+    "cancel": "Hủy",
+    "save": "Lưu"
+  },
+  "toast": {
+    "title": {
+      "success": "Thành công",
+      "error": "Lỗi",
+      "warning": "Cảnh báo",
+      "info": "Thông tin"
+    }
+  }
 }

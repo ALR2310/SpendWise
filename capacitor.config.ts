@@ -9,6 +9,9 @@ const config: CapacitorConfig = {
   appName: 'SpendWise',
   webDir: 'dist',
   plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+    },
     SplashScreen: {
       launchShowDuration: 0,
     },
@@ -29,7 +32,7 @@ const config: CapacitorConfig = {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
     buildOptions: {
-      keystorePath: path.resolve(__dirname, 'spendwise-release-key.jks'),
+      keystorePath: path.resolve(__dirname, 'release-key.jks'),
       keystoreAlias: process.env.ANDROID_KEY_ALIAS,
       keystorePassword: process.env.ANDROID_KEYSTORE_PASSWORD,
       releaseType: 'APK',

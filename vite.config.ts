@@ -1,29 +1,25 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import rawPlugin from 'vite-raw-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { version } from './package.json';
-import dotenv from 'dotenv';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-dotenv.config();
+import { version } from './package.json';
 
 export default defineConfig({
-  root: 'src',
   build: {
-    outDir: '../dist',
+    outDir: 'dist',
     minify: false,
-    cssMinify: true,
+    cssMinify: false,
     emptyOutDir: true,
     rollupOptions: {
       external: ['jeep-sqlite'],
       input: {
-        index: resolve(__dirname, 'src', 'index.html'),
+        index: resolve(__dirname, 'index.html'),
       },
     },
   },
-  server: {
-    port: 8181,
-  },
+  server: { port: 8100 },
   resolve: {
     alias: {
       '~': resolve(__dirname, 'src'),
@@ -31,15 +27,17 @@ export default defineConfig({
   },
   define: {
     __APP_VERSION__: JSON.stringify(version),
-    __GOOGLE_CLIENT_ID__: JSON.stringify(process.env.GOOGLE_CLIENT_ID),
-    __GOOGLE_CLIENT_SECRET__: JSON.stringify(process.env.GOOGLE_CLIENT_SECRET),
-    __GIT_API_URL__: JSON.stringify(process.env.GIT_API_URL),
-    __GIT_ACCESS_TOKEN__: JSON.stringify(process.env.GIT_ACCESS_TOKEN),
   },
   plugins: [
+    react(),
     tailwindcss(),
-    rawPlugin({
-      fileRegex: /.*\.hbs$/,
+    viteStaticCopy({
+      targets: [
+        {
+          src: './src/assets/sql-wasm.wasm',
+          dest: 'assets',
+        },
+      ],
     }),
   ],
 });

@@ -1,0 +1,21 @@
+{
+    "cSpell.words": [
+        "anatine",
+        "downloadjs",
+        "nosqlite"
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "i18n-ally.localesPaths": [
+        "src/assets/locale"
+    ],
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.sourceLanguage": "en",
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": "./.vscode/daisyui.md"
+        }
+    ]
+}

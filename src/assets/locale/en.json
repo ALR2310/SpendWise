@@ -1,106 +1,132 @@
 {
-  "nav": {
-    "header": {
-      "title": "SpendWise"
-    },
-    "bottom": {
-      "spend": "Spend",
-      "stats": "Stats",
-      "note": "Note",
-      "setting": "Setting"
-    }
+  "dock": {
+    "expenses": "Expenses",
+    "statistics": "Statistics",
+    "notes": "Notes",
+    "settings": "Settings"
   },
-  "button": {
-    "add": "Add",
-    "save": "Save",
-    "edit": "Edit",
-    "update": "Update",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "close": "Close"
-  },
-  "error": {
-    "general": "Something went wrong. Please try again.",
-    "network": "Network issue. Please check your connection.",
-    "timeout": "Request timed out. Try again later.",
-    "unauthorized": "Unauthorized access.",
-    "forbidden": "Action not allowed.",
-    "not_found": "Resource not found.",
-    "server": "Server error. Try again later.",
-    "validation": "Invalid input. Please check again."
-  },
-  "spend": {
-    "button": {
-      "create": {
-        "list": "New List",
-        "item": "New Spending"
-      }
-    },
-    "search": {
-      "placeholder": "Search"
-    },
-    "sort": {
-      "title": "Sort by:"
-    },
+  "expenses": {
     "table": {
-      "col": {
+      "header": {
         "date": "Date",
-        "name": "Name",
-        "price": "Price"
+        "expense": "Expense",
+        "amount": "Amount"
       }
     },
     "modal": {
-      "spendList": {
-        "title": {
-          "create": "Add spending list",
-          "update": "Edit spending list"
+      "create": {
+        "form": {
+          "name": "Expense Name",
+          "date": "Date",
+          "amount": "Amount",
+          "type": {
+            "title": "Type",
+            "expense": "Expense",
+            "income": "Income"
+          },
+          "note": "Notes",
+          "recurring": "Recurring"
         },
-        "placeholder": "Name list",
-        "message": {
-          "create": {
-            "success": "Create spending list successfully",
-            "require": "Please enter the name of the spending list"
-          },
-          "update": {
-            "success": "Update spending list successfully"
-          },
-          "delete": {
-            "require": "Please select the list you want to delete",
-            "confirm": {
-              "title": "Confirm delete",
-              "message": "Do you want to delete this list? After deleting, you cannot recover the data"
-            },
-            "success": "Delete spending list successfully"
-          }
-        }
+        "title": "Create expenses"
       },
-      "spendItem": {
-        "title": {
-          "create": "Add spending item",
-          "update": "Edit spending item"
-        },
-        "message": {
-          "create": {
-            "success": "Create spending item successfully",
-            "require": {
-              "list": "Please select the list you want to add the item to",
-              "name": "Please enter the name of the spending item"
-            }
-          },
-          "update": {
-            "success": "Update spending item successfully",
-            "require": {
-              "id": "Please select the item you want to update"
-            }
-          },
-          "delete": {
-            "require": "Please select the item you want to delete"
-          }
-        }
+      "edit": {
+        "title": "Edit expenses"
       }
+    },
+    "filter": {
+      "search": "Enter keyword..."
     }
   },
-  "stats": {},
-  "note": {},
-  "setting": {}
+  "calendar": {
+    "clear": "Delete"
+  },
+  "settings": {
+    "account": {
+      "google": {
+        "logout": {
+          "title": "Logout",
+          "desc": "Logout to your google account",
+          "success": "Logout google successfully"
+        },
+        "login": {
+          "title": "Login",
+          "desc": "Login to your google account",
+          "success": "Logged google successfully"
+        }
+      }
+    },
+    "theme": {
+      "title": "Theme",
+      "desc": "Choose the theme of the app"
+    },
+    "language": {
+      "title": "Language",
+      "desc": "Choose the language of the app"
+    },
+    "notification": {
+      "title": "Notification",
+      "desc": "Turn On/Off the notification of the app"
+    },
+    "data": {
+      "import": {
+        "title": "Import",
+        "desc": "Import the data expenses",
+        "error": "An error occurred when importing data",
+        "success": "Import data successfully"
+      },
+      "export": {
+        "title": "Export",
+        "desc": "Export the data expenses",
+        "error": "An error occurred when exporting data",
+        "success": "Export data successfully"
+      },
+      "cache": {
+        "title": "Delete Cache",
+        "desc": "Delete cache data of the app"
+      },
+      "title": "Data",
+      "desc": "Set import, export and synchronize data",
+      "backup": {
+        "title": "Backup",
+        "description": "Click to backup manual data",
+        "success": "Backup data successfully",
+        "error": "An error when backup data"
+      },
+      "sync": {
+        "title": "Sync",
+        "description": "Click to sync manual data",
+        "success": "Sync data successfully",
+        "error": "An error when sync data",
+        "confirm": "Do you want to replace your local data with the backup data?"
+      }
+    },
+    "autoUpdate": {
+      "title": "Auto Update",
+      "desc": "Turn On/Off auto update of the app"
+    },
+    "checkUpdate": {
+      "title": "Check Update"
+    },
+    "general": {
+      "checkUpdate": {
+        "desc": "Manual check new version of the app"
+      }
+    },
+    "defaultPage": {
+      "title": "Default Page",
+      "desc": "Choose the page when open the app"
+    }
+  },
+  "btn": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "toast": {
+    "title": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info"
+    }
+  }
 }
