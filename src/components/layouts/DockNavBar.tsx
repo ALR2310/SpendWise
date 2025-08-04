@@ -28,13 +28,15 @@ export default function DockNavBar() {
   ];
 
   return (
-    <div className="dock static">
-      {dockMenu.map((item, index) => (
-        <NavLink key={index} to={item.path} className={({ isActive }) => (isActive ? 'dock-active' : '')}>
-          {item.icon}
-          <span className="dock-label">{item.label}</span>
-        </NavLink>
-      ))}
+    <div id="dock-container" className="relative">
+      <div className="dock static">
+        {dockMenu.map((item, index) => (
+          <NavLink key={index} to={item.path} className={({ isActive }) => (isActive ? 'dock-active' : '')}>
+            {item.icon}
+            <span className="dock-label">{item.label}</span>
+          </NavLink>
+        ))}
+      </div>
     </div>
   );
 }

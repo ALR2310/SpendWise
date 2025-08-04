@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,20 +7,28 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 import { appSettings } from '~/configs/settings';
 import { toast } from '~/hooks/useToast';
 import { handleSyncData } from '~/pages/settings/logic/data';
+import { checkAndUpdateApp } from '~/pages/settings/logic/updater';
 import { googleAuth } from '~/services/googleAuth';
 
+import DownloadProgress from '../DownloadProgress';
 import DockNavBar from './DockNavBar';
 import NavBar from './NavBar';
 
 export default function MainLayout() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const isNative = Capacitor.isNativePlatform();
+
+  const [isLogin, setIsLogin] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const defaultPage = appSettings.general.defaultPage;
 
-  const [isLogin, setIsLogin] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [autoUpdate] = useState<boolean>(appSettings.general.autoUpdate);
+
+  // Check login
   useEffect(() => {
     googleAuth.isLoggedIn().then((res) => setIsLogin(res.data!));
   }, []);
@@ -29,7 +38,7 @@ export default function MainLayout() {
     if (!isLogin) return;
 
     toast.info('Sync data', async () => {
-      const result = await handleSyncData({ askBeforeReplace: true });
+      const result = await handleSyncData();
       if (result.success) {
         queryClient.invalidateQueries({ queryKey: ['expenses'] });
         queryClient.invalidateQueries({ queryKey: ['notes'] });
@@ -38,15 +47,27 @@ export default function MainLayout() {
     });
   }, [isLogin, queryClient, t]);
 
+  // Check default page
   useEffect(() => {
     if (location.pathname === '/') {
       navigate(`/${defaultPage}`);
     }
   }, [defaultPage, location.pathname, navigate]);
 
+  // Check update
+  useEffect(() => {
+    if (!autoUpdate) return;
+
+    checkAndUpdateApp({
+      onProgress: setDownloadProgress,
+    });
+  }, [autoUpdate]);
+
   return (
     <div className="flex flex-col h-screen pt-[env(safe-area-inset-top)]">
-      <NavBar />
+      {downloadProgress > 0 && downloadProgress < 100 && <DownloadProgress value={downloadProgress} />}
+
+      {isNative && <NavBar />}
       <main className="flex-1 overflow-auto no-scrollbar">
         <Outlet />
       </main>

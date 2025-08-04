@@ -143,8 +143,7 @@ export async function handleSyncData(options = { askBeforeReplace: false }) {
           <p>Local data size: <span class="text-primary">${localDataSize}</span> bytes</p>
         </div>`,
         contentAsHTML: true,
-        btnOk: { text: 'Yes' },
-        btnCancel: { text: 'No' },
+        btnOk: { color: 'success' },
       });
 
       if (!result) return { success: false, message: 'Cancelled' };

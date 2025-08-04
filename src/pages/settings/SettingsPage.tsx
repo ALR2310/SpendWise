@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
@@ -13,9 +14,12 @@ import { googleAuth } from '~/services/googleAuth';
 import { LANGUAGE, PAGE, THEME } from '~/shared/types/settings.type';
 
 import SettingsItem from './components/SettingsItem';
+import { handleSyncData } from './logic/data';
+import SettingsUpdatePage from './SettingsUpdatePage';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   // Apply theme setting
   const [theme, setTheme] = useState(appSettings.general.theme);
@@ -51,12 +55,6 @@ export default function SettingsPage() {
     appSettings.general.notification = notification;
   }, [notification]);
 
-  // Apply auto update setting
-  const [autoUpdate, setAutoUpdate] = useState(appSettings.general.autoUpdate);
-  useEffect(() => {
-    appSettings.general.autoUpdate = autoUpdate;
-  }, [autoUpdate]);
-
   // Check isLogin
   const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
@@ -89,6 +87,16 @@ export default function SettingsPage() {
             if (result.success) {
               setIsLogin(true);
               toast.success(t('settings.account.google.login.success'));
+
+              // Check and sync data
+              toast.info('Sync data', async () => {
+                const result = await handleSyncData({ askBeforeReplace: true });
+                if (result.success) {
+                  queryClient.invalidateQueries({ queryKey: ['expenses'] });
+                  queryClient.invalidateQueries({ queryKey: ['notes'] });
+                  toast.success(t('settings.data.sync.success'));
+                } else toast.error(result.message);
+              });
             } else toast.error(result.message);
           }
         }}
@@ -155,24 +163,7 @@ export default function SettingsPage() {
         linkTo="data"
       />
 
-      <SettingsItem
-        title={t(`settings.autoUpdate.title`)}
-        description={t(`settings.autoUpdate.desc`)}
-        type="toggle"
-        iconEl={<img src={appImages.icons.update} />}
-        onToggleChange={(value) => setAutoUpdate(value as boolean)}
-        defaultToggle={autoUpdate}
-      />
-
-      <SettingsItem
-        title={t(`settings.checkUpdate.title`)}
-        description={t(`settings.general.checkUpdate.desc`)}
-        type="button"
-        iconEl={<img src={appImages.icons.update} />}
-        onClick={async () => {
-          // TODO: Check for updates
-        }}
-      />
+      <SettingsUpdatePage />
     </motion.div>
   );
 }
