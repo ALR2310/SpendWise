@@ -7,10 +7,11 @@ on:
   workflow_dispatch:
 
 env:
-  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-  GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
-  GIT_API_URL: ${{ secrets.GIT_API_URL }}
+  VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+  VITE_GOOGLE_CLIENT_SECRET: ${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}
+  VITE_GOOGLE_REDIRECT_URI: ${{ secrets.VITE_GOOGLE_REDIRECT_URI }}
+  VITE_GIT_ACCESS_TOKEN: ${{ secrets.VITE_GIT_ACCESS_TOKEN }}
+  VITE_GIT_API_URL: ${{ secrets.VITE_GIT_API_URL }}
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
   ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
@@ -89,22 +90,16 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > spendwise-release-key.jks
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > release-key.jks
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          YARN_VERSION=$(yarn --version)
-          if [[ "$YARN_VERSION" =~ ^1\..* ]]; then
-            yarn install --frozen-lockfile
-          else
-            yarn install --immutable
-          fi
+        run: npm ci
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -126,10 +121,10 @@ jobs:
         run: cd android && chmod +x ./gradlew
 
       - name: Set Version
-        run: yarn run version
+        run: npm run version
 
       - name: Build Source
-        run: yarn build
+        run: npm run build
 
       - name: Sync Capacitor
         run: npx cap sync android
@@ -139,7 +134,7 @@ jobs:
 
       - name: Sign APK
         run: |
-          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks spendwise-release-key.jks \
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks release-key.jks \
             --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
             --out android/app/build/outputs/apk/release/SpendWise-${{ steps.update_version.outputs.NEW_VERSION }}.apk \
