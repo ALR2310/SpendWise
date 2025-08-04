@@ -82,7 +82,12 @@
       },
       "cache": {
         "title": "Delete Cache",
-        "desc": "Delete cache data of the app"
+        "desc": "Delete cache data of the app",
+        "toast": {
+          "title": "Cleaning cache",
+          "success": "Clean cache successfully",
+          "error": "An error when clear cache"
+        }
       },
       "title": "Data",
       "desc": "Set import, export and synchronize data",

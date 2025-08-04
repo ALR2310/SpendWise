@@ -82,7 +82,12 @@
       },
       "cache": {
         "title": "Xóa bộ nhớ đệm",
-        "desc": "Xóa dữ liệu bộ nhớ đệm của ứng dụng"
+        "desc": "Xóa dữ liệu bộ nhớ đệm của ứng dụng",
+        "toast": {
+          "title": "Đang xoá bộ nhớ đệm",
+          "success": "Xoá thành công",
+          "error": "Có lỗi khi xoá bộ nhớ đệm"
+        }
       },
       "title": "Dữ liệu",
       "desc": "Cài đặt nhập, xuất và đồng bộ dữ liệu",

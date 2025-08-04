@@ -7,18 +7,48 @@ import { compareVersions } from 'compare-versions';
 import { confirm } from '~/hooks/useConfirm';
 import { toast } from '~/hooks/useToast';
 
-export async function checkFileExists(path: string, directory: Directory = Directory.Documents): Promise<boolean> {
+export async function checkFileExists(
+  path: string,
+  directory: Directory | 'DOWNLOADS' = Directory.Cache,
+): Promise<boolean> {
   try {
-    await Filesystem.stat({ directory: directory, path });
+    if (directory === 'DOWNLOADS') {
+      directory = Directory.Documents;
+      path = `../Download/${path}`;
+    }
+
+    await Filesystem.stat({ directory, path });
     return true;
-  } catch {
+  } catch (e) {
+    console.log(e);
     return false;
   }
 }
 
-export async function getFileUri(path: string, directory: Directory = Directory.Documents): Promise<string> {
-  const result = await Filesystem.getUri({ directory: directory, path });
+export async function getFileUri(path: string, directory: Directory | 'DOWNLOADS' = Directory.Cache): Promise<string> {
+  if (directory === 'DOWNLOADS') {
+    const result = await Filesystem.getUri({ directory: Directory.Documents, path });
+    return result.uri.replace('Documents', 'Download');
+  }
+
+  const result = await Filesystem.getUri({ directory, path });
   return result.uri;
+}
+
+export async function cleanCache(name?: string, directory: Directory = Directory.Cache) {
+  try {
+    const result = await Filesystem.readdir({ directory, path: '' });
+
+    for (const file of result.files) {
+      const matchesName = name ? file.name.includes(name) : true;
+      if (matchesName) await Filesystem.deleteFile({ directory, path: file.name });
+    }
+
+    return { success: true, message: 'Clean cache successfully' };
+  } catch (e: any) {
+    console.error(e);
+    return { success: false, message: e.message };
+  }
 }
 
 export async function downloadFile({
@@ -77,7 +107,10 @@ export async function checkAndUpdateApp({ onProgress }: { onProgress?: (percent:
     const fileName = assetInfo.name;
     const downloadUrl = assetInfo.browser_download_url;
 
-    const [fileUri, exists] = await Promise.all([getFileUri(fileName), checkFileExists(fileName)]);
+    const [fileUri, exists] = await Promise.all([
+      getFileUri(fileName, 'DOWNLOADS'),
+      checkFileExists(fileName, 'DOWNLOADS'),
+    ]);
     if (!exists) await downloadFile({ url: downloadUrl, path: fileUri, onProgress });
 
     const allowInstall = await confirm({

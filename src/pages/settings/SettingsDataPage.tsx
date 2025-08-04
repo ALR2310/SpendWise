@@ -14,6 +14,7 @@ import { Platform } from '~/shared/enums/app.enum';
 
 import SettingsItem from './components/SettingsItem';
 import { handleBackupData, handleExportData, handleImportData, handleSyncData } from './logic/data';
+import { cleanCache } from './logic/updater';
 
 export default function SettingsDataPage() {
   const { t } = useTranslation();
@@ -125,8 +126,13 @@ export default function SettingsDataPage() {
         description={t(`settings.data.cache.desc`)}
         type="button"
         iconEl={<img src={appImages.icons.dataClean} />}
-        onClick={() => {
-          // TODO: Check for updates
+        onClick={async () => {
+          toast.info(t('settings.data.cache.toast.title'), async () => {
+            const result = await cleanCache();
+            return result.success
+              ? toast.success(t('settings.data.cache.toast.success'))
+              : toast.error(t('settings.data.cache.toast.error'));
+          });
         }}
       />
     </motion.div>
