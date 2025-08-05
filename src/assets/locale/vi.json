@@ -35,7 +35,8 @@
     },
     "filter": {
       "search": "Nhập từ khóa..."
-    }
+    },
+    "title": "Chi tiêu"
   },
   "calendar": {
     "clear": "Xóa"
@@ -120,7 +121,8 @@
     "defaultPage": {
       "title": "Trang mặc định",
       "desc": "Chọn trang mặc định khi mở ứng dụng"
-    }
+    },
+    "title": "Cài đặt"
   },
   "btn": {
     "cancel": "Hủy",
@@ -133,5 +135,15 @@
       "warning": "Cảnh báo",
       "info": "Thông tin"
     }
+  },
+  "language": {
+    "en": "Tiếng Anh",
+    "vi": "Tiếng Việt"
+  },
+  "notes": {
+    "title": "Ghi chú"
+  },
+  "statistics": {
+    "title": "Thống kê"
   }
 }

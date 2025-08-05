@@ -9,30 +9,33 @@ import SettingsDataPage from './pages/settings/SettingsDataPage';
 import SettingsPage from './pages/settings/SettingsPage';
 import { ConfirmProvider } from './providers/ConfirmProvider';
 import { ToastProvider } from './providers/ToastProvider';
+import { UpdaterProvider } from './providers/UpdaterProvider';
 
 export default function App() {
   return (
     <QueryClientProvider client={new QueryClient()}>
-      <ConfirmProvider>
-        <ToastProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<MainLayout />}>
-                <Route path="expenses" element={<ExpensesPage />} />
-                <Route path="statistics" element={<div></div>} />
-                <Route path="notes">
-                  <Route index element={<NoteListPage />} />
-                  <Route path=":id" element={<NoteDetailPage />} />
+      <UpdaterProvider>
+        <ConfirmProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<MainLayout />}>
+                  <Route path="expenses" element={<ExpensesPage />} />
+                  <Route path="statistics" element={<div></div>} />
+                  <Route path="notes">
+                    <Route index element={<NoteListPage />} />
+                    <Route path=":id" element={<NoteDetailPage />} />
+                  </Route>
+                  <Route path="settings">
+                    <Route index element={<SettingsPage />} />
+                    <Route path="data" element={<SettingsDataPage />} />
+                  </Route>
                 </Route>
-                <Route path="settings">
-                  <Route index element={<SettingsPage />} />
-                  <Route path="data" element={<SettingsDataPage />} />
-                </Route>
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </ToastProvider>
-      </ConfirmProvider>
+              </Routes>
+            </BrowserRouter>
+          </ToastProvider>
+        </ConfirmProvider>
+      </UpdaterProvider>
     </QueryClientProvider>
   );
 }

@@ -109,7 +109,7 @@ export default function SettingsPage() {
         iconEl={<img src={appImages.icons.theme} />}
         options={Object.values(THEME).map((value) => ({
           value,
-          label: value,
+          label: value?.charAt(0).toUpperCase() + value?.slice(1),
         }))}
         onSelectChange={(value) => setTheme(value as THEME)}
         defaultSelect={theme}
@@ -122,7 +122,7 @@ export default function SettingsPage() {
         iconEl={<img src={appImages.icons.language} />}
         options={Object.values(LANGUAGE).map((value) => ({
           value,
-          label: value,
+          label: t(`language.${value}`) || value,
         }))}
         onSelectChange={(value) => {
           i18next.changeLanguage(value as LANGUAGE);
@@ -138,7 +138,7 @@ export default function SettingsPage() {
         iconEl={<img src={appImages.icons.page} />}
         options={Object.values(PAGE).map((value) => ({
           value,
-          label: value,
+          label: t(`${value}.title`) || value,
         }))}
         onSelectChange={(value) => {
           setDefaultPage(value as PAGE);

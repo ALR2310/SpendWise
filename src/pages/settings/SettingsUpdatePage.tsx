@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { appImages } from '~/assets';
-import DownloadProgress from '~/components/DownloadProgress';
 import { appSettings } from '~/configs/settings';
+import { useUpdater } from '~/hooks/useUpdater';
 
 import SettingsItem from './components/SettingsItem';
-import { checkAndUpdateApp } from './logic/updater';
 
 export default function SettingsUpdatePage() {
   const { t } = useTranslation();
-
-  const [downloadProgress, setDownloadProgress] = useState(0);
+  const { triggerUpdate } = useUpdater();
 
   // Apply auto update setting
   const [autoUpdate, setAutoUpdate] = useState<boolean>(appSettings.general.autoUpdate);
@@ -21,8 +19,6 @@ export default function SettingsUpdatePage() {
 
   return (
     <React.Fragment>
-      {downloadProgress > 0 && downloadProgress < 100 && <DownloadProgress value={downloadProgress} />}
-
       <SettingsItem
         title={t(`settings.autoUpdate.title`)}
         description={t(`settings.autoUpdate.desc`)}
@@ -37,11 +33,7 @@ export default function SettingsUpdatePage() {
         description={t(`settings.general.checkUpdate.desc`)}
         type="button"
         iconEl={<img src={appImages.icons.update} />}
-        onClick={async () => {
-          checkAndUpdateApp({
-            onProgress: setDownloadProgress,
-          });
-        }}
+        onClick={triggerUpdate}
       />
     </React.Fragment>
   );

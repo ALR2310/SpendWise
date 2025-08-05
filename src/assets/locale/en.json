@@ -6,6 +6,7 @@
     "settings": "Settings"
   },
   "expenses": {
+    "title": "Expenses",
     "table": {
       "header": {
         "date": "Date",
@@ -41,6 +42,7 @@
     "clear": "Delete"
   },
   "settings": {
+    "title": "Settings",
     "account": {
       "google": {
         "logout": {
@@ -122,6 +124,12 @@
       "desc": "Choose the page when open the app"
     }
   },
+  "notes": {
+    "title": "Notes"
+  },
+  "statistics": {
+    "title": "Statistics"
+  },
   "btn": {
     "cancel": "Cancel",
     "save": "Save"
@@ -133,5 +141,9 @@
       "warning": "Warning",
       "info": "Info"
     }
+  },
+  "language": {
+    "vi": "Vietnamese",
+    "en": "English"
   }
 }

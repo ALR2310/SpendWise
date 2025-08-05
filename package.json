@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite --host",
     "dev:android": "vite build && npx cap sync && npx cap run android",
-    "dev:android-live": "vite build && npx cap sync && npx cap run android --live-reload --port=8100 --host=172.16.20.27",
+    "dev:android-live": "vite build && npx cap sync && npx cap run android --live-reload --port=8100 --host=172.16.20.71",
     "preview": "vite preview",
     "lint": "eslint",
     "update": "npm-check-updates -u",

@@ -7,10 +7,7 @@ import { compareVersions } from 'compare-versions';
 import { confirm } from '~/hooks/useConfirm';
 import { toast } from '~/hooks/useToast';
 
-export async function checkFileExists(
-  path: string,
-  directory: Directory | 'DOWNLOADS' = Directory.Cache,
-): Promise<boolean> {
+async function checkFileExists(path: string, directory: Directory | 'DOWNLOADS' = Directory.Cache): Promise<boolean> {
   try {
     if (directory === 'DOWNLOADS') {
       directory = Directory.Documents;
@@ -25,7 +22,7 @@ export async function checkFileExists(
   }
 }
 
-export async function getFileUri(path: string, directory: Directory | 'DOWNLOADS' = Directory.Cache): Promise<string> {
+async function getFileUri(path: string, directory: Directory | 'DOWNLOADS' = Directory.Cache): Promise<string> {
   if (directory === 'DOWNLOADS') {
     const result = await Filesystem.getUri({ directory: Directory.Documents, path });
     return result.uri.replace('Documents', 'Download');
@@ -35,23 +32,7 @@ export async function getFileUri(path: string, directory: Directory | 'DOWNLOADS
   return result.uri;
 }
 
-export async function cleanCache(name?: string, directory: Directory = Directory.Cache) {
-  try {
-    const result = await Filesystem.readdir({ directory, path: '' });
-
-    for (const file of result.files) {
-      const matchesName = name ? file.name.includes(name) : true;
-      if (matchesName) await Filesystem.deleteFile({ directory, path: file.name });
-    }
-
-    return { success: true, message: 'Clean cache successfully' };
-  } catch (e: any) {
-    console.error(e);
-    return { success: false, message: e.message };
-  }
-}
-
-export async function downloadFile({
+async function downloadFile({
   url,
   path,
   onProgress,
@@ -81,7 +62,7 @@ export async function downloadFile({
 
 export async function checkAndUpdateApp({ onProgress }: { onProgress?: (percent: number) => void }) {
   try {
-    const res = await CapacitorHttp.get({
+    let res = await CapacitorHttp.get({
       url: `${import.meta.env.VITE_GIT_API_URL}/releases/latest`,
       headers: {
         Authorization: `token ${import.meta.env.VITE_GIT_ACCESS_TOKEN}`,
@@ -89,13 +70,23 @@ export async function checkAndUpdateApp({ onProgress }: { onProgress?: (percent:
       },
     });
 
-    if (res.status !== 200) return toast.error('Failed to check update');
+    if (res.status !== 200) {
+      res = await CapacitorHttp.get({
+        url: `${import.meta.env.VITE_GIT_API_URL}/releases?per_page=1`,
+        headers: {
+          Authorization: `token ${import.meta.env.VITE_GIT_ACCESS_TOKEN}`,
+          Accept: 'application/vnd.github.v3+json',
+        },
+      });
 
-    const data = res.data;
+      if (res.status !== 200) return toast.info('No new version available');
+    }
+
+    const data = Array.isArray(res.data) ? res.data[0] : res.data;
     const latestVersion = data.tag_name.replace('v', '');
-    const isLatest = compareVersions(latestVersion, __APP_VERSION__);
+    const isUpdateAvailable = compareVersions(latestVersion, __APP_VERSION__);
 
-    if (isLatest !== 1) return;
+    if (isUpdateAvailable !== 1) return;
 
     const allowDownload = await confirm({
       title: 'New version available',
@@ -126,5 +117,21 @@ export async function checkAndUpdateApp({ onProgress }: { onProgress?: (percent:
   } catch (e) {
     console.error(e);
     toast.error('Something went wrong');
+  }
+}
+
+export async function cleanCache(name?: string, directory: Directory = Directory.Cache) {
+  try {
+    const result = await Filesystem.readdir({ directory, path: '' });
+
+    for (const file of result.files) {
+      const matchesName = name ? file.name.includes(name) : true;
+      if (matchesName) await Filesystem.deleteFile({ directory, path: file.name });
+    }
+
+    return { success: true, message: 'Clean cache successfully' };
+  } catch (e: any) {
+    console.error(e);
+    return { success: false, message: e.message };
   }
 }

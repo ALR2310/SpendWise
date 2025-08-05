@@ -6,11 +6,10 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 
 import { appSettings } from '~/configs/settings';
 import { toast } from '~/hooks/useToast';
+import { useUpdater } from '~/hooks/useUpdater';
 import { handleSyncData } from '~/pages/settings/logic/data';
-import { checkAndUpdateApp } from '~/pages/settings/logic/updater';
 import { googleAuth } from '~/services/googleAuth';
 
-import DownloadProgress from '../DownloadProgress';
 import DockNavBar from './DockNavBar';
 import NavBar from './NavBar';
 
@@ -25,7 +24,7 @@ export default function MainLayout() {
   const location = useLocation();
   const defaultPage = appSettings.general.defaultPage;
 
-  const [downloadProgress, setDownloadProgress] = useState(0);
+  const { triggerUpdate } = useUpdater();
   const [autoUpdate] = useState<boolean>(appSettings.general.autoUpdate);
 
   // Check login
@@ -58,15 +57,11 @@ export default function MainLayout() {
   useEffect(() => {
     if (!autoUpdate) return;
 
-    checkAndUpdateApp({
-      onProgress: setDownloadProgress,
-    });
-  }, [autoUpdate]);
+    triggerUpdate();
+  }, [autoUpdate, triggerUpdate]);
 
   return (
     <div className="flex flex-col h-screen pt-[env(safe-area-inset-top)]">
-      {downloadProgress > 0 && downloadProgress < 100 && <DownloadProgress value={downloadProgress} />}
-
       {isNative && <NavBar />}
       <main className="flex-1 overflow-auto no-scrollbar">
         <Outlet />
