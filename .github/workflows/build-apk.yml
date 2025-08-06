@@ -15,6 +15,8 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
   ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_SHA: ${{ github.sha }}
 
 jobs:
   build:
@@ -66,5 +68,3 @@ jobs:
 
       - name: Build Release
         run: npx tsx scripts/build-release.ts
-        env:
-          GITHUB_SHA: ${{ github.sha }}

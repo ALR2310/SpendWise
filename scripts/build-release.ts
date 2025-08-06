@@ -8,7 +8,7 @@ import path from 'path';
 dotenv.config();
 
 const repo = process.env.GITHUB_REPOSITORY!;
-const token = process.env.GITHUB_ACCESS_TOKEN;
+const token = process.env.GITHUB_TOKEN;
 const githubSha = process.env.GITHUB_SHA ?? 'main';
 
 const owner = repo.split('/')[0];
