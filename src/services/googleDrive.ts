@@ -1,11 +1,9 @@
 import { CapacitorHttp } from '@capacitor/core';
 
-type FileContent = string | Blob | ArrayBuffer | File | Uint8Array;
-
 interface UploadOptions {
   fileName: string;
   mimeType?: string;
-  content: FileContent;
+  content: any;
   appDataFolder?: boolean;
 }
 
@@ -53,7 +51,7 @@ class GoogleDrive {
   /**
    * Create FormData for file upload/update operations
    */
-  private createFormData(fileName: string, content: FileContent, mimeType?: string, appDataFolder?: boolean): FormData {
+  private createFormData(fileName: string, content: any, mimeType?: string, appDataFolder?: boolean): FormData {
     const metadata = {
       name: fileName,
       ...(mimeType && { mimeType }),
