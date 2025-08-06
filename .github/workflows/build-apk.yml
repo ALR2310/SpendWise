@@ -66,3 +66,5 @@ jobs:
 
       - name: Build Release
         run: npx tsx scripts/build-release.ts
+        env:
+          GITHUB_SHA: ${{ github.sha }}

@@ -1,11 +1,15 @@
 import { Octokit } from '@octokit/rest';
 import { execSync } from 'child_process';
 import { compare } from 'compare-versions';
+import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 
+dotenv.config();
+
 const repo = process.env.GITHUB_REPOSITORY!;
 const token = process.env.GITHUB_ACCESS_TOKEN;
+const githubSha = process.env.GITHUB_SHA ?? 'main';
 
 const owner = repo.split('/')[0];
 const repoName = repo.split('/')[1];
@@ -84,58 +88,27 @@ async function getLatestCommitSha() {
     octokit.rest.repos.getCommit({
       owner,
       repo: repoName,
-      ref: 'main',
+      ref: githubSha,
     }),
   );
   return latestCommit.data.sha;
 }
 
+async function getFirstCommitSha() {
+  const firstCommit = await retry(() =>
+    octokit.rest.repos.listCommits({
+      owner,
+      repo: repoName,
+      per_page: 1,
+      page: 1000000,
+    }),
+  );
+  return firstCommit.data[0]?.sha;
+}
+
 // #endregion
 
 // #region Main function
-async function createTagIfNotExists(tagName: string, sha?: string) {
-  try {
-    await retry(() =>
-      octokit.rest.git.getRef({
-        owner,
-        repo: repoName,
-        ref: `tags/${tagName}`,
-      }),
-    );
-    console.log(`Tag ${tagName} already exists.`);
-  } catch (error: any) {
-    if (error.status === 404) {
-      console.log(`Tag ${tagName} does not exist, creating...`);
-
-      const commitSha = sha ?? (await getLatestCommitSha());
-
-      const tagObj = await retry(() =>
-        octokit.rest.git.createTag({
-          owner,
-          repo: repoName,
-          tag: tagName,
-          message: `Release ${tagName}`,
-          object: commitSha,
-          type: 'commit',
-        }),
-      );
-
-      await retry(() =>
-        octokit.rest.git.createRef({
-          owner,
-          repo: repoName,
-          ref: `refs/tags/${tagName}`,
-          sha: tagObj.data.sha,
-        }),
-      );
-
-      console.log(`Tag ${tagName} created and pushed.`);
-    } else {
-      throw error;
-    }
-  }
-}
-
 async function checkVersion() {
   const allTags = await getAllTags();
 
@@ -148,32 +121,29 @@ async function checkVersion() {
   return { allTags, newVersion, previousVersion, versionCode };
 }
 
-async function createChangelog(allTags: any[], latestTag: string, prevTag: string) {
+async function createChangelog(allTags: any[], prevTag: string) {
   let commits: { message: string }[] = [];
+  let baseSha: string;
+  const headSha = await getLatestCommitSha();
 
-  if (prevTag === '0.0.0') {
-    const firstCommitSha = allTags[0].commit.sha;
-
-    const comparison = await retry(() =>
-      octokit.rest.repos.compareCommits({
-        owner,
-        repo: repoName,
-        base: firstCommitSha,
-        head: latestTag,
-      }),
-    );
-    commits = comparison.data.commits.map((c) => ({ message: c.commit.message }));
+  if (prevTag === 'v0.0.0') {
+    baseSha = await getFirstCommitSha();
+    if (!baseSha) throw new Error('Cannot determine first commit SHA.');
   } else {
-    const comparison = await retry(() =>
-      octokit.rest.repos.compareCommits({
-        owner,
-        repo: repoName,
-        base: prevTag,
-        head: latestTag,
-      }),
-    );
-    commits = comparison.data.commits.map((c) => ({ message: c.commit.message }));
+    const foundTag = allTags.find((tag) => tag.name === prevTag);
+    if (!foundTag) throw new Error(`Tag ${prevTag} not found.`);
+    baseSha = foundTag.commit.sha;
   }
+
+  const comparison = await retry(() =>
+    octokit.rest.repos.compareCommits({
+      owner,
+      repo: repoName,
+      base: baseSha,
+      head: headSha,
+    }),
+  );
+  commits = comparison.data.commits.map((c) => ({ message: c.commit.message }));
 
   return commits.length > 0
     ? commits.map((c) => `- ${c.message.split('\n')[0]}`).join('\n')
@@ -212,7 +182,6 @@ async function createRelease(name: string, tagName: string, changelogs: string) 
     }),
   );
 }
-
 // #endregion
 
 async function main() {
@@ -231,11 +200,8 @@ async function main() {
   // Build APK
   execSync('npx cap build android', { stdio: 'inherit' });
 
-  // Create Tag
-  await createTagIfNotExists(`v${newVersion}`);
-
   // Create Changelogs
-  const changelog = await createChangelog(allTags, `v${newVersion}`, `v${previousVersion}`);
+  const changelog = await createChangelog(allTags, `v${previousVersion}`);
 
   // Create Release
   await createRelease(`SpendWise v${newVersion}`, `v${newVersion}`, changelog);
