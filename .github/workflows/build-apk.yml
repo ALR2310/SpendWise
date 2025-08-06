@@ -54,6 +54,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: cd android && chmod +x ./gradlew
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Add apksigner to PATH
+        run: echo "${ANDROID_HOME}/build-tools/34.0.0" >> $GITHUB_PATH
+
       - name: Decode keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
