@@ -4,6 +4,7 @@
         "downloadjs",
         "gradlew",
         "nosqlite",
+        "Retryable",
         "VITE",
         "zulu"
     ],

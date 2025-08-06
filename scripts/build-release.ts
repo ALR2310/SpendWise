@@ -13,33 +13,60 @@ const repoName = repo.split('/')[1];
 const octokit = new Octokit({ auth: token });
 
 // #region Helper function
+async function retry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000) {
+  try {
+    return await fn();
+  } catch (err: any) {
+    const isRetryable =
+      err.status === 500 ||
+      err.status === 502 ||
+      err.status === 503 ||
+      err.status === 504 ||
+      err.code === 'EPIPE' ||
+      err.message?.includes('fetch failed') ||
+      err.message?.includes('other side closed');
+
+    if (retries > 0 && isRetryable) {
+      console.warn(`[retry] ${err.message || err} - retrying in ${delayMs}ms... (${retries} left)`);
+      await new Promise((r) => setTimeout(r, delayMs));
+      return retry(fn, retries - 1, delayMs);
+    }
+
+    throw err;
+  }
+}
+
 async function getAllTags() {
-  const tags = await octokit.paginate(octokit.rest.repos.listTags, {
-    owner,
-    repo: repoName,
-    per_page: 100,
-  });
+  const tags = await retry(() =>
+    octokit.paginate(octokit.rest.repos.listTags, {
+      owner,
+      repo: repoName,
+      per_page: 100,
+    }),
+  );
 
   return tags;
 }
 
 async function getRelease() {
   try {
-    const res = await octokit.rest.repos.getLatestRelease({
-      owner,
-      repo: repoName,
-    });
-
+    const res = await retry(() =>
+      octokit.rest.repos.getLatestRelease({
+        owner,
+        repo: repoName,
+      }),
+    );
     return res.data;
   } catch (error: any) {
     if (error.status !== 404) throw error;
 
-    const res = await octokit.rest.repos.listReleases({
-      owner,
-      repo: repoName,
-      per_page: 1,
-    });
-
+    const res = await retry(() =>
+      octokit.rest.repos.listReleases({
+        owner,
+        repo: repoName,
+        per_page: 1,
+      }),
+    );
     return res.data[0] ?? null;
   }
 }
@@ -53,12 +80,13 @@ function determineNewVersion(prev: string, current: string): string {
 }
 
 async function getLatestCommitSha() {
-  const latestCommit = await octokit.rest.repos.getCommit({
-    owner,
-    repo: repoName,
-    ref: 'main',
-  });
-
+  const latestCommit = await retry(() =>
+    octokit.rest.repos.getCommit({
+      owner,
+      repo: repoName,
+      ref: 'main',
+    }),
+  );
   return latestCommit.data.sha;
 }
 
@@ -67,12 +95,13 @@ async function getLatestCommitSha() {
 // #region Main function
 async function createTagIfNotExists(tagName: string, sha?: string) {
   try {
-    await octokit.rest.git.getRef({
-      owner,
-      repo: repoName,
-      ref: `tags/${tagName}`,
-    });
-
+    await retry(() =>
+      octokit.rest.git.getRef({
+        owner,
+        repo: repoName,
+        ref: `tags/${tagName}`,
+      }),
+    );
     console.log(`Tag ${tagName} already exists.`);
   } catch (error: any) {
     if (error.status === 404) {
@@ -80,21 +109,25 @@ async function createTagIfNotExists(tagName: string, sha?: string) {
 
       const commitSha = sha ?? (await getLatestCommitSha());
 
-      const tagObj = await octokit.rest.git.createTag({
-        owner,
-        repo: repoName,
-        tag: tagName,
-        message: `Release ${tagName}`,
-        object: commitSha,
-        type: 'commit',
-      });
+      const tagObj = await retry(() =>
+        octokit.rest.git.createTag({
+          owner,
+          repo: repoName,
+          tag: tagName,
+          message: `Release ${tagName}`,
+          object: commitSha,
+          type: 'commit',
+        }),
+      );
 
-      await octokit.rest.git.createRef({
-        owner,
-        repo: repoName,
-        ref: `refs/tags/${tagName}`,
-        sha: tagObj.data.sha,
-      });
+      await retry(() =>
+        octokit.rest.git.createRef({
+          owner,
+          repo: repoName,
+          ref: `refs/tags/${tagName}`,
+          sha: tagObj.data.sha,
+        }),
+      );
 
       console.log(`Tag ${tagName} created and pushed.`);
     } else {
@@ -121,20 +154,24 @@ async function createChangelog(allTags: any[], latestTag: string, prevTag: strin
   if (prevTag === '0.0.0') {
     const firstCommitSha = allTags[0].commit.sha;
 
-    const comparison = await octokit.rest.repos.compareCommits({
-      owner,
-      repo: repoName,
-      base: firstCommitSha,
-      head: latestTag,
-    });
+    const comparison = await retry(() =>
+      octokit.rest.repos.compareCommits({
+        owner,
+        repo: repoName,
+        base: firstCommitSha,
+        head: latestTag,
+      }),
+    );
     commits = comparison.data.commits.map((c) => ({ message: c.commit.message }));
   } else {
-    const comparison = await octokit.rest.repos.compareCommits({
-      owner,
-      repo: repoName,
-      base: prevTag,
-      head: latestTag,
-    });
+    const comparison = await retry(() =>
+      octokit.rest.repos.compareCommits({
+        owner,
+        repo: repoName,
+        base: prevTag,
+        head: latestTag,
+      }),
+    );
     commits = comparison.data.commits.map((c) => ({ message: c.commit.message }));
   }
 
@@ -149,27 +186,31 @@ async function createRelease(name: string, tagName: string, changelogs: string) 
   const fileData = fs.readFileSync(filePath);
   const fileName = name.replace(/ /g, '-') + '.apk';
 
-  const release = await octokit.rest.repos.createRelease({
-    owner,
-    repo: repoName,
-    tag_name: tagName,
-    name: name,
-    body: changelogs,
-    draft: false,
-    prerelease: false,
-  });
+  const release = await retry(() =>
+    octokit.rest.repos.createRelease({
+      owner,
+      repo: repoName,
+      tag_name: tagName,
+      name: name,
+      body: changelogs,
+      draft: false,
+      prerelease: false,
+    }),
+  );
 
-  await octokit.rest.repos.uploadReleaseAsset({
-    owner,
-    repo: repoName,
-    release_id: release.data.id,
-    name: fileName,
-    data: fileData as any,
-    headers: {
-      'content-type': 'application/vnd.android.package-archive',
-      'content-length': fileSize,
-    },
-  });
+  await retry(() =>
+    octokit.rest.repos.uploadReleaseAsset({
+      owner,
+      repo: repoName,
+      release_id: release.data.id,
+      name: fileName,
+      data: fileData as any,
+      headers: {
+        'content-type': 'application/vnd.android.package-archive',
+        'content-length': fileSize,
+      },
+    }),
+  );
 }
 
 // #endregion
