@@ -1,11 +1,11 @@
 import { Octokit } from '@octokit/rest';
 import { execSync } from 'child_process';
 import { compare } from 'compare-versions';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 
-dotenv.config();
+config();
 
 const repo = process.env.GITHUB_REPOSITORY!;
 const token = process.env.GITHUB_TOKEN;
@@ -40,7 +40,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000) {
   }
 }
 
-async function getAllTags() {
+async function getTags() {
   const tags = await retry(() =>
     octokit.paginate(octokit.rest.repos.listTags, {
       owner,
@@ -105,35 +105,28 @@ async function getFirstCommitSha() {
   );
   return firstCommit.data[0]?.sha;
 }
-
 // #endregion
 
 // #region Main function
 async function checkVersion() {
-  const allTags = await getAllTags();
+  const tags = await getTags();
 
-  const versionCode = allTags.length + 1;
+  const versionCode = tags.length + 1;
   const currentVersion = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
   const previousVersion = ((await getRelease()) ?? { tag_name: 'v0.0.0' }).tag_name.replace(/^v/, '');
 
   const newVersion = determineNewVersion(previousVersion, currentVersion);
 
-  return { allTags, newVersion, previousVersion, versionCode };
+  return { versionCode, previousVersion, newVersion };
 }
 
-async function createChangelog(allTags: any[], prevTag: string) {
+async function createChangelog(prevTag: string) {
   let commits: { message: string }[] = [];
   let baseSha: string;
   const headSha = await getLatestCommitSha();
 
-  if (prevTag === 'v0.0.0') {
-    baseSha = await getFirstCommitSha();
-    if (!baseSha) throw new Error('Cannot determine first commit SHA.');
-  } else {
-    const foundTag = allTags.find((tag) => tag.name === prevTag);
-    if (!foundTag) throw new Error(`Tag ${prevTag} not found.`);
-    baseSha = foundTag.commit.sha;
-  }
+  if (prevTag !== 'v0.0.0') baseSha = prevTag;
+  else baseSha = await getFirstCommitSha();
 
   const comparison = await retry(() =>
     octokit.rest.repos.compareCommits({
@@ -186,9 +179,9 @@ async function createRelease(name: string, tagName: string, changelogs: string) 
 
 async function main() {
   // Check Version
-  const { allTags, newVersion, previousVersion, versionCode } = await checkVersion();
+  const { versionCode, previousVersion, newVersion } = await checkVersion();
 
-  // Set Version
+  // Set Cap Version
   execSync(`npx capacitor-set-version set:android -v ${newVersion} -b ${versionCode}`, { stdio: 'inherit' });
 
   // Build Source
@@ -201,7 +194,7 @@ async function main() {
   execSync('npx cap build android', { stdio: 'inherit' });
 
   // Create Changelogs
-  const changelog = await createChangelog(allTags, `v${previousVersion}`);
+  const changelog = await createChangelog(`v${previousVersion}`);
 
   // Create Release
   await createRelease(`SpendWise v${newVersion}`, `v${newVersion}`, changelog);
