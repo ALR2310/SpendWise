@@ -17,7 +17,8 @@
     "version": "tsx scripts/version.ts",
     "build": "tsc && vite build",
     "build:image": "nodemon --exec tsx scripts/build-image.ts --watch src/assets/imgs --ext png,jpg,jpeg,svg,gif",
-    "build:android": "vite build && npx cap sync && npx cap build android"
+    "build:android": "vite build && npx cap sync && npx cap build android",
+    "release": "tsx scripts/build-release.ts"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^7.0.1",
@@ -37,6 +38,7 @@
     "@capawesome-team/capacitor-file-opener": "^7.0.1",
     "@capawesome/capacitor-file-picker": "^7.2.0",
     "@capgo/capacitor-social-login": "^7.8.3",
+    "@octokit/rest": "^22.0.0",
     "@tanstack/react-query": "^5.83.0",
     "@types/react-router": "^5.1.20",
     "animate.css": "^4.1.1",

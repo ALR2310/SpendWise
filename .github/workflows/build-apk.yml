@@ -1,4 +1,4 @@
-name: Build APK And Release
+name: Build And Release
 
 on:
   push:
@@ -25,72 +25,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Get total releases
-        run: |
-          echo "Fetching all tags..."
-          TOTAL_TAGS=$(curl -s -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/tags" | jq '. | length')
-          VERSION_CODE=$((TOTAL_TAGS + 1))
-          echo "New versionCode: $VERSION_CODE"
-          jq --argjson v "$VERSION_CODE" '.versionCode = $v' package.json > temp.json && mv temp.json package.json
-
-      - name: Get version from package.json
-        id: get_version
-        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Get previous tag
-        id: previous_tag
-        run: |
-          LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // empty')
-
-          if [[ -z "$LATEST_RELEASE" || "$LATEST_RELEASE" == "null" ]]; then
-            LATEST_RELEASE=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "v0.0.0")
-          fi
-
-          echo "PREVIOUS_TAG=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-
-      - name: Determine new version & update package.json
-        id: update_version
-        run: |
-          PREV_TAG="${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
-          CUR_VERSION="${{ steps.get_version.outputs.VERSION }}"
-
-          PREV_TAG=${PREV_TAG#v} # Bỏ 'v' nếu có
-          CUR_VERSION=${CUR_VERSION#v}
-
-          IFS='.' read -r -a prev_parts <<< "$PREV_TAG"
-          IFS='.' read -r -a cur_parts <<< "$CUR_VERSION"
-
-          prev_major=${prev_parts[0]:-0}
-          prev_minor=${prev_parts[1]:-0}
-          prev_patch=${prev_parts[2]:-0}
-
-          cur_major=${cur_parts[0]:-0}
-          cur_minor=${cur_parts[1]:-0}
-          cur_patch=${cur_parts[2]:-0}
-
-          if [ "$prev_major" -gt "$cur_major" ] || [ "$prev_major" -eq "$cur_major" -a "$prev_minor" -gt "$cur_minor" ] || [ "$prev_major" -eq "$cur_major" -a "$prev_minor" -eq "$cur_minor" -a "$prev_patch" -ge "$cur_patch" ]; then
-            NEW_VERSION="${prev_major}.${prev_minor}.$((prev_patch + 1))"
-          else
-            NEW_VERSION="$CUR_VERSION"
-          fi
-
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-
-          jq --arg new_version "$NEW_VERSION" '.version=$new_version' package.json > package.tmp.json && mv package.tmp.json package.json
-
-      - name: Check version
-        run: |
-          echo "CURRENT_VERSION=${{ steps.get_version.outputs.VERSION }}"
-          echo "NEW_VERSION=${{ steps.update_version.outputs.NEW_VERSION }}"
-          echo "PREVIOUS_VERSION=${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
-
-      - name: Decode keystore
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -120,70 +54,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: cd android && chmod +x ./gradlew
 
-      - name: Set Version
-        run: npm run version
-
-      - name: Build Source
-        run: npm run build
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Build APK
-        run: cd android && ./gradlew assembleRelease
-
-      - name: Sign APK
+      - name: Decode keystore
         run: |
-          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks release-key.jks \
-            --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
-            --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
-            --out android/app/build/outputs/apk/release/SpendWise-${{ steps.update_version.outputs.NEW_VERSION }}.apk \
-            android/app/build/outputs/apk/release/app-release-unsigned.apk
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"      
-
-          LATEST_TAG="v${{ steps.update_version.outputs.NEW_VERSION }}"
-          PREV_TAG="${{ steps.previous_tag.outputs.PREVIOUS_TAG }}"
-
-          git fetch --tags
-
-          if ! git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
-            echo "Tag $LATEST_TAG does not exist, creating it now..."
-            git tag -a "$LATEST_TAG" -m "Release $LATEST_TAG"
-            git push origin "$LATEST_TAG"
-          fi
-
-          if [ "$PREV_TAG" == "0.0.0" ]; then
-            CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $(git rev-list --max-parents=0 HEAD)..$LATEST_TAG)
-            COMPARE_URL="https://github.com/${{ github.repository }}/commits/$LATEST_TAG"
-          else
-            CHANGELOG=$(git log --no-merges --pretty=format:"- %s" $PREV_TAG..$LATEST_TAG)
-            COMPARE_URL="https://github.com/${{ github.repository }}/compare/$PREV_TAG...$LATEST_TAG"
-          fi
-
-          [ -z "$CHANGELOG" ] && CHANGELOG="No changes in this release."
-
-          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo "See full changes: $COMPARE_URL" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        with:
-          tag_name: 'v${{ steps.update_version.outputs.NEW_VERSION }}'
-          name: 'SpendWise v${{ steps.update_version.outputs.NEW_VERSION }}'
-          body: |
-            Change log:
-            ${{ steps.changelog.outputs.CHANGELOG }}
-          draft: false
-          prerelease: false
-          files: android/app/build/outputs/apk/release/SpendWise-${{ steps.update_version.outputs.NEW_VERSION }}.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Release
+        run: npx tsx scripts/build-release.ts

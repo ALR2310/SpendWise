@@ -2,8 +2,10 @@
     "cSpell.words": [
         "anatine",
         "downloadjs",
+        "gradlew",
         "nosqlite",
-        "VITE"
+        "VITE",
+        "zulu"
     ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
